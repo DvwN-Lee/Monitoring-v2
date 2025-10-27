@@ -186,14 +186,19 @@ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/st
 
 ## 프로젝트 진행 상황
 
-### 완료된 항목
+### ✅ Week 1 완료 (2025-10-27)
 - [x] 로컬 개발 환경 구축 (Minikube + Skaffold)
 - [x] 마이크로서비스 기본 구조 설계
-- [ ] Solid Cloud 인프라 구축 (Terraform)
-- [ ] CI/CD 파이프라인 구축
-- [ ] PostgreSQL 적용 및 데이터 마이그레이션
-- [ ] 모니터링 시스템 구축
-- [ ] Istio 서비스 메시 적용
+- [x] Solid Cloud 인프라 구축 (Terraform)
+- [x] PostgreSQL 적용 및 데이터 마이그레이션 완료
+- [x] Kustomize Overlays 분리 (local vs solid-cloud)
+- [x] 환경 전환 및 배포 스크립트 작성
+- [x] 통합 테스트 스크립트 작성
+
+### 🚧 진행 예정
+- [ ] CI/CD 파이프라인 구축 (Week 2)
+- [ ] 모니터링 시스템 구축 (Week 3)
+- [ ] Istio 서비스 메시 적용 (Week 4)
 
 ---
 
