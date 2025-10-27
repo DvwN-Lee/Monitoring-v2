@@ -13,6 +13,16 @@ PROJECT_ROOT="$SCRIPT_DIR/.."
 cd "$PROJECT_ROOT"
 
 echo "📁 Working directory: $(pwd)"
+echo ""
+
+# Load tool installation functions
+source "$SCRIPT_DIR/install-tools.sh"
+
+# Check and install required tools
+echo "🔍 필요한 도구 확인 중..."
+check_and_install_tools terraform kubectl || exit 1
+
+echo ""
 
 # Colors for output
 RED='\033[0;31m'

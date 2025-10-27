@@ -15,25 +15,14 @@ cd "$PROJECT_ROOT"
 echo "📁 Working directory: $(pwd)"
 echo ""
 
-# Check if Minikube is installed
-if ! command -v minikube &> /dev/null; then
-    echo "Minikube is not installed. Please install it first."
-    exit 1
-fi
+# Load tool installation functions
+source "$SCRIPT_DIR/install-tools.sh"
 
-# Check if kubectl is installed
-if ! command -v kubectl &> /dev/null; then
-    echo "kubectl is not installed. Please install it first."
-    exit 1
-fi
+# Check and install required tools
+echo "🔍 필요한 도구 확인 중..."
+check_and_install_tools minikube kubectl skaffold || exit 1
 
-# Check if skaffold is installed
-if ! command -v skaffold &> /dev/null; then
-    echo "Skaffold is not installed. Please install it first."
-    exit 1
-fi
-
-echo "All required tools are installed"
+echo ""
 
 # Start Minikube if not running
 if ! minikube status &> /dev/null; then
