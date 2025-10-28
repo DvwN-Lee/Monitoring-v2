@@ -61,7 +61,7 @@ variable "postgres_password" {
 variable "kubeconfig_path" {
   description = "Path to kubeconfig file"
   type        = string
-  default     = "~/.kube/config"
+  default     = ""
 }
 
 variable "kubernetes_host" {

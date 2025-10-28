@@ -45,6 +45,14 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+# Ensure Terraform picks up the same kubeconfig that kubectl is using
+KUBECONFIG_PATH="${KUBECONFIG:-$HOME/.kube/config}"
+if [[ "$KUBECONFIG_PATH" == ~* ]]; then
+    KUBECONFIG_PATH="${KUBECONFIG_PATH/#\~/$HOME}"
+fi
+export TF_VAR_kubeconfig_path="$KUBECONFIG_PATH"
+echo "⬆️  TF_VAR_kubeconfig_path set to: $TF_VAR_kubeconfig_path"
+
 # Step 1: Terraform Infrastructure
 echo ""
 echo "${GREEN}📦 Step 1: Creating Infrastructure with Terraform${NC}"

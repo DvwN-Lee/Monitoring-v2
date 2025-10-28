@@ -99,6 +99,8 @@ resource "kubernetes_config_map" "postgresql_init" {
 
 # PostgreSQL PersistentVolumeClaim
 resource "kubernetes_persistent_volume_claim" "postgresql" {
+  wait_until_bound = false
+
   metadata {
     name      = "postgresql-pvc"
     namespace = var.namespace
@@ -108,7 +110,8 @@ resource "kubernetes_persistent_volume_claim" "postgresql" {
   }
 
   spec {
-    access_modes = ["ReadWriteOnce"]
+    access_modes       = ["ReadWriteOnce"]
+    storage_class_name = "local-path"
     resources {
       requests = {
         storage = var.storage_size

@@ -20,10 +20,14 @@ terraform {
 }
 
 # Provider Configuration
-# Update with actual Solid Cloud credentials
+# kubeconfig path can be supplied via TF_VAR_kubeconfig_path or defaults to ~/.kube/config
+locals {
+  resolved_kubeconfig_path = length(trimspace(var.kubeconfig_path)) > 0 ? pathexpand(var.kubeconfig_path) : pathexpand("~/.kube/config")
+}
+
 provider "kubernetes" {
   # Option 1: Use kubeconfig file
-  config_path = var.kubeconfig_path
+  config_path = local.resolved_kubeconfig_path
 
   # Option 2: Use explicit configuration
   # host                   = var.kubernetes_host

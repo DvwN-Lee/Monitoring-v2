@@ -211,7 +211,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 ## 프로젝트 진행 상황
 
-### ✅ Week 1 완료 (2025-10-27)
+### Week 1 완료 (2025-10-27)
 - [x] 로컬 개발 환경 구축 (Minikube + Skaffold)
 - [x] 마이크로서비스 기본 구조 설계
 - [x] Solid Cloud 인프라 구축 (Terraform)
@@ -220,7 +220,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 - [x] 환경 전환 및 배포 스크립트 작성
 - [x] 통합 테스트 스크립트 작성
 
-### 🚧 진행 예정
+### 진행 예정
 - [ ] CI/CD 파이프라인 구축 (Week 2)
 - [ ] 모니터링 시스템 구축 (Week 3)
 - [ ] Istio 서비스 메시 적용 (Week 4)

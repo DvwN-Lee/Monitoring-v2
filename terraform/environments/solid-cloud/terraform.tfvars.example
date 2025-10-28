@@ -16,10 +16,12 @@ postgres_version      = "15-alpine"
 postgres_storage_size = "10Gi"
 postgres_password     = "CHANGE_THIS_SECURE_PASSWORD"  # ⚠️ Update with strong password
 
-# Kubernetes Provider Configuration
-kubeconfig_path = "~/.kube/config"  # Path to your kubeconfig file
+# Kubernetes Provider Configuration (optional overrides)
+# Provide when you want Terraform to use a specific kubeconfig file.
+# Otherwise, the default ~/.kube/config is used.
+# kubeconfig_path = "/absolute/path/to/kubeconfig"
 
-# Or use explicit configuration (comment out kubeconfig_path if using this)
+# Or use explicit configuration (set all four values if not using config_path)
 # kubernetes_host                   = "https://solid-cloud-k8s-endpoint"
 # kubernetes_client_certificate     = "base64-encoded-cert"
 # kubernetes_client_key             = "base64-encoded-key"
