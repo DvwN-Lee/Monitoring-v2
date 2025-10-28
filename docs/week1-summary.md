@@ -139,18 +139,25 @@ CREATE TABLE posts (
 ```bash
 scripts/
 ├── switch-to-local.sh              # Minikube로 전환
-├── switch-to-cloud.sh              # Solid Cloud로 전환
+├── switch-to-cloud.sh              # Solid Cloud로 전환 (Token 기반 인증)
 ├── deploy-local.sh                 # 로컬 배포
-├── deploy-cloud.sh                 # 클라우드 배포
+├── deploy-cloud.sh                 # 클라우드 배포 (Token 기반 인증)
 ├── test-week1-infrastructure.sh    # 인프라 테스트
 └── test-week1-services.sh          # API 테스트
 ```
 
 **기능**:
 - 원클릭 환경 전환
+- Token 기반 Kubernetes 인증 자동 설정
 - 사전 요구사항 자동 검증
 - 단계별 배포 가이드
 - 자동화된 통합 테스트
+
+**Token 기반 인증 지원**:
+- `.env.k8s` 파일을 통한 환경 변수 관리
+- Service Account Token 기반 인증
+- CA Certificate 자동 설정
+- kubeconfig 파일 불필요 (인스턴스 실행 환경 지원)
 
 ### 5. 문서
 ```
@@ -369,14 +376,15 @@ configMapGenerator:
 ✅ 통합 테스트로 검증 자동화
 
 ### 개선이 필요한 점
-⚠️ Solid Cloud Provider 문서 부족 (플레이스홀더 사용)
 ⚠️ Secret 관리가 수동적 (External Secret 도입 검토)
 ⚠️ PostgreSQL 단일 레플리카 (HA 필요)
+~~⚠️ kubeconfig 파일 의존성~~ ✅ Token 기반 인증으로 해결
 
 ### 배운 점
 💡 IaC의 중요성 (재현 가능한 환경)
 💡 Kustomize의 강력함 (환경별 설정 관리)
 💡 테스트 자동화의 가치 (빠른 피드백)
+💡 Token 기반 인증의 편리함 (인스턴스 환경 지원)
 
 ---
 

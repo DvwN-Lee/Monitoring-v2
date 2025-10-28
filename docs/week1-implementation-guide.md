@@ -248,6 +248,46 @@ minikube service load-balancer-service --url -n local
 
 ### 옵션 2: Solid Cloud 환경
 
+#### Step 0: Kubernetes 인증 설정 (Token 기반)
+
+```bash
+# .env.k8s 파일 생성
+cp .env.k8s.example .env.k8s
+
+# .env.k8s 파일 편집
+vi .env.k8s
+```
+
+**.env.k8s 파일 내용:**
+```bash
+K8S_API_SERVER=https://your-k8s-api-server:6443
+K8S_CLUSTER_NAME=solid-cloud
+K8S_TOKEN=your-service-account-token-here
+K8S_CA_CERT=your-base64-encoded-ca-cert-here
+K8S_SKIP_TLS_VERIFY=false
+```
+
+**Token 발급 방법 (기존 클러스터 접근 가능 시):**
+```bash
+# Service Account 생성
+kubectl create serviceaccount monitoring-sa -n default
+kubectl create clusterrolebinding monitoring-sa-admin \
+  --clusterrole=cluster-admin \
+  --serviceaccount=default:monitoring-sa
+
+# Token 발급 (Kubernetes 1.24+)
+kubectl create token monitoring-sa --duration=87600h
+
+# CA Certificate 가져오기
+kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}'
+```
+
+**환경 전환:**
+```bash
+# Solid Cloud로 전환
+./scripts/switch-to-cloud.sh
+```
+
 #### Step 1: Secret 파일 생성
 
 ```bash

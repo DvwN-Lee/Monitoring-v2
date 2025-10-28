@@ -1,5 +1,5 @@
 #!/bin/bash
-# Week 1 Infrastructure Integration Tests
+# Week 1 Infrastructure Integration Tests (Token-based Authentication)
 # Tests: Terraform, Kubernetes, PostgreSQL, Services
 
 set -e
@@ -12,6 +12,22 @@ PROJECT_ROOT="$SCRIPT_DIR/.."
 cd "$PROJECT_ROOT"
 
 echo "📁 Working directory: $(pwd)"
+echo ""
+
+# Check if kubectl is connected to a cluster
+echo "🔍 Checking Kubernetes connection..."
+if ! kubectl cluster-info &> /dev/null; then
+    echo "❌ Not connected to Kubernetes cluster"
+    echo ""
+    echo "Please run the environment switch script first:"
+    echo "  ./scripts/switch-to-cloud.sh (for Solid Cloud)"
+    echo "  ./scripts/switch-to-local.sh (for Minikube)"
+    echo ""
+    exit 1
+fi
+
+CURRENT_CONTEXT=$(kubectl config current-context 2>/dev/null || echo "none")
+echo "📍 Using context: $CURRENT_CONTEXT"
 echo ""
 
 # Colors

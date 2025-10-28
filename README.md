@@ -118,24 +118,49 @@ minikube service load-balancer-service --url
 
 실제 클라우드 환경에서 Terraform으로 인프라를 생성하고 GitOps 방식으로 배포합니다.
 
-**요구사항:** `Terraform`, `kubectl`, Solid Cloud 접근 권한
+**요구사항:** `Terraform`, `kubectl`, Solid Cloud 접근 권한 (Token 기반 인증)
 
 ```bash
-# 1. Terraform으로 인프라 생성
-cd terraform/environments/dev
+# 1. Kubernetes 인증 설정 (Token 기반)
+# .env.k8s 파일 생성
+cp .env.k8s.example .env.k8s
+
+# .env.k8s 파일 편집 (API Server, Token, CA Cert 입력)
+# - K8S_API_SERVER: Kubernetes API 서버 URL
+# - K8S_TOKEN: Service Account Token
+# - K8S_CA_CERT: CA Certificate (Base64 인코딩)
+
+# 2. Solid Cloud 환경으로 전환
+./scripts/switch-to-cloud.sh
+
+# 3. Terraform으로 인프라 생성
+cd terraform/environments/solid-cloud
 terraform init
 terraform apply
 
-# 2. kubectl 설정
-# Solid Cloud에서 제공하는 kubeconfig 파일 다운로드
-export KUBECONFIG=~/solid-cloud-kubeconfig.yaml
+# 4. 애플리케이션 배포
+cd ../../..
+kubectl apply -k k8s-manifests/overlays/solid-cloud
 
-# 3. Argo CD 설치
-kubectl create namespace argocd
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+# 5. 배포 상태 확인
+kubectl get pods -n titanium-prod
+kubectl get svc -n titanium-prod
+```
 
-# 4. GitOps 배포
-# 이후 Git Push만으로 자동 배포
+**Token 발급 방법:**
+
+```bash
+# Service Account 생성 (기존 클러스터 접근 가능한 경우)
+kubectl create serviceaccount monitoring-sa -n default
+kubectl create clusterrolebinding monitoring-sa-admin \
+  --clusterrole=cluster-admin \
+  --serviceaccount=default:monitoring-sa
+
+# Token 발급 (Kubernetes 1.24+)
+kubectl create token monitoring-sa --duration=87600h
+
+# CA Certificate 가져오기
+kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}'
 ```
 
 ---

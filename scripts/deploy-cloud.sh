@@ -1,5 +1,5 @@
 #!/bin/bash
-# Deploy to Solid Cloud using Terraform and Kustomize
+# Deploy to Solid Cloud using Terraform and Kustomize (Token-based Authentication)
 
 set -e
 
@@ -22,6 +22,21 @@ source "$SCRIPT_DIR/install-tools.sh"
 echo "🔍 필요한 도구 확인 중..."
 check_and_install_tools terraform kubectl || exit 1
 
+echo ""
+
+# Ensure Kubernetes connection is configured
+echo "🔍 Checking Kubernetes connection..."
+if ! kubectl cluster-info &> /dev/null; then
+    echo "❌ Not connected to Kubernetes cluster"
+    echo ""
+    echo "Please run the environment switch script first:"
+    echo "  ./scripts/switch-to-cloud.sh"
+    echo ""
+    exit 1
+fi
+
+CURRENT_CONTEXT=$(kubectl config current-context 2>/dev/null || echo "none")
+echo "📍 Using context: $CURRENT_CONTEXT"
 echo ""
 
 # Colors for output
