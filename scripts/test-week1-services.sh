@@ -14,12 +14,13 @@ cd "$PROJECT_ROOT"
 echo "📁 Working directory: $(pwd)"
 echo ""
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
+# Colors - Disabled for better compatibility
+# If you want colors, uncomment these lines and use a terminal that supports ANSI colors
+RED=''
+GREEN=''
+YELLOW=''
+BLUE=''
+NC=''
 
 # Test counters
 TESTS_PASSED=0
@@ -28,26 +29,26 @@ TESTS_FAILED=0
 # Helper functions
 print_test() {
     echo ""
-    echo "${BLUE}========================================${NC}"
-    echo "${BLUE}TEST: $1${NC}"
-    echo "${BLUE}========================================${NC}"
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "${BLUE}TEST: $1${NC}"
+    echo -e "${BLUE}========================================${NC}"
 }
 
 pass() {
-    echo "${GREEN}PASS: $1${NC}"
+    echo -e "${GREEN}PASS: $1${NC}"
     TESTS_PASSED=$((TESTS_PASSED + 1))
 }
 
 fail() {
-    echo "${RED}FAIL: $1${NC}"
+    echo -e "${RED}FAIL: $1${NC}"
     TESTS_FAILED=$((TESTS_FAILED + 1))
 }
 
 warn() {
-    echo "${YELLOW}WARN: $1${NC}"
+    echo -e "${YELLOW}WARN: $1${NC}"
 }
 
-echo "${GREEN}🧪 Week 1 Service Integration Tests${NC}"
+echo -e "${GREEN}🧪 Week 1 Service Integration Tests${NC}"
 echo "=========================================="
 
 # Get LoadBalancer IP or use port-forward
@@ -226,15 +227,15 @@ fi
 
 # Summary
 echo ""
-echo "${BLUE}========================================${NC}"
-echo "${BLUE}TEST SUMMARY${NC}"
-echo "${BLUE}========================================${NC}"
-echo "${GREEN}Passed: $TESTS_PASSED${NC}"
-echo "${RED}Failed: $TESTS_FAILED${NC}"
+echo -e "${BLUE}========================================${NC}"
+echo -e "${BLUE}TEST SUMMARY${NC}"
+echo -e "${BLUE}========================================${NC}"
+echo -e "${GREEN}Passed: $TESTS_PASSED${NC}"
+echo -e "${RED}Failed: $TESTS_FAILED${NC}"
 
 if [ $TESTS_FAILED -eq 0 ]; then
     echo ""
-    echo "${GREEN}All service tests passed!${NC}"
+    echo -e "${GREEN}All service tests passed!${NC}"
     echo ""
     echo "PostgreSQL integration working correctly"
     echo "CRUD operations functional"
@@ -243,6 +244,6 @@ if [ $TESTS_FAILED -eq 0 ]; then
     exit 0
 else
     echo ""
-    echo "${RED}Some service tests failed.${NC}"
+    echo -e "${RED}Some service tests failed.${NC}"
     exit 1
 fi

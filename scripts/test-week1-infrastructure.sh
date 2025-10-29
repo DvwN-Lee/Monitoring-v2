@@ -30,12 +30,13 @@ CURRENT_CONTEXT=$(kubectl config current-context 2>/dev/null || echo "none")
 echo "📍 Using context: $CURRENT_CONTEXT"
 echo ""
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Colors - Disabled for better compatibility
+# If you want colors, uncomment these lines and use a terminal that supports ANSI colors
+RED=''
+GREEN=''
+YELLOW=''
+BLUE=''
+NC=''
 
 # Test counters
 TESTS_PASSED=0
@@ -45,28 +46,28 @@ TOTAL_TESTS=0
 # Helper functions
 print_test() {
     echo ""
-    echo "${BLUE}========================================${NC}"
-    echo "${BLUE}TEST: $1${NC}"
-    echo "${BLUE}========================================${NC}"
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "${BLUE}TEST: $1${NC}"
+    echo -e "${BLUE}========================================${NC}"
     TOTAL_TESTS=$((TOTAL_TESTS + 1))
 }
 
 pass() {
-    echo "${GREEN}PASS: $1${NC}"
+    echo -e "${GREEN}PASS: $1${NC}"
     TESTS_PASSED=$((TESTS_PASSED + 1))
 }
 
 fail() {
-    echo "${RED}FAIL: $1${NC}"
+    echo -e "${RED}FAIL: $1${NC}"
     TESTS_FAILED=$((TESTS_FAILED + 1))
 }
 
 warn() {
-    echo "${YELLOW}WARN: $1${NC}"
+    echo -e "${YELLOW}WARN: $1${NC}"
 }
 
 # Start tests
-echo "${GREEN}Week 1 Infrastructure Integration Tests${NC}"
+echo -e "${GREEN}Week 1 Infrastructure Integration Tests${NC}"
 echo "=========================================="
 
 # Test 1: Terraform Setup
@@ -310,17 +311,17 @@ done
 
 # Summary
 echo ""
-echo "${BLUE}========================================${NC}"
-echo "${BLUE}TEST SUMMARY${NC}"
-echo "${BLUE}========================================${NC}"
+echo -e "${BLUE}========================================${NC}"
+echo -e "${BLUE}TEST SUMMARY${NC}"
+echo -e "${BLUE}========================================${NC}"
 echo "Total Tests: $TOTAL_TESTS"
-echo "${GREEN}Passed: $TESTS_PASSED${NC}"
-echo "${RED}Failed: $TESTS_FAILED${NC}"
-echo "${YELLOW}Warnings: Check output above${NC}"
+echo -e "${GREEN}Passed: $TESTS_PASSED${NC}"
+echo -e "${RED}Failed: $TESTS_FAILED${NC}"
+echo -e "${YELLOW}Warnings: Check output above${NC}"
 
 if [ $TESTS_FAILED -eq 0 ]; then
     echo ""
-    echo "${GREEN}🎉 All critical tests passed!${NC}"
+    echo -e "${GREEN}🎉 All critical tests passed!${NC}"
     echo ""
     echo "Week 1 Completion Criteria:"
     echo "  Terraform modules created"
@@ -333,6 +334,6 @@ if [ $TESTS_FAILED -eq 0 ]; then
     exit 0
 else
     echo ""
-    echo "${RED}Some tests failed. Please review and fix issues.${NC}"
+    echo -e "${RED}Some tests failed. Please review and fix issues.${NC}"
     exit 1
 fi
