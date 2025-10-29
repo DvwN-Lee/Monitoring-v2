@@ -1,0 +1,98 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Namespace for all resources
+namespace: titanium-prod
+
+# Name prefix for all resources
+namePrefix: prod-
+
+# Base resources
+resources:
+  - ../../base
+  - namespace.yaml
+
+# Patches for Solid Cloud environment
+patches:
+  # Change Service type from ClusterIP to LoadBalancer for external access
+  - path: patches/service-lb-patch.yaml
+    target:
+      kind: Service
+      name: load-balancer-service
+
+  # Remove SQLite PVC from user-service deployment
+  - path: patches/user-service-deployment-patch.yaml
+    target:
+      kind: Deployment
+      name: user-service-deployment
+
+  # Update blog-service deployment for PostgreSQL
+  - path: patches/blog-service-deployment-patch.yaml
+    target:
+      kind: Deployment
+      name: blog-service-deployment
+
+# ConfigMap generator for production-specific config
+configMapGenerator:
+  - name: app-config
+    behavior: merge
+    literals:
+      - USE_POSTGRES=true
+      - POSTGRES_HOST=postgresql-service
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=titanium
+      - API_GATEWAY_URL=http://prod-api-gateway-service:8000
+      - USER_SERVICE_URL=http://prod-user-service:8001
+      - AUTH_SERVICE_URL=http://prod-auth-service:8002
+      - BLOG_SERVICE_URL=http://prod-blog-service:8005
+      - DASHBOARD_UI_URL=http://prod-dashboard-ui-service:80
+      - LOAD_BALANCER_URL=http://prod-load-balancer-service:7100
+      - REDIS_HOST=prod-redis-service
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+      - DEBUG_MODE=false
+      - APP_NAME=titanium
+      - APP_VERSION=2.0.0
+      - CORS_ALLOWED_ORIGINS=*
+
+# Secret generator (will be replaced by actual secrets)
+# Note: In production, manage secrets separately or use external secret managers
+secretGenerator:
+  - name: app-secrets
+    behavior: merge
+    literals:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=CHANGE_THIS_SECURE_PASSWORD
+      - JWT_SECRET_KEY=CHANGE_THIS_JWT_SECRET
+      - INTERNAL_API_SECRET=CHANGE_THIS_API_SECRET
+
+# Common labels for all resources
+labels:
+  - pairs:
+      environment: production
+      managed-by: kustomize
+      project: titanium
+
+# Images to use (update with actual registry)
+images:
+  - name: dongju101/titanium-user-service
+    newTag: latest
+  - name: dongju101/titanium-blog-service
+    newTag: latest
+  - name: dongju101/titanium-auth-service
+    newTag: latest
+  - name: dongju101/titanium-api-gateway
+    newTag: latest
+
+# Resource modifications
+replicas:
+  - name: user-service-deployment
+    count: 2
+  - name: blog-service-deployment
+    count: 2
+  - name: auth-service-deployment
+    count: 2
+  - name: api-gateway-deployment
+    count: 2

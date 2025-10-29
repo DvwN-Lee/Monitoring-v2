@@ -1,6 +1,5 @@
 import os
 import logging
-import sqlite3
 from datetime import datetime
 from typing import Optional, Dict, List
 import aiohttp
@@ -20,39 +19,108 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/blog/static", StaticFiles(directory="static"), name="static")
 
-
 # --- 설정 ---
 AUTH_SERVICE_URL = os.getenv('AUTH_SERVICE_URL', 'http://auth-service:8002')
-DATABASE_PATH = os.getenv('BLOG_DATABASE_PATH', '/app/blog.db')
 
-# --- SQLite 초기화 ---
-def init_db():
-    os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
-    with sqlite3.connect(DATABASE_PATH) as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS posts (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                content TEXT NOT NULL,
-                author TEXT NOT NULL,
-                created_at TEXT NOT NULL,
-                updated_at TEXT NOT NULL
-            )
-            """
-        )
-        conn.commit()
+# Determine which DB to use
+USE_POSTGRES = os.getenv('USE_POSTGRES', 'false').lower() == 'true'
 
-def row_to_post(row: sqlite3.Row) -> Dict:
-    return {
-        "id": row[0],
-        "title": row[1],
-        "content": row[2],
-        "author": row[3],
-        "created_at": row[4],
-        "updated_at": row[5],
+if USE_POSTGRES:
+    import psycopg2
+    from psycopg2.extras import RealDictCursor
+    logger.info("🐘 Using PostgreSQL database for blog posts")
+
+    DB_CONFIG = {
+        'host': os.getenv('POSTGRES_HOST', 'postgresql-service'),
+        'port': int(os.getenv('POSTGRES_PORT', '5432')),
+        'database': os.getenv('POSTGRES_DB', 'titanium'),
+        'user': os.getenv('POSTGRES_USER', 'postgres'),
+        'password': os.getenv('POSTGRES_PASSWORD', ''),
     }
+else:
+    import sqlite3
+    logger.info("💾 Using SQLite database for blog posts")
+    DATABASE_PATH = os.getenv('BLOG_DATABASE_PATH', '/app/blog.db')
+
+# --- Database Helper Functions ---
+def get_db_connection():
+    """Get database connection."""
+    if USE_POSTGRES:
+        try:
+            conn = psycopg2.connect(**DB_CONFIG)
+            return conn
+        except psycopg2.Error as e:
+            logger.error(f"PostgreSQL connection failed: {e}", exc_info=True)
+            raise
+    else:
+        return sqlite3.connect(DATABASE_PATH)
+
+def init_db():
+    """Initialize database schema."""
+    try:
+        if USE_POSTGRES:
+            conn = get_db_connection()
+            with conn.cursor() as cursor:
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS posts (
+                        id SERIAL PRIMARY KEY,
+                        title VARCHAR(200) NOT NULL,
+                        content TEXT NOT NULL,
+                        author VARCHAR(100) NOT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                ''')
+                cursor.execute('''
+                    CREATE INDEX IF NOT EXISTS idx_posts_author ON posts(author)
+                ''')
+                cursor.execute('''
+                    CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC)
+                ''')
+                conn.commit()
+            conn.close()
+            logger.info("PostgreSQL blog database initialized successfully")
+        else:
+            os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
+            with sqlite3.connect(DATABASE_PATH) as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS posts (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        title TEXT NOT NULL,
+                        content TEXT NOT NULL,
+                        author TEXT NOT NULL,
+                        created_at TEXT NOT NULL,
+                        updated_at TEXT NOT NULL
+                    )
+                ''')
+                conn.commit()
+            logger.info("SQLite blog database initialized successfully")
+    except Exception as e:
+        logger.error(f"Database initialization failed: {e}", exc_info=True)
+        raise
+
+def row_to_post(row: Dict) -> Dict:
+    """Convert database row to post dictionary."""
+    if USE_POSTGRES:
+        return {
+            "id": row["id"],
+            "title": row["title"],
+            "content": row["content"],
+            "author": row["author"],
+            "created_at": row["created_at"].isoformat() if hasattr(row["created_at"], 'isoformat') else str(row["created_at"]),
+            "updated_at": row["updated_at"].isoformat() if hasattr(row["updated_at"], 'isoformat') else str(row["updated_at"]),
+        }
+    else:
+        # SQLite row
+        return {
+            "id": row[0],
+            "title": row[1],
+            "content": row[2],
+            "author": row[3],
+            "created_at": row[4],
+            "updated_at": row[5],
+        }
 
 init_db()
 
@@ -97,12 +165,26 @@ async def require_user(request: Request) -> str:
 @app.get("/api/posts")
 async def handle_get_posts(offset: int = Query(0, ge=0), limit: int = Query(20, ge=1, le=100)):
     """모든 블로그 게시물 목록을 반환합니다(최신순, 페이지네이션)."""
-    with sqlite3.connect(DATABASE_PATH) as conn:
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT id, title, content, author, created_at, updated_at FROM posts ORDER BY id DESC LIMIT ? OFFSET ?", (limit, offset))
-        rows = cursor.fetchall()
-        items = [row_to_post(r) for r in rows]
+    conn = get_db_connection()
+    try:
+        if USE_POSTGRES:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    "SELECT id, title, content, author, created_at, updated_at FROM posts ORDER BY id DESC LIMIT %s OFFSET %s",
+                    (limit, offset)
+                )
+                rows = cursor.fetchall()
+                items = [row_to_post(dict(r)) for r in rows]
+        else:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT id, title, content, author, created_at, updated_at FROM posts ORDER BY id DESC LIMIT ? OFFSET ?",
+                (limit, offset)
+            )
+            rows = cursor.fetchall()
+            items = [row_to_post(r) for r in rows]
+
         # 목록 응답은 요약 정보 위주로 반환 + 발췌(excerpt)
         summaries = []
         for p in items:
@@ -116,18 +198,37 @@ async def handle_get_posts(offset: int = Query(0, ge=0), limit: int = Query(20, 
                 "excerpt": excerpt,
             })
         return JSONResponse(content=summaries)
+    finally:
+        conn.close()
 
 @app.get("/api/posts/{post_id}")
 async def handle_get_post_by_id(post_id: int):
     """ID로 특정 게시물을 찾아 반환합니다."""
-    with sqlite3.connect(DATABASE_PATH) as conn:
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT id, title, content, author, created_at, updated_at FROM posts WHERE id = ?", (post_id,))
-        row = cursor.fetchone()
-        if not row:
-            raise HTTPException(status_code=404, detail={'error': 'Post not found'})
-        return JSONResponse(content=row_to_post(row))
+    conn = get_db_connection()
+    try:
+        if USE_POSTGRES:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    "SELECT id, title, content, author, created_at, updated_at FROM posts WHERE id = %s",
+                    (post_id,)
+                )
+                row = cursor.fetchone()
+                if not row:
+                    raise HTTPException(status_code=404, detail={'error': 'Post not found'})
+                return JSONResponse(content=row_to_post(dict(row)))
+        else:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT id, title, content, author, created_at, updated_at FROM posts WHERE id = ?",
+                (post_id,)
+            )
+            row = cursor.fetchone()
+            if not row:
+                raise HTTPException(status_code=404, detail={'error': 'Post not found'})
+            return JSONResponse(content=row_to_post(row))
+    finally:
+        conn.close()
 
 @app.post("/api/login")
 async def handle_login(user_login: UserLogin):
@@ -151,68 +252,144 @@ async def handle_register(user_register: UserRegister):
 
 @app.post("/api/posts", status_code=201)
 async def create_post(request: Request, payload: PostCreate, username: str = Depends(require_user)):
-    now = datetime.utcnow().isoformat()
-    with sqlite3.connect(DATABASE_PATH) as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO posts (title, content, author, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-            (payload.title, payload.content, username, now, now)
-        )
-        post_id = cursor.lastrowid
-        conn.commit()
-    return JSONResponse(content={
-        "id": post_id,
-        "title": payload.title,
-        "content": payload.content,
-        "author": username,
-        "created_at": now,
-        "updated_at": now,
-    })
+    conn = get_db_connection()
+    try:
+        if USE_POSTGRES:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    "INSERT INTO posts (title, content, author) VALUES (%s, %s, %s) RETURNING id, created_at, updated_at",
+                    (payload.title, payload.content, username)
+                )
+                result = cursor.fetchone()
+                post_id = result["id"]
+                created_at = result["created_at"].isoformat()
+                updated_at = result["updated_at"].isoformat()
+                conn.commit()
+        else:
+            cursor = conn.cursor()
+            now = datetime.utcnow().isoformat()
+            cursor.execute(
+                "INSERT INTO posts (title, content, author, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+                (payload.title, payload.content, username, now, now)
+            )
+            post_id = cursor.lastrowid
+            created_at = now
+            updated_at = now
+            conn.commit()
+
+        return JSONResponse(content={
+            "id": post_id,
+            "title": payload.title,
+            "content": payload.content,
+            "author": username,
+            "created_at": created_at,
+            "updated_at": updated_at,
+        })
+    finally:
+        conn.close()
 
 @app.patch("/api/posts/{post_id}")
 async def update_post_partial(post_id: int, request: Request, payload: PostUpdate, username: str = Depends(require_user)):
-    with sqlite3.connect(DATABASE_PATH) as conn:
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT author FROM posts WHERE id = ?", (post_id,))
-        row = cursor.fetchone()
-        if not row:
-            raise HTTPException(status_code=404, detail={'error': 'Post not found'})
-        if row[0] != username:
-            raise HTTPException(status_code=403, detail='Forbidden: not the author')
-        fields = []
-        params = []
-        if payload.title is not None:
-            fields.append("title = ?")
-            params.append(payload.title)
-        if payload.content is not None:
-            fields.append("content = ?")
-            params.append(payload.content)
-        if not fields:
-            return JSONResponse(content={"message": "No changes"})
-        fields.append("updated_at = ?")
-        params.append(datetime.utcnow().isoformat())
-        params.append(post_id)
-        cursor.execute(f"UPDATE posts SET {', '.join(fields)} WHERE id = ?", tuple(params))
-        conn.commit()
-        cursor.execute("SELECT id, title, content, author, created_at, updated_at FROM posts WHERE id = ?", (post_id,))
-        out = cursor.fetchone()
-        return JSONResponse(content=row_to_post(out))
+    conn = get_db_connection()
+    try:
+        if USE_POSTGRES:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("SELECT author FROM posts WHERE id = %s", (post_id,))
+                row = cursor.fetchone()
+                if not row:
+                    raise HTTPException(status_code=404, detail={'error': 'Post not found'})
+                if row["author"] != username:
+                    raise HTTPException(status_code=403, detail='Forbidden: not the author')
+
+                fields = []
+                params = []
+                if payload.title is not None:
+                    fields.append("title = %s")
+                    params.append(payload.title)
+                if payload.content is not None:
+                    fields.append("content = %s")
+                    params.append(payload.content)
+                if not fields:
+                    return JSONResponse(content={"message": "No changes"})
+
+                fields.append("updated_at = CURRENT_TIMESTAMP")
+                params.append(post_id)
+
+                cursor.execute(
+                    f"UPDATE posts SET {', '.join(fields)} WHERE id = %s",
+                    tuple(params)
+                )
+                conn.commit()
+
+                cursor.execute(
+                    "SELECT id, title, content, author, created_at, updated_at FROM posts WHERE id = %s",
+                    (post_id,)
+                )
+                out = cursor.fetchone()
+                return JSONResponse(content=row_to_post(dict(out)))
+        else:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute("SELECT author FROM posts WHERE id = ?", (post_id,))
+            row = cursor.fetchone()
+            if not row:
+                raise HTTPException(status_code=404, detail={'error': 'Post not found'})
+            if row[0] != username:
+                raise HTTPException(status_code=403, detail='Forbidden: not the author')
+
+            fields = []
+            params = []
+            if payload.title is not None:
+                fields.append("title = ?")
+                params.append(payload.title)
+            if payload.content is not None:
+                fields.append("content = ?")
+                params.append(payload.content)
+            if not fields:
+                return JSONResponse(content={"message": "No changes"})
+
+            fields.append("updated_at = ?")
+            params.append(datetime.utcnow().isoformat())
+            params.append(post_id)
+
+            cursor.execute(f"UPDATE posts SET {', '.join(fields)} WHERE id = ?", tuple(params))
+            conn.commit()
+
+            cursor.execute("SELECT id, title, content, author, created_at, updated_at FROM posts WHERE id = ?", (post_id,))
+            out = cursor.fetchone()
+            return JSONResponse(content=row_to_post(out))
+    finally:
+        conn.close()
 
 @app.delete("/api/posts/{post_id}", status_code=204)
 async def delete_post(post_id: int, request: Request, username: str = Depends(require_user)):
-    with sqlite3.connect(DATABASE_PATH) as conn:
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT author FROM posts WHERE id = ?", (post_id,))
-        row = cursor.fetchone()
-        if not row:
-            raise HTTPException(status_code=404, detail={'error': 'Post not found'})
-        if row[0] != username:
-            raise HTTPException(status_code=403, detail='Forbidden: not the author')
-        cursor.execute("DELETE FROM posts WHERE id = ?", (post_id,))
-        conn.commit()
-    return Response(status_code=204)
+    conn = get_db_connection()
+    try:
+        if USE_POSTGRES:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("SELECT author FROM posts WHERE id = %s", (post_id,))
+                row = cursor.fetchone()
+                if not row:
+                    raise HTTPException(status_code=404, detail={'error': 'Post not found'})
+                if row["author"] != username:
+                    raise HTTPException(status_code=403, detail='Forbidden: not the author')
+                cursor.execute("DELETE FROM posts WHERE id = %s", (post_id,))
+                conn.commit()
+        else:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute("SELECT author FROM posts WHERE id = ?", (post_id,))
+            row = cursor.fetchone()
+            if not row:
+                raise HTTPException(status_code=404, detail={'error': 'Post not found'})
+            if row[0] != username:
+                raise HTTPException(status_code=403, detail='Forbidden: not the author')
+            cursor.execute("DELETE FROM posts WHERE id = ?", (post_id,))
+            conn.commit()
+
+        return Response(status_code=204)
+    finally:
+        conn.close()
 
 @app.get("/health")
 async def handle_health():
