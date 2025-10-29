@@ -14,14 +14,6 @@ cd "$PROJECT_ROOT"
 echo "📁 Working directory: $(pwd)"
 echo ""
 
-# Colors - Disabled for better compatibility
-# If you want colors, uncomment these lines and use a terminal that supports ANSI colors
-RED=''
-GREEN=''
-YELLOW=''
-BLUE=''
-NC=''
-
 # Test counters
 TESTS_PASSED=0
 TESTS_FAILED=0
@@ -29,26 +21,26 @@ TESTS_FAILED=0
 # Helper functions
 print_test() {
     echo ""
-    echo -e "${BLUE}========================================${NC}"
-    echo -e "${BLUE}TEST: $1${NC}"
-    echo -e "${BLUE}========================================${NC}"
+    echo "========================================"
+    echo "TEST: $1"
+    echo "========================================"
 }
 
 pass() {
-    echo -e "${GREEN}PASS: $1${NC}"
+    echo "PASS: $1"
     TESTS_PASSED=$((TESTS_PASSED + 1))
 }
 
 fail() {
-    echo -e "${RED}FAIL: $1${NC}"
+    echo "FAIL: $1"
     TESTS_FAILED=$((TESTS_FAILED + 1))
 }
 
 warn() {
-    echo -e "${YELLOW}WARN: $1${NC}"
+    echo "WARN: $1"
 }
 
-echo -e "${GREEN}🧪 Week 1 Service Integration Tests${NC}"
+echo "🧪 Week 1 Service Integration Tests"
 echo "=========================================="
 
 # Get LoadBalancer IP or use port-forward
@@ -227,15 +219,15 @@ fi
 
 # Summary
 echo ""
-echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}TEST SUMMARY${NC}"
-echo -e "${BLUE}========================================${NC}"
-echo -e "${GREEN}Passed: $TESTS_PASSED${NC}"
-echo -e "${RED}Failed: $TESTS_FAILED${NC}"
+echo "========================================"
+echo "TEST SUMMARY"
+echo "========================================"
+echo "Passed: $TESTS_PASSED"
+echo "Failed: $TESTS_FAILED"
 
 if [ $TESTS_FAILED -eq 0 ]; then
     echo ""
-    echo -e "${GREEN}All service tests passed!${NC}"
+    echo "All service tests passed!"
     echo ""
     echo "PostgreSQL integration working correctly"
     echo "CRUD operations functional"
@@ -244,6 +236,6 @@ if [ $TESTS_FAILED -eq 0 ]; then
     exit 0
 else
     echo ""
-    echo -e "${RED}Some service tests failed.${NC}"
+    echo "Some service tests failed."
     exit 1
 fi
