@@ -25,6 +25,12 @@ on:
       - 'dashboard-ui/**'
       - '.github/workflows/ci.yml'
 
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+  issues: write
+
 env:
   DOCKER_HUB_USERNAME: dongju101
   REGISTRY: docker.io
@@ -143,6 +149,7 @@ jobs:
 
       - name: Comment PR with Trivy results
         if: github.event_name == 'pull_request'
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           script: |
