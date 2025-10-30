@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: api-gateway-container
-        image: dongju101/titanium-api:latest
+        image: dongju101/api-gateway:v1.0
         imagePullPolicy: Always
         ports:
         - containerPort: 8000

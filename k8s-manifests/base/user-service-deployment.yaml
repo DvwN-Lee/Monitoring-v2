@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: user-service-container
-        image: dongju101/titanium-user-service:latest
+        image: dongju101/user-service:v1.0
         imagePullPolicy: Always
         ports:
         - containerPort: 8001

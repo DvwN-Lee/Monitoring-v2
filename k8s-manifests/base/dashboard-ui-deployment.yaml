@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: dashboard-ui-container
-        image: dongju101/titanium-ui:latest
+        image: dongju101/dashboard-ui:v1.0
         imagePullPolicy: Always
         ports:
         - containerPort: 80
