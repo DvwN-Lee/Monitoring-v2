@@ -11,6 +11,7 @@ resources:
 - auth-service-service.yaml
 - dashboard-ui-deployment.yaml
 - dashboard-ui-service.yaml
+- dashboard-ui-nginx-config.yaml
 - load-balancer-deployment.yaml
 - load-balancer-service.yaml
 - redis-deployment.yaml
