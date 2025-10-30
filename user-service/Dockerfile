@@ -1,5 +1,5 @@
-# user-service/Dockerfile
-FROM python:3.11-slim
+# user-service/Dockerfile - Testing security scan failure
+FROM python:3.7-slim
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
