@@ -104,13 +104,12 @@ jobs:
           git add k8s-manifests/overlays/solid-cloud/kustomization.yaml
 
           # 커밋 메시지 생성
-          COMMIT_MSG="chore: Update image tags to main-${SHORT_SHA}
+          git commit -m "chore: Update image tags to main-${SHORT_SHA}
 
-Updated services: ${SERVICES}
+          Updated services: ${SERVICES}
 
-[skip ci]"
+          [skip ci]"
 
-          git commit -m "$COMMIT_MSG"
           git push origin main
 
       - name: Summary
