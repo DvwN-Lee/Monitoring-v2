@@ -31,9 +31,34 @@ data:
             proxy_set_header X-Forwarded-Proto $scheme;
         }
 
-        # API Gateway 프록시 (선택적)
+        # Blog Service 프록시 (load-balancer를 통해)
+        location /blog {
+            proxy_pass http://prod-load-balancer-service:7100/blog;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /blog/ {
+            proxy_pass http://prod-load-balancer-service:7100/blog/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # API Gateway 프록시 (load-balancer를 통해)
         location /api/ {
-            proxy_pass http://prod-api-gateway-service:8000/api/;
+            proxy_pass http://prod-load-balancer-service:7100/api/;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection 'upgrade';
