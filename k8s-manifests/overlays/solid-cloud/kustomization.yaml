@@ -20,6 +20,12 @@ patches:
       kind: Service
       name: load-balancer-service
 
+  # Expose dashboard-ui service as NodePort for external access
+  - path: patches/dashboard-ui-service-patch.yaml
+    target:
+      kind: Service
+      name: dashboard-ui-service
+
   # Remove SQLite PVC from user-service deployment
   - path: patches/user-service-deployment-patch.yaml
     target:
