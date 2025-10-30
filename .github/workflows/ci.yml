@@ -89,7 +89,7 @@ jobs:
           images: ${{ env.DOCKER_HUB_USERNAME }}/${{ matrix.service }}
           tags: |
             type=ref,event=pr
-            type=sha,prefix={{branch}}-
+            type=sha,prefix=main-,format=short
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build Docker image (PR)
