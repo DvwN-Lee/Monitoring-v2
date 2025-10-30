@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: auth-service-container
-        image: dongju101/titanium-auth-service:latest
+        image: dongju101/auth-service:v1.0
         imagePullPolicy: Always
         ports:
         - containerPort: 8002

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: load-balancer-container
-        image: dongju101/titanium-lb:latest
+        image: dongju101/load-balancer:v1.0
         imagePullPolicy: Always
         ports:
         - containerPort: 7100
