@@ -1,4 +1,5 @@
 # TItanium-v2/user-service/user_service.py
+# Version: 1.1.0 - Added CI/CD pipeline support
 
 # ... (기존 import 및 모델 정의는 그대로 유지) ...
 import logging
