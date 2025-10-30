@@ -97,7 +97,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./${{ matrix.service }}
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: false
           load: true
           tags: ${{ env.DOCKER_HUB_USERNAME }}/${{ matrix.service }}:test
