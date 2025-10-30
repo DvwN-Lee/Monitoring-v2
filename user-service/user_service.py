@@ -1,5 +1,5 @@
 # TItanium-v2/user-service/user_service.py
-# Version: 1.1.2 - Rollback testing
+# Version: 1.1.1 - E2E testing for CI/CD pipeline
 
 # ... (기존 import 및 모델 정의는 그대로 유지) ...
 import logging
