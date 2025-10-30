@@ -84,7 +84,7 @@ labels:
 # Images to use (updated with Docker Hub registry)
 images:
   - name: dongju101/user-service
-    newTag: main-bcc29b4
+    newTag: main-2fd69a0
   - name: dongju101/blog-service
     newTag: v1.0
   - name: dongju101/auth-service
