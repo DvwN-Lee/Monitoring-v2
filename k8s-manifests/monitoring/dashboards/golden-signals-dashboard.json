@@ -239,12 +239,12 @@
       "pluginVersion": "8.0.0",
       "targets": [
         {
-          "expr": "sum(rate(http_requests_total{namespace=\"titanium-prod\", job=~\"$service\", status=~\"5..\"}[5m])) by (job) / sum(rate(http_requests_total{namespace=\"titanium-prod\", job=~\"$service\"}[5m])) by (job) * 100",
+          "expr": "sum(rate(http_requests_total{namespace=\"titanium-prod\", job=~\"$service\", status=\"5xx\"}[5m])) by (job) / sum(rate(http_requests_total{namespace=\"titanium-prod\", job=~\"$service\"}[5m])) by (job) * 100",
           "refId": "A",
           "legendFormat": "{{job}} - 5xx Errors"
         },
         {
-          "expr": "sum(rate(http_requests_total{namespace=\"titanium-prod\", job=~\"$service\", status=~\"4..\"}[5m])) by (job) / sum(rate(http_requests_total{namespace=\"titanium-prod\", job=~\"$service\"}[5m])) by (job) * 100",
+          "expr": "sum(rate(http_requests_total{namespace=\"titanium-prod\", job=~\"$service\", status=\"4xx\"}[5m])) by (job) / sum(rate(http_requests_total{namespace=\"titanium-prod\", job=~\"$service\"}[5m])) by (job) * 100",
           "refId": "B",
           "legendFormat": "{{job}} - 4xx Errors"
         }
