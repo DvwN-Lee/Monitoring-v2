@@ -1,5 +1,5 @@
 # TItanium-v2/user-service/user_service.py
-# Version: 1.2.0 - Added Prometheus metrics
+# Version: 1.2.1 - Improved Prometheus histogram buckets for accurate P95/P99
 
 import logging
 from fastapi import FastAPI, HTTPException, Depends
@@ -29,7 +29,10 @@ db = UserServiceDatabase()
 cache = CacheService()
 
 # Prometheus 메트릭 설정
-Instrumentator().instrument(app).expose(app)
+# 히스토그램 버킷을 세밀하게 설정하여 정확한 P95/P99 계산 가능
+Instrumentator(
+    buckets=(0.001, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 10.0)
+).instrument(app).expose(app)
 
 # --- User Service의 통계 및 DB/Cache 상태를 반환하는 엔드포인트 ---
 @app.get("/stats")
