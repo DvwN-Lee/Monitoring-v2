@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from prometheus_fastapi_instrumentator import Instrumentator
+from prometheus_fastapi_instrumentator.metrics import request_latency
 
 # --- 기본 로깅 ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -18,9 +19,40 @@ app = FastAPI()
 
 # Prometheus 메트릭 설정
 # 히스토그램 버킷을 세밀하게 설정하여 정확한 P95/P99 계산 가능
-Instrumentator(
-    buckets=(0.001, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 10.0)
-).instrument(app).expose(app)
+REQUEST_LATENCY_BUCKETS = (
+    0.001,
+    0.005,
+    0.01,
+    0.025,
+    0.05,
+    0.075,
+    0.1,
+    0.25,
+    0.5,
+    0.75,
+    1.0,
+    2.5,
+    5.0,
+    10.0,
+)
+
+
+def configure_metrics(application: FastAPI) -> None:
+    """Configure Prometheus request latency metrics with backward-compatible buckets."""
+    try:
+        instrumentator = Instrumentator(buckets=REQUEST_LATENCY_BUCKETS)
+    except TypeError as exc:
+        if "buckets" not in str(exc):
+            raise
+        instrumentator = Instrumentator()
+        instrumentator.add(
+            request_latency(buckets=REQUEST_LATENCY_BUCKETS)
+        )
+
+    instrumentator.instrument(application).expose(application)
+
+
+configure_metrics(app)
 
 # --- 정적 파일 및 템플릿 설정 ---
 templates = Jinja2Templates(directory="templates")
