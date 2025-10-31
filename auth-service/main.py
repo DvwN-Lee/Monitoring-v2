@@ -15,7 +15,10 @@ app = FastAPI()
 auth_service = AuthService()
 
 # Prometheus 메트릭 설정
-Instrumentator().instrument(app).expose(app)
+# 히스토그램 버킷을 세밀하게 설정하여 정확한 P95/P99 계산 가능
+Instrumentator(
+    buckets=(0.001, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 10.0)
+).instrument(app).expose(app)
 
 # --- API 엔드포인트 ---
 @app.post("/login")
