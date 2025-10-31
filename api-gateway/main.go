@@ -12,7 +12,27 @@ import (
 	"strings"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+)
+
+var (
+	httpRequestsTotal = promauto.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "http_requests_total",
+			Help: "Total number of HTTP requests",
+		},
+		[]string{"method", "status"},
+	)
+	httpRequestDuration = promauto.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "http_request_duration_seconds",
+			Help:    "Duration of HTTP requests",
+			Buckets: prometheus.DefBuckets,
+		},
+		[]string{"method"},
+	)
 )
 
 func getEnv(key, fallback string) string {
@@ -26,6 +46,42 @@ func newProxy(target *url.URL) *httputil.ReverseProxy {
 	return httputil.NewSingleHostReverseProxy(target)
 }
 
+// statusRecorder records the status code of the response
+type statusRecorder struct {
+	http.ResponseWriter
+	status int
+}
+
+func (r *statusRecorder) WriteHeader(status int) {
+	r.status = status
+	r.ResponseWriter.WriteHeader(status)
+}
+
+func prometheusMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		recorder := &statusRecorder{
+			ResponseWriter: w,
+			status:         http.StatusOK,
+		}
+		timer := prometheus.NewTimer(httpRequestDuration.WithLabelValues(r.Method))
+		next.ServeHTTP(recorder, r)
+		timer.ObserveDuration()
+
+		// Record status code
+		statusClass := "unknown"
+		if recorder.status >= 500 {
+			statusClass = "5xx"
+		} else if recorder.status >= 400 {
+			statusClass = "4xx"
+		} else if recorder.status >= 300 {
+			statusClass = "3xx"
+		} else if recorder.status >= 200 {
+			statusClass = "2xx"
+		}
+		httpRequestsTotal.WithLabelValues(r.Method, statusClass).Inc()
+	})
+}
+
 func main() {
 	port := getEnv("API_GATEWAY_PORT", "8000")
 
@@ -33,10 +89,7 @@ func main() {
 	userServiceURL, _ := url.Parse(getEnv("USER_SERVICE_URL", "http://user-service:8001"))
 	authServiceURL, _ := url.Parse(getEnv("AUTH_SERVICE_URL", "http://auth-service:8002"))
 	blogServiceURL, _ := url.Parse(getEnv("BLOG_SERVICE_URL", "http://blog-service:8005"))
-	// 분석 서비스는 현재 통계 집계에 직접 사용되지 않으므로 주석 처리 또는 삭제 가능
-	// analyticsServiceURL, _ := url.Parse(getEnv("ANALYTICS_SERVICE_URL", "http://analytics-service:8004"))
 
-	// 리버스 프록시 + 타임아웃이 설정된 트랜스포트
 	transport := &http.Transport{
 		ResponseHeaderTimeout: 2 * time.Second,
 		IdleConnTimeout:       30 * time.Second,
@@ -51,40 +104,34 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// --- [핵심 수정] /api/ 경로를 처리하고 접두사를 제거하는 핸들러 ---
-	mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
+	apiHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
-
-		// /api/ 접두사 제거
 		trimmedPath := strings.TrimPrefix(path, "/api")
 
 		if strings.HasPrefix(trimmedPath, "/login") {
 			r.URL.Path = trimmedPath
 			authProxy.ServeHTTP(w, r)
 		} else if strings.HasPrefix(trimmedPath, "/register") {
-			// 회원가입은 User Service로 프록시하고, /users로 경로 재작성
 			r.URL.Path = "/users"
 			userProxy.ServeHTTP(w, r)
 		} else if strings.HasPrefix(trimmedPath, "/users") {
 			r.URL.Path = trimmedPath
 			userProxy.ServeHTTP(w, r)
 		} else if strings.HasPrefix(trimmedPath, "/posts") {
-			// Blog Service는 내부 라우트를 /api/posts 로 노출하므로 게이트웨이에서는 원본 경로(path)를 유지하여 프록시
-			r.URL.Path = path // e.g., /api/posts, /api/posts/{id}
+			r.URL.Path = path
 			blogProxy.ServeHTTP(w, r)
 		} else {
 			http.NotFound(w, r)
 		}
-	})
+})
 
-	// Prometheus 메트릭 엔드포인트
+	mux.Handle("/api/", apiHandler)
 	mux.Handle("/metrics", promhttp.Handler())
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	// API Gateway 자체의 통계 정보 (LB가 수집해감)
 	mux.HandleFunc("/stats", func(w http.ResponseWriter, r *http.Request) {
 		stats := map[string]interface{}{
 			"api-gateway": map[string]interface{}{
@@ -99,7 +146,7 @@ func main() {
 	log.Printf("Go API Gateway started on :%s", port)
 	srv := &http.Server{
 		Addr:              ":" + port,
-		Handler:           mux,
+		Handler:           prometheusMiddleware(mux),
 		ReadHeaderTimeout: 2 * time.Second,
 		WriteTimeout:      10 * time.Second,
 		IdleTimeout:       60 * time.Second,
