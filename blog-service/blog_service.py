@@ -8,12 +8,16 @@ from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
+from prometheus_fastapi_instrumentator import Instrumentator
 
 # --- 기본 로깅 ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('BlogServiceApp')
 
 app = FastAPI()
+
+# Prometheus 메트릭 설정
+Instrumentator().instrument(app).expose(app)
 
 # --- 정적 파일 및 템플릿 설정 ---
 templates = Jinja2Templates(directory="templates")

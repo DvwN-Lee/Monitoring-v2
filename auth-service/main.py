@@ -1,6 +1,7 @@
 import logging
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from config import config
 from auth_service import AuthService
@@ -12,6 +13,9 @@ logger = logging.getLogger('AuthServiceApp')
 # FastAPI 앱 생성
 app = FastAPI()
 auth_service = AuthService()
+
+# Prometheus 메트릭 설정
+Instrumentator().instrument(app).expose(app)
 
 # --- API 엔드포인트 ---
 @app.post("/login")
