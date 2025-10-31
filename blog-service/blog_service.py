@@ -9,7 +9,14 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from prometheus_fastapi_instrumentator import Instrumentator
-from prometheus_fastapi_instrumentator.metrics import request_latency
+
+try:
+    from prometheus_fastapi_instrumentator.metrics import request_latency
+except ImportError:
+    from prometheus_fastapi_instrumentator import metrics as _metrics
+
+    def request_latency(*args, **kwargs):
+        return _metrics.latency(*args, **kwargs)
 
 # --- 기본 로깅 ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -35,7 +42,6 @@ REQUEST_LATENCY_BUCKETS = (
     5.0,
     10.0,
 )
-
 
 def configure_metrics(application: FastAPI) -> None:
     """Configure Prometheus request latency metrics with backward-compatible buckets."""
