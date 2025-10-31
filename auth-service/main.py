@@ -2,7 +2,14 @@ import logging
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
-from prometheus_fastapi_instrumentator.metrics import request_latency
+
+try:
+    from prometheus_fastapi_instrumentator.metrics import request_latency
+except ImportError:  # Older library versions expose latency helper instead
+    from prometheus_fastapi_instrumentator import metrics as _metrics
+
+    def request_latency(*args, **kwargs):
+        return _metrics.latency(*args, **kwargs)
 
 from config import config
 from auth_service import AuthService
@@ -34,7 +41,6 @@ REQUEST_LATENCY_BUCKETS = (
     10.0,
 )
 
-
 def configure_metrics(application: FastAPI) -> None:
     """
     Configure Prometheus metrics with backward-compatible bucket settings.
@@ -54,6 +60,7 @@ def configure_metrics(application: FastAPI) -> None:
 
 
 configure_metrics(app)
+
 
 # --- API 엔드포인트 ---
 @app.post("/login")

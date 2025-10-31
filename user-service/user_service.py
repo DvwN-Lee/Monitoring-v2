@@ -6,7 +6,14 @@ from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from prometheus_fastapi_instrumentator import Instrumentator
-from prometheus_fastapi_instrumentator.metrics import request_latency
+
+try:
+    from prometheus_fastapi_instrumentator.metrics import request_latency
+except ImportError:
+    from prometheus_fastapi_instrumentator import metrics as _metrics
+
+    def request_latency(*args, **kwargs):
+        return _metrics.latency(*args, **kwargs)
 
 from database_service import UserServiceDatabase
 from cache_service import CacheService
@@ -47,7 +54,6 @@ REQUEST_LATENCY_BUCKETS = (
     5.0,
     10.0,
 )
-
 
 def configure_metrics(application: FastAPI) -> None:
     """Configure Prometheus request latency metrics with backward-compatible buckets."""
