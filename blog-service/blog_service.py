@@ -26,6 +26,9 @@ app = FastAPI()
 
 # Prometheus 메트릭 설정
 # 히스토그램 버킷을 세밀하게 설정하여 정확한 P95/P99 계산 가능
+from prometheus_client import Counter
+from prometheus_fastapi_instrumentator.metrics import Info
+
 REQUEST_LATENCY_BUCKETS = (
     0.001,
     0.005,
@@ -43,6 +46,28 @@ REQUEST_LATENCY_BUCKETS = (
     10.0,
 )
 
+# 커스텀 메트릭: http_requests_total_custom
+# api-gateway와 동일한 형식의 status 레이블(2xx, 4xx, 5xx)을 사용
+http_requests_total_custom = Counter(
+    "http_requests_total",
+    "Total number of HTTP requests",
+    ("method", "status"),
+)
+
+def http_requests_total_custom_metric(info: Info) -> None:
+    status_code = info.response.status_code
+    status_group = "unknown"
+    if 200 <= status_code < 300:
+        status_group = "2xx"
+    elif 300 <= status_code < 400:
+        status_group = "3xx"
+    elif 400 <= status_code < 500:
+        status_group = "4xx"
+    elif 500 <= status_code < 600:
+        status_group = "5xx"
+    
+    http_requests_total_custom.labels(info.method, status_group).inc()
+
 def configure_metrics(application: FastAPI) -> None:
     """Configure Prometheus request latency metrics with backward-compatible buckets."""
     try:
@@ -55,6 +80,8 @@ def configure_metrics(application: FastAPI) -> None:
             request_latency(buckets=REQUEST_LATENCY_BUCKETS)
         )
 
+    # 커스텀 메트릭 추가
+    instrumentator.add(http_requests_total_custom_metric)
     instrumentator.instrument(application).expose(application)
 
 
