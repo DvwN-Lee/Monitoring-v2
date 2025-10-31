@@ -90,7 +90,7 @@ images:
   - name: dongju101/auth-service
     newTag: main-7a2d1a7
   - name: dongju101/api-gateway
-    newTag: main-7a2d1a7
+    newTag: main-6b69742
   - name: dongju101/load-balancer
     newTag: v1.0
   - name: dongju101/dashboard-ui
