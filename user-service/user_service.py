@@ -1,11 +1,11 @@
 # TItanium-v2/user-service/user_service.py
-# Version: 1.1.1 - E2E testing for CI/CD pipeline
+# Version: 1.2.0 - Added Prometheus metrics
 
-# ... (기존 import 및 모델 정의는 그대로 유지) ...
 import logging
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from database_service import UserServiceDatabase
 from cache_service import CacheService
@@ -27,6 +27,9 @@ class Credentials(BaseModel):
 app = FastAPI()
 db = UserServiceDatabase()
 cache = CacheService()
+
+# Prometheus 메트릭 설정
+Instrumentator().instrument(app).expose(app)
 
 # --- User Service의 통계 및 DB/Cache 상태를 반환하는 엔드포인트 ---
 @app.get("/stats")

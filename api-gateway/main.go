@@ -11,6 +11,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func getEnv(key, fallback string) string {
@@ -74,6 +76,9 @@ func main() {
 			http.NotFound(w, r)
 		}
 	})
+
+	// Prometheus 메트릭 엔드포인트
+	mux.Handle("/metrics", promhttp.Handler())
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
