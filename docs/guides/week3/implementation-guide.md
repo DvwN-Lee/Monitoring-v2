@@ -812,8 +812,9 @@ http://<node-ip>:30093
 ## 트러블슈팅
 
 자세한 트러블슈팅은 다음 문서를 참조하세요:
-- [Week 2-3 트러블슈팅 가이드](./troubleshooting-week2-week3.md)
-- [Week 3 메트릭 개선 Bugfix](../bugfixes/week3-monitoring-metrics-improvements.md)
+- [Week 2 트러블슈팅 가이드](../week2/troubleshooting-week2.md)
+- [Week 3 트러블슈팅 가이드](./troubleshooting-week3.md)
+- [Week 3 메트릭 개선 Bugfix](./bugfixes.md)
 
 ### 주요 해결 사항
 
