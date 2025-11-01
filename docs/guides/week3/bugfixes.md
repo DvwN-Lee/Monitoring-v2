@@ -490,7 +490,9 @@ http_requests_total
 - [#19: Grafana 대시보드 구성](https://github.com/DvwN-Lee/Monitoring-v2/issues/19)
 
 ### 문서
-- [Week 2-3 트러블슈팅 가이드](../guides/troubleshooting-week2-week3.md)
+- [Week 2 트러블슈팅 가이드](../week2/troubleshooting-week2.md)
+- [Week 3 트러블슈팅 가이드](./troubleshooting-week3.md)
+- [Week 3 구현 가이드](./implementation-guide.md)
 - [Prometheus Best Practices](https://prometheus.io/docs/practices/)
 - [Grafana Dashboard Best Practices](https://grafana.com/docs/grafana/latest/best-practices/)
 
