@@ -38,6 +38,23 @@ patches:
       kind: Deployment
       name: blog-service-deployment
 
+  # Add Istio sidecar resource limits to all Deployments
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: not-used
+      spec:
+        template:
+          metadata:
+            annotations:
+              sidecar.istio.io/proxyCPU: "50m"
+              sidecar.istio.io/proxyCPULimit: "200m"
+              sidecar.istio.io/proxyMemory: "64Mi"
+              sidecar.istio.io/proxyMemoryLimit: "256Mi"
+    target:
+      kind: Deployment
+
 # ConfigMap generator for production-specific config
 configMapGenerator:
   - name: app-config
