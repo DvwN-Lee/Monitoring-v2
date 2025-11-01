@@ -163,3 +163,9 @@ vendor/
 kubeconfig
 *.kubeconfig
 *-kubeconfig.yaml
+
+# AI prompts and configurations (private)
+CLAUDE.MD
+CLAUDE.md
+.claude/
+.cursor/
