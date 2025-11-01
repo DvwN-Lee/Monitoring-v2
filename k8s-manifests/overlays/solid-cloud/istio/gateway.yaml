@@ -1,0 +1,35 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: titanium-gateway
+  namespace: titanium-prod
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: load-balancer-vs
+  namespace: titanium-prod
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - titanium-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: prod-load-balancer-service
+        port:
+          number: 7100
