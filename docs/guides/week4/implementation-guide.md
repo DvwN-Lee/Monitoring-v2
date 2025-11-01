@@ -120,6 +120,43 @@ kubectl apply -f istio-1.20.1/samples/addons/jaeger.yaml
 
 [주의] Kiali는 Prometheus를 필요로 하므로 Prometheus를 먼저 설치해야 합니다.
 
+#### Kiali 외부 서비스 설정
+
+Kiali가 Grafana, Jaeger 등과 연동되도록 ConfigMap을 업데이트합니다.
+
+**k8s-manifests/overlays/solid-cloud/istio/kiali-config.yaml:**
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kiali
+  namespace: istio-system
+data:
+  config.yaml: |
+    auth:
+      strategy: anonymous
+    deployment:
+      accessible_namespaces:
+      - '**'
+    external_services:
+      grafana:
+        enabled: true
+        in_cluster_url: 'http://prometheus-grafana.monitoring:80'
+      prometheus:
+        url: 'http://prometheus.istio-system:9090'
+      tracing:
+        enabled: true
+        in_cluster_url: 'http://tracing.istio-system:80'
+    istio_namespace: istio-system
+```
+
+**적용:**
+```bash
+kubectl apply -f k8s-manifests/overlays/solid-cloud/istio/kiali-config.yaml
+kubectl rollout restart deployment kiali -n istio-system
+```
+
 ### 5. Gateway 및 VirtualService 생성
 
 **k8s-manifests/overlays/solid-cloud/istio/gateway.yaml:**
