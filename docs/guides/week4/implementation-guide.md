@@ -108,12 +108,17 @@ kubectl rollout restart deployment -n titanium-prod
 ### 4. Istio 애드온 설치
 
 ```bash
+# Prometheus (메트릭 수집)
+kubectl apply -f istio-1.20.1/samples/addons/prometheus.yaml
+
 # Kiali (서비스 메시 시각화)
 kubectl apply -f istio-1.20.1/samples/addons/kiali.yaml
 
 # Jaeger (분산 추적)
 kubectl apply -f istio-1.20.1/samples/addons/jaeger.yaml
 ```
+
+[주의] Kiali는 Prometheus를 필요로 하므로 Prometheus를 먼저 설치해야 합니다.
 
 ### 5. Gateway 및 VirtualService 생성
 

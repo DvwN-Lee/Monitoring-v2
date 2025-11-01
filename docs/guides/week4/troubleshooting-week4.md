@@ -5,10 +5,11 @@
 
 ## 목차
 1. [Istio 설치 및 사이드카 주입 문제](#istio-설치-및-사이드카-주입-문제)
-2. [mTLS 관련 문제](#mtls-관련-문제)
-3. [Metrics Server 및 HPA 문제](#metrics-server-및-hpa-문제)
-4. [ResourceQuota 초과 문제](#resourcequota-초과-문제)
-5. [Rate Limiting 문제](#rate-limiting-문제)
+2. [Kiali 및 관찰성 문제](#kiali-및-관찰성-문제)
+3. [mTLS 관련 문제](#mtls-관련-문제)
+4. [Metrics Server 및 HPA 문제](#metrics-server-및-hpa-문제)
+5. [ResourceQuota 초과 문제](#resourcequota-초과-문제)
+6. [Rate Limiting 문제](#rate-limiting-문제)
 
 ---
 
@@ -94,9 +95,74 @@ source ~/.zshrc
 
 ---
 
+## Kiali 및 관찰성 문제
+
+### 문제 4: Kiali에서 "Could not fetch metrics" 오류
+
+**증상:**
+```
+Could not fetch metrics: error in metric request_count: Post "http://prometheus.istio-system:9090/api/v1/query_range": dial tcp: lookup prometheus.istio-system on 10.96.0.10:53: no such host
+```
+
+Kiali 대시보드에 접속하면 메트릭을 가져올 수 없다는 오류가 표시됩니다.
+
+**원인:**
+- Istio의 Prometheus addon이 설치되지 않음
+- Kiali는 기본적으로 `prometheus.istio-system` 서비스를 찾음
+
+**해결 방법:**
+
+**방법 1: Istio Prometheus addon 설치 (권장)**
+
+```bash
+# Prometheus 설치
+kubectl apply -f istio-1.20.1/samples/addons/prometheus.yaml
+
+# Prometheus Pod 확인
+kubectl get pods -n istio-system -l app=prometheus
+
+# Prometheus 서비스 확인
+kubectl get svc -n istio-system prometheus
+
+# Kiali 재시작
+kubectl rollout restart deployment kiali -n istio-system
+
+# Kiali가 준비될 때까지 대기
+kubectl wait --for=condition=ready pod -l app=kiali -n istio-system --timeout=60s
+```
+
+**방법 2: 기존 Prometheus 사용 (고급)**
+
+monitoring 네임스페이스에 이미 Prometheus가 있다면 Kiali ConfigMap을 수정:
+
+```bash
+kubectl edit configmap kiali -n istio-system
+```
+
+다음 내용 추가:
+```yaml
+external_services:
+  prometheus:
+    url: "http://prometheus-kube-prometheus-prometheus.monitoring:9090"
+```
+
+Kiali 재시작:
+```bash
+kubectl rollout restart deployment kiali -n istio-system
+```
+
+**검증:**
+1. Kiali 대시보드에 접속: `kubectl port-forward -n istio-system svc/kiali 20001:20001`
+2. 브라우저에서 `http://localhost:20001` 접속
+3. Graph 메뉴 선택
+4. 네임스페이스에서 `titanium-prod` 선택
+5. 서비스 간 트래픽 흐름과 메트릭이 표시되는지 확인
+
+---
+
 ## mTLS 관련 문제
 
-### 문제 4: 서비스 간 통신이 실패함
+### 문제 5: 서비스 간 통신이 실패함
 
 **증상:**
 ```bash
@@ -124,7 +190,7 @@ kubectl apply -f k8s-manifests/overlays/solid-cloud/istio/destination-rules.yaml
 kubectl rollout restart deployment -n titanium-prod
 ```
 
-### 문제 5: mTLS 인증서가 유효하지 않음
+### 문제 6: mTLS 인증서가 유효하지 않음
 
 **증상:**
 ```bash
@@ -156,7 +222,7 @@ istioctl proxy-config secret $POD_NAME -n titanium-prod
 
 ## Metrics Server 및 HPA 문제
 
-### 문제 6: Metrics Server가 동작하지 않음
+### 문제 7: Metrics Server가 동작하지 않음
 
 **증상:**
 ```bash
@@ -190,7 +256,7 @@ kubectl top nodes
 Failed to scrape node: tls: failed to verify certificate: x509: cannot validate certificate
 ```
 
-### 문제 7: HPA가 메트릭을 수집하지 못함
+### 문제 8: HPA가 메트릭을 수집하지 못함
 
 **증상:**
 ```bash
@@ -220,7 +286,7 @@ sleep 30
 kubectl get hpa -n titanium-prod
 ```
 
-### 문제 8: HPA가 스케일링하지 않음
+### 문제 9: HPA가 스케일링하지 않음
 
 **증상:**
 - CPU 사용률이 목표를 초과했지만 Pod가 증가하지 않음
@@ -248,7 +314,7 @@ kubectl describe resourcequota -n titanium-prod
 
 ## ResourceQuota 초과 문제
 
-### 문제 9: Pod 생성이 Quota 초과로 실패
+### 문제 10: Pod 생성이 Quota 초과로 실패
 
 **증상:**
 ```bash
@@ -310,7 +376,7 @@ kubectl patch resourcequota titanium-prod-quota -n titanium-prod --type merge \
   -p '{"spec":{"hard":{"limits.cpu":"16"}}}'
 ```
 
-### 문제 10: Rolling Update가 진행되지 않음
+### 문제 11: Rolling Update가 진행되지 않음
 
 **증상:**
 - Deployment는 업데이트되었지만 새 Pod가 생성되지 않음
@@ -336,7 +402,7 @@ kubectl get pods -n titanium-prod -w
 
 ## Rate Limiting 문제
 
-### 문제 11: Rate Limiting이 동작하지 않음
+### 문제 12: Rate Limiting이 동작하지 않음
 
 **증상:**
 - 대량의 요청을 보내도 429 응답을 받지 못함
@@ -361,7 +427,7 @@ kubectl apply -f k8s-manifests/overlays/solid-cloud/istio/rate-limit.yaml
 kubectl rollout restart deployment -n titanium-prod prod-load-balancer-deployment
 ```
 
-### 문제 12: Rate Limit 헤더가 응답에 포함되지 않음
+### 문제 13: Rate Limit 헤더가 응답에 포함되지 않음
 
 **증상:**
 - 429 응답은 받지만 x-local-rate-limit 헤더가 없음
