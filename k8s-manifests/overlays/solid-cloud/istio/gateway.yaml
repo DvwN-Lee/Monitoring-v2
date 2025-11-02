@@ -28,7 +28,7 @@ spec:
   # Blog routes
   - match:
     - uri:
-        prefix: /blog/
+        prefix: /blog
     route:
     - destination:
         host: prod-blog-service
