@@ -114,8 +114,11 @@ git push origin main
 # Argo CD 애플리케이션 상태 확인
 kubectl get applications -n argocd
 
-# Pod 롤아웃 확인
+# Pod 롤아웃 확인 (watch가 설치되어 있는 경우)
 watch kubectl get pods -n titanium-prod
+
+# 또는 watch 없이 반복 확인 (macOS 기본)
+while true; do clear; kubectl get pods -n titanium-prod; sleep 2; done
 ```
 
 **스크립트**:
