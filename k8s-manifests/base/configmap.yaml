@@ -10,8 +10,6 @@ data:
   USER_SERVICE_URL: "http://user-service:8001"
   AUTH_SERVICE_URL: "http://auth-service:8002"
   BLOG_SERVICE_URL: "http://blog-service:8005"
-  DASHBOARD_UI_URL: "http://dashboard-ui-service:80"
-  LOAD_BALANCER_URL: "http://load-balancer-service:7100"
 
   # === Redis 설정 ===
   REDIS_HOST: "redis-service"
