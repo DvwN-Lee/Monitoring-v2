@@ -11,6 +11,7 @@ namePrefix: prod-
 resources:
   - ../../base
   - namespace.yaml
+  - istio/peer-authentication-databases.yaml
 
 # Patches for Solid Cloud environment
 patches:
