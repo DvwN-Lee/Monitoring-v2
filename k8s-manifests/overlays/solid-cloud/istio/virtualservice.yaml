@@ -1,0 +1,127 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: titanium-vs
+  namespace: titanium-prod
+spec:
+  gateways:
+    - titanium-gateway
+  hosts:
+    - '*'
+  http:
+    # Blog API routes (더 구체적인 경로를 먼저 매칭)
+    - match:
+        - uri:
+            prefix: /api/posts
+      route:
+        - destination:
+            host: prod-blog-service
+            port:
+              number: 8005
+
+    # Auth API routes
+    - match:
+        - uri:
+            exact: /api/login
+      rewrite:
+        uri: /login
+      route:
+        - destination:
+            host: prod-auth-service
+            port:
+              number: 8002
+
+    - match:
+        - uri:
+            exact: /api/register
+      rewrite:
+        uri: /register
+      route:
+        - destination:
+            host: prod-auth-service
+            port:
+              number: 8002
+
+    # Blog static files and pages
+    - match:
+        - uri:
+            prefix: /blog
+      route:
+        - destination:
+            host: prod-blog-service
+            port:
+              number: 8005
+
+    # User API routes
+    - match:
+        - uri:
+            prefix: /api/users
+      rewrite:
+        uri: /users
+      route:
+        - destination:
+            host: prod-user-service
+            port:
+              number: 8001
+
+    # Auth API routes (fallback)
+    - match:
+        - uri:
+            prefix: /api/auth
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            host: prod-auth-service
+            port:
+              number: 8002
+
+    # API Gateway (catch-all for other /api/ routes)
+    - match:
+        - uri:
+            prefix: /api/
+      route:
+        - destination:
+            host: prod-api-gateway-service
+            port:
+              number: 8000
+
+    # Dashboard UI
+    - match:
+        - uri:
+            prefix: /dashboard/
+      route:
+        - destination:
+            host: prod-dashboard-ui-service
+            port:
+              number: 80
+
+    # Load Balancer health check
+    - match:
+        - uri:
+            prefix: /lb-health
+      route:
+        - destination:
+            host: prod-load-balancer-service
+            port:
+              number: 7100
+
+    # Load Balancer stats
+    - match:
+        - uri:
+            prefix: /stats
+      route:
+        - destination:
+            host: prod-load-balancer-service
+            port:
+              number: 7100
+
+    # Default route (Dashboard UI)
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: prod-dashboard-ui-service
+            port:
+              number: 80
