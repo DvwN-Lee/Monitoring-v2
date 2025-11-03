@@ -248,17 +248,17 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 - [x] VirtualService 및 DestinationRule 설정
 - [x] Rate Limiting 구현
 
-### Week 5 진행 중 (10/28 ~ 11/3): 테스트 및 문서화
+### Week 5 완료 (10/28 ~ 11/3): 테스트 및 문서화
 - [x] k6 부하 테스트 수행 및 성능 분석
 - [x] HPA 최적화 (minReplicas 2로 증가)
 - [x] 보안 검증 (Trivy, mTLS, NetworkPolicy, RBAC)
 - [x] ADR 5건 작성
 - [x] Week 5 최종 상태 보고서 작성
 - [x] README 최종 업데이트
-- [ ] 운영 가이드 작성
-- [ ] 프로젝트 회고 작성
-- [ ] 장애 복구 시나리오 테스트
-- [ ] 데모 준비
+- [x] 운영 가이드 작성
+- [x] 프로젝트 회고 작성
+- [x] 장애 복구 시나리오 테스트
+- [x] 데모 준비
 
 ---
 
