@@ -31,10 +31,10 @@
   - `argocd`: Argo CD GitOps
 
 ### 주요 컴포넌트
-- **애플리케이션**: API Gateway, Auth Service, User Service, Blog Service, Dashboard
+- **애플리케이션**: API Gateway, Auth Service, User Service, Blog Service
 - **데이터베이스**: PostgreSQL (StatefulSet)
 - **서비스 메시**: Istio 1.20.1 (mTLS STRICT)
-- **모니터링**: Prometheus + Grafana + Loki
+- **모니터링**: Prometheus + Grafana + Kiali + Loki
 - **CI/CD**: GitHub Actions + Argo CD
 
 ---

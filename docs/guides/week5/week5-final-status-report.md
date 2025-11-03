@@ -185,8 +185,6 @@ prod-auth-service-xxxxxxxxx-xxxxx             2/2     Running   0
 prod-auth-service-xxxxxxxxx-xxxxx             2/2     Running   0
 prod-blog-service-xxxxxxxxx-xxxxx             2/2     Running   0
 prod-blog-service-xxxxxxxxx-xxxxx             2/2     Running   0
-prod-dashboard-xxxxxxxxx-xxxxx                2/2     Running   0
-prod-dashboard-xxxxxxxxx-xxxxx                2/2     Running   0
 prod-user-service-xxxxxxxxx-xxxxx             2/2     Running   0
 prod-user-service-xxxxxxxxx-xxxxx             2/2     Running   0
 postgres-0                                     2/2     Running   0
@@ -197,7 +195,6 @@ postgres-0                                     2/2     Running   0
 - Auth Service: 2 replicas
 - Blog Service: 2 replicas
 - User Service: 2 replicas
-- Dashboard: 2 replicas
 
 ---
 

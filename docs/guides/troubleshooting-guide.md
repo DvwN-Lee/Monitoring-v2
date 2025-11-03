@@ -505,43 +505,7 @@ labels:
 
 ## 네트워크 및 서비스 문제
 
-### 문제 15: 대시보드가 백엔드 API에 연결되지 않음
-
-**증상**
-- 대시보드 UI에서 "Backend communication error"
-- 서비스 상태가 "disconnected"
-
-**원인**
-1. nginx 프록시 설정 누락
-2. 서비스 이름 불일치 (Kustomize namePrefix 미고려)
-3. CORS 오류
-
-**해결 방법**
-```bash
-# 1. nginx 설정 확인
-kubectl exec [DASHBOARD_POD] -n titanium-prod -- cat /etc/nginx/conf.d/default.conf
-
-# 2. 서비스 이름 확인 (Kustomize namePrefix 확인)
-kubectl get services -n titanium-prod | grep load-balancer
-
-# 3. 백엔드 서비스 연결 테스트
-kubectl exec [DASHBOARD_POD] -n titanium-prod -- curl http://prod-load-balancer-service:7100/stats
-
-# 4. nginx 로그 확인
-kubectl logs [DASHBOARD_POD] -n titanium-prod
-```
-
-**올바른 nginx 설정**
-```nginx
-location /stats {
-    proxy_pass http://prod-load-balancer-service:7100/stats;
-    # prod- prefix 확인!
-}
-```
-
----
-
-### 문제 16: NodePort 서비스에 외부에서 접근 안 됨
+### 문제 15: NodePort 서비스에 외부에서 접근 안 됨
 
 **증상**
 - kubectl get svc에서 NodePort 확인되지만 브라우저에서 접근 안 됨
@@ -576,12 +540,12 @@ kubectl get pods -n titanium-prod -o wide
 apiVersion: v1
 kind: Service
 metadata:
-  name: dashboard-ui-service
+  name: [SERVICE_NAME]
 spec:
   type: NodePort
   ports:
-  - port: 80
-    nodePort: 31194
+  - port: [PORT]
+    nodePort: [NODE_PORT]
 ```
 
 ---
