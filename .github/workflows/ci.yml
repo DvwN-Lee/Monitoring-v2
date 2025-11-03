@@ -10,8 +10,6 @@ on:
       - 'blog-service/**'
       - 'auth-service/**'
       - 'api-gateway/**'
-      - 'load-balancer/**'
-      - 'dashboard-ui/**'
       - '.github/workflows/ci.yml'
   push:
     branches:
@@ -21,8 +19,6 @@ on:
       - 'blog-service/**'
       - 'auth-service/**'
       - 'api-gateway/**'
-      - 'load-balancer/**'
-      - 'dashboard-ui/**'
       - '.github/workflows/ci.yml'
 
 permissions:
@@ -60,10 +56,6 @@ jobs:
               - 'auth-service/**'
             api-gateway:
               - 'api-gateway/**'
-            load-balancer:
-              - 'load-balancer/**'
-            dashboard-ui:
-              - 'dashboard-ui/**'
 
   build-and-scan:
     name: Build and Scan

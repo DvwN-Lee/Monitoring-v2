@@ -39,8 +39,8 @@ curl http://10.0.11.168:31304/blog/
 2. **브라우저 탭 준비**:
    - Tab 1: Grafana 대시보드 (http://10.0.11.168:30300)
    - Tab 2: 애플리케이션 (http://10.0.11.168:31304)
-   - Tab 3: GitHub Actions (https://github.com/idongju/Monitoring-v2/actions)
-   - Tab 4: 프로젝트 README (https://github.com/idongju/Monitoring-v2)
+   - Tab 3: GitHub Actions (https://github.com/DvwN-Lee/Monitoring-v2/actions)
+   - Tab 4: 프로젝트 README (https://github.com/DvwN-Lee/Monitoring-v2)
 
 3. **터미널 준비**:
    - Terminal 1: kubectl 명령어 실행용
@@ -88,9 +88,9 @@ curl http://10.0.11.168:31304/blog/
 
 1. **코드 변경 및 Push**:
 ```bash
-# 간단한 코드 변경 (예: 버전 번호 업데이트)
-echo "# Demo commit - $(date)" >> DEMO.txt
-git add DEMO.txt
+# User Service에 간단한 변경 추가
+echo "# Demo commit - $(date)" >> user-service/DEMO.txt
+git add user-service/DEMO.txt
 git commit -m "데모: CI/CD 파이프라인 테스트"
 git push origin main
 ```
