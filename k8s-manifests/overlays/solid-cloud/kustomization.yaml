@@ -16,18 +16,6 @@ resources:
 
 # Patches for Solid Cloud environment
 patches:
-  # Change Service type from ClusterIP to LoadBalancer for external access
-  - path: patches/service-lb-patch.yaml
-    target:
-      kind: Service
-      name: load-balancer-service
-
-  # Expose dashboard-ui service as NodePort for external access
-  - path: patches/dashboard-ui-service-patch.yaml
-    target:
-      kind: Service
-      name: dashboard-ui-service
-
   # Remove SQLite PVC from user-service deployment
   - path: patches/user-service-deployment-patch.yaml
     target:
@@ -70,8 +58,6 @@ configMapGenerator:
       - USER_SERVICE_URL=http://prod-user-service:8001
       - AUTH_SERVICE_URL=http://prod-auth-service:8002
       - BLOG_SERVICE_URL=http://prod-blog-service:8005
-      - DASHBOARD_UI_URL=http://prod-dashboard-ui-service:80
-      - LOAD_BALANCER_URL=http://prod-load-balancer-service:7100
       - REDIS_HOST=prod-redis-service
       - REDIS_PORT=6379
       - REDIS_DB=0
