@@ -86,42 +86,12 @@ spec:
             port:
               number: 8000
 
-    # Dashboard UI
-    - match:
-        - uri:
-            prefix: /dashboard/
-      route:
-        - destination:
-            host: prod-dashboard-ui-service
-            port:
-              number: 80
-
-    # Load Balancer health check
-    - match:
-        - uri:
-            prefix: /lb-health
-      route:
-        - destination:
-            host: prod-load-balancer-service
-            port:
-              number: 7100
-
-    # Load Balancer stats
-    - match:
-        - uri:
-            prefix: /stats
-      route:
-        - destination:
-            host: prod-load-balancer-service
-            port:
-              number: 7100
-
-    # Default route (Dashboard UI)
+    # Default route (Blog Service)
     - match:
         - uri:
             prefix: /
       route:
         - destination:
-            host: prod-dashboard-ui-service
+            host: prod-blog-service
             port:
-              number: 80
+              number: 8005
