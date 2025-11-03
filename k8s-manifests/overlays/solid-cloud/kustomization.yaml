@@ -12,6 +12,7 @@ resources:
   - ../../base
   - namespace.yaml
   - istio/peer-authentication-databases.yaml
+  - istio/virtualservice.yaml
 
 # Patches for Solid Cloud environment
 patches:
