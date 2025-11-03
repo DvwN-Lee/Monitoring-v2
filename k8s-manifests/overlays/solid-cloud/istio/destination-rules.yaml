@@ -12,76 +12,21 @@ spec:
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
-  name: api-gateway
+  name: postgresql-service-disable-mtls
   namespace: titanium-prod
 spec:
-  host: prod-api-gateway-service
+  host: postgresql-service
   trafficPolicy:
     tls:
-      mode: ISTIO_MUTUAL
+      mode: DISABLE
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
-  name: auth-service
-  namespace: titanium-prod
-spec:
-  host: prod-auth-service
-  trafficPolicy:
-    tls:
-      mode: ISTIO_MUTUAL
----
-apiVersion: networking.istio.io/v1beta1
-kind: DestinationRule
-metadata:
-  name: blog-service
-  namespace: titanium-prod
-spec:
-  host: prod-blog-service
-  trafficPolicy:
-    tls:
-      mode: ISTIO_MUTUAL
----
-apiVersion: networking.istio.io/v1beta1
-kind: DestinationRule
-metadata:
-  name: user-service
-  namespace: titanium-prod
-spec:
-  host: prod-user-service
-  trafficPolicy:
-    tls:
-      mode: ISTIO_MUTUAL
----
-apiVersion: networking.istio.io/v1beta1
-kind: DestinationRule
-metadata:
-  name: load-balancer
-  namespace: titanium-prod
-spec:
-  host: prod-load-balancer-service
-  trafficPolicy:
-    tls:
-      mode: ISTIO_MUTUAL
----
-apiVersion: networking.istio.io/v1beta1
-kind: DestinationRule
-metadata:
-  name: dashboard-ui
-  namespace: titanium-prod
-spec:
-  host: prod-dashboard-ui-service
-  trafficPolicy:
-    tls:
-      mode: ISTIO_MUTUAL
----
-apiVersion: networking.istio.io/v1beta1
-kind: DestinationRule
-metadata:
-  name: redis
+  name: redis-disable-mtls
   namespace: titanium-prod
 spec:
   host: prod-redis-service
   trafficPolicy:
     tls:
-      mode: ISTIO_MUTUAL
+      mode: DISABLE
