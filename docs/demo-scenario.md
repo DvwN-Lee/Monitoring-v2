@@ -38,9 +38,10 @@ curl http://10.0.11.168:31304/blog/
 
 2. **브라우저 탭 준비**:
    - Tab 1: Grafana 대시보드 (http://10.0.11.168:30300)
-   - Tab 2: 애플리케이션 (http://10.0.11.168:31304)
-   - Tab 3: GitHub Actions (https://github.com/DvwN-Lee/Monitoring-v2/actions)
-   - Tab 4: 프로젝트 README (https://github.com/DvwN-Lee/Monitoring-v2)
+   - Tab 2: Kiali 서비스 메시 (http://10.0.11.168:30164)
+   - Tab 3: 애플리케이션 (http://10.0.11.168:31304)
+   - Tab 4: GitHub Actions (https://github.com/DvwN-Lee/Monitoring-v2/actions)
+   - Tab 5: 프로젝트 README (https://github.com/DvwN-Lee/Monitoring-v2)
 
 3. **터미널 준비**:
    - Terminal 1: kubectl 명령어 실행용
@@ -156,8 +157,27 @@ while true; do clear; kubectl get pods -n titanium-prod; sleep 2; done
 >
 > 각 서비스의 응답 코드별 요청 수와 응답 시간을 실시간으로 확인할 수 있습니다."
 
-3. **로그 조회** (시간이 있다면):
-   - Explore 메뉴로 이동
+3. **Kiali 서비스 메시 시각화**:
+   - Kiali 접속 (http://10.0.11.168:30164)
+   - Graph 메뉴에서 titanium-prod 네임스페이스 선택
+   - 서비스 토폴로지 및 트래픽 흐름 확인
+
+**스크립트**:
+> "Kiali는 Istio 서비스 메시를 시각화하는 도구입니다.
+>
+> 여기서 보시는 것처럼 모든 서비스 간 연결과 실시간 트래픽 흐름을 한눈에 확인할 수 있습니다.
+>
+> 각 서비스 간의 요청량, 응답 시간, 에러율을 시각적으로 모니터링할 수 있으며,
+> mTLS 암호화 상태도 확인할 수 있습니다."
+
+**주요 기능 시연**:
+- Graph: 서비스 의존성 및 트래픽 흐름
+- Applications: 애플리케이션별 상태 확인
+- Workloads: Pod 상태 및 Istio 구성 확인
+- Istio Config: VirtualService, DestinationRule 등 확인
+
+4. **로그 조회** (시간이 있다면):
+   - Grafana Explore 메뉴로 이동
    - Loki 데이터소스 선택
    - titanium-prod 네임스페이스 로그 조회
 
