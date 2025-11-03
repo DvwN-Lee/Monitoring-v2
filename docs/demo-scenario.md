@@ -33,7 +33,7 @@ kubectl get pods -n monitoring
 kubectl get pods -n argocd
 
 # 서비스 접속 테스트
-curl http://10.0.11.168:31304/lb-health
+curl http://10.0.11.168:31304/blog/
 ```
 
 2. **브라우저 탭 준비**:
@@ -75,8 +75,8 @@ curl http://10.0.11.168:31304/lb-health
 **아키텍처 다이어그램 설명**:
 - Kubernetes 클러스터 구조
 - CI/CD 파이프라인 플로우
-- 마이크로서비스 구성 (API Gateway, Auth, User, Blog, Dashboard)
-- 모니터링 스택 (Prometheus, Grafana, Loki)
+- 마이크로서비스 구성 (API Gateway, Auth, User, Blog)
+- 모니터링 스택 (Prometheus, Grafana, Kiali, Loki)
 
 ---
 
@@ -226,7 +226,7 @@ watch kubectl get pods -n titanium-prod
 ```bash
 # 서비스 연속 요청
 for i in {1..5}; do
-  curl -s -o /dev/null -w "Request $i: HTTP %{http_code}, Time: %{time_total}s\n" http://10.0.11.168:31304/lb-health
+  curl -s -o /dev/null -w "Request $i: HTTP %{http_code}, Time: %{time_total}s\n" http://10.0.11.168:31304/blog/
   sleep 1
 done
 ```

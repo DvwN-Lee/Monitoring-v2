@@ -110,7 +110,7 @@
   - `argocd`: Argo CD
 
 #### 서비스 통신
-- **외부 → 클러스터**: Load Balancer → Istio Ingress Gateway
+- **외부 → 클러스터**: Istio Ingress Gateway (NodePort)
 - **서비스 간**: Istio Service Mesh (mTLS 암호화)
 - **DB 접근**: 각 서비스 → PostgreSQL Service
 
@@ -137,11 +137,9 @@
 ```
 User Request
     ↓
-Load Balancer
+Istio Ingress Gateway (NodePort: 31304)
     ↓
-Istio Ingress Gateway
-    ↓
-API Gateway (Go)
+VirtualService (Routing Rules)
     ↓
 ┌───────────┬───────────┬───────────┐
 │           │           │           │
