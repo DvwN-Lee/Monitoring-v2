@@ -18,6 +18,6 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: prod-redis
+      app: redis
   mtls:
     mode: DISABLE
