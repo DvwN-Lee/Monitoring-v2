@@ -13,6 +13,7 @@ resources:
   - namespace.yaml
   - istio/peer-authentication-databases.yaml
   - istio/virtualservice.yaml
+  - istio/destination-rules.yaml
 
 # Patches for Solid Cloud environment
 patches:
@@ -96,10 +97,6 @@ images:
     newTag: main-19bd713
   - name: dongju101/api-gateway
     newTag: main-6b69742
-  - name: dongju101/load-balancer
-    newTag: v1.0
-  - name: dongju101/dashboard-ui
-    newTag: v1.0
 
 
 # Resource modifications
