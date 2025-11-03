@@ -189,6 +189,8 @@ jobs:
         run: |
           if [ "${{ needs.build-and-scan.result }}" == "success" ]; then
             echo "✅ All builds completed successfully"
+          elif [ "${{ needs.build-and-scan.result }}" == "skipped" ]; then
+            echo "⏭️ No service changes detected, build skipped"
           else
             echo "❌ Some builds failed"
             exit 1
