@@ -37,7 +37,7 @@
 
 ## 주요 기능
 
--   **Infrastructure as Code (IaC)**: Terraform을 사용하여 Solid Cloud의 Kubernetes 클러스터, 네트워크, 스토리지 등을 코드로 정의하고 자동으로 생성합니다.
+-   **Infrastructure as Code (IaC)**: Terraform을 사용하여 Kubernetes 클러스터 내 필수 리소스(네임스페이스, PostgreSQL 배포 등)를 코드로 관리합니다. 참고: 현재 terraform/modules의 네트워크 및 클러스터 모듈은 기본 구조를 보여주는 템플릿이며, 실제 클라우드 환경에 맞게 구체화가 필요합니다.
 -   **GitOps CI/CD 파이프라인**: GitHub에 코드를 Push하면 자동으로 빌드, 테스트, 보안 스캔을 거쳐 Solid Cloud에 배포됩니다.
 -   **마이크로서비스 아키텍처**: Go와 Python(FastAPI)을 활용한 폴리글랏 MSA 구조로 각 서비스를 독립적으로 개발하고 배포합니다.
 -   **관측성 (Observability)**: Prometheus, Grafana, Loki를 도입하여 시스템의 메트릭과 로그를 실시간으로 모니터링합니다.
@@ -301,6 +301,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 -   **[시스템 설계서](./docs/architecture.md)**: 시스템 아키텍처와 구조
 -   **[프로젝트 계획서](./docs/project-plan.md)**: 개발 일정과 마일스톤
 -   **[기술 결정 기록 (ADR)](./docs/adr/)**: 주요 기술 선택의 이유와 배경
+-   **[Secret 관리 가이드](./docs/SECRET_MANAGEMENT.md)**: 보안 비밀 정보 관리 방법
 -   **[Week 5 최종 상태 보고서](./docs/guides/week5/week5-final-status-report.md)**: 프로젝트 완료 상태
 -   **[Week 5 성능 분석](./docs/performance/week5-performance-analysis.md)**: 부하 테스트 및 최적화 결과
 -   **[Week 4 Istio 구현 가이드](./docs/guides/week4/)**: Istio 서비스 메시 구축 과정
@@ -311,3 +312,9 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 - 이 프로젝트는 단국대학교 Solid Cloud 환경에서 개발 및 운영되었습니다.
 - 모든 핵심 요구사항이 완료되어 실제 운영 가능한 상태입니다.
 - 추가 개선 사항은 프로젝트 문서를 참고하세요.
+
+## 보안 주의사항
+
+- Secret(비밀번호, API 키 등)은 Git 저장소에 커밋하지 마세요
+- 프로덕션 환경에서는 External Secrets Operator 또는 클라우드 네이티브 Secret 관리 솔루션 사용을 권장합니다
+- 자세한 내용은 [Secret 관리 가이드](./docs/SECRET_MANAGEMENT.md)를 참고하세요
