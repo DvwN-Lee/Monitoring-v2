@@ -128,7 +128,7 @@ git push origin feature/new-feature
 
 1. **PR 코멘트**: 각 서비스별 취약점 요약
    ```
-   ### 🔒 Trivy Security Scan Results - `user-service`
+   ### Trivy Security Scan Results - `user-service`
    - Total Vulnerabilities: 5
    - Critical: 2
    - High: 3
