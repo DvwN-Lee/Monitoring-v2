@@ -11,6 +11,7 @@ namePrefix: prod-
 resources:
   - ../../base
   - namespace.yaml
+  - istio/peer-authentication.yaml
   - istio/peer-authentication-databases.yaml
   - istio/virtualservice.yaml
   - istio/destination-rules.yaml
