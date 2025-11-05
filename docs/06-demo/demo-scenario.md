@@ -3,7 +3,7 @@
 ## 문서 정보
 - **버전**: 1.0
 - **작성일**: 2025년 11월 3일
-- **예상 데모 시간**: 15-20분
+- **예상 데모 시간**: 20-25분
 - **대상**: 평가위원, 기술 팀
 
 ---
@@ -71,7 +71,7 @@ kubectl logs -n titanium-prod -l app=load-generator -c load-generator --tail=10
 
 ---
 
-## 데모 시나리오 (20분)
+## 데모 시나리오 (25분)
 
 ### 1부: 프로젝트 소개 (3분)
 
@@ -171,7 +171,6 @@ while true; do clear; kubectl get pods -n titanium-prod; sleep 2; done
 
 **스크립트**:
 > "Istio 서비스 메시를 통해 모든 서비스 간 통신을 모니터링합니다.
->
 > 각 서비스의 응답 코드별 요청 수와 응답 시간을 실시간으로 확인할 수 있습니다."
 
 3. **Kiali 서비스 메시 시각화**:
@@ -260,7 +259,118 @@ kubectl get pods -n titanium-prod -o jsonpath='{range .items[*]}{.metadata.name}
 
 ---
 
-### 5부: 고가용성 및 자동 복구 (4분)
+### 5부: 에러 시나리오 및 모니터링 (5분)
+
+**화면**: 터미널 + Grafana
+
+**시나리오**:
+
+**목적**: 에러 발생 시 모니터링 시스템이 어떻게 감지하고, 로그를 통해 추적하며, 알림이 작동하는지 시연
+
+1. **정상 상태 확인**:
+```bash
+# 현재 에러율 확인
+curl -s http://10.0.11.168:31304/blog/ | head -5
+echo "HTTP 200 OK - 정상 응답"
+```
+
+**스크립트**:
+> "먼저 정상 상태의 시스템을 확인하겠습니다. 모든 요청이 HTTP 200으로 정상 응답합니다."
+
+2. **의도적인 에러 발생**:
+```bash
+# 존재하지 않는 엔드포인트 호출 (404 에러)
+echo "에러 시나리오: 잘못된 엔드포인트 호출"
+for i in {1..20}; do
+  curl -s -o /dev/null -w "Request $i: HTTP %{http_code}\n" http://10.0.11.168:31304/nonexistent-endpoint
+  sleep 0.5
+done
+
+# 잘못된 메서드로 호출 (405 에러)
+echo ""
+echo "에러 시나리오: 잘못된 HTTP 메서드"
+for i in {1..10}; do
+  curl -s -o /dev/null -w "Request $i: HTTP %{http_code}\n" -X DELETE http://10.0.11.168:31304/blog/
+  sleep 0.5
+done
+```
+
+**스크립트**:
+> "이제 의도적으로 에러를 발생시켜보겠습니다.
+>
+> 먼저 존재하지 않는 엔드포인트를 호출하여 404 에러를 발생시킵니다.
+> 그 다음 지원하지 않는 HTTP 메서드를 사용하여 405 에러를 발생시킵니다."
+
+3. **Grafana에서 에러 감지 확인**:
+   - Golden Signals 대시보드로 이동
+   - Errors 패널에서 에러율 증가 확인
+   - response_code별 요청 수 그래프 확인 (404, 405 표시)
+
+**스크립트**:
+> "Grafana 대시보드를 보시면, Errors 패널에 에러율이 증가한 것을 실시간으로 확인할 수 있습니다.
+>
+> response_code별 요청 수 그래프에서 404와 405 에러가 발생한 것을 명확히 볼 수 있습니다.
+>
+> 이것이 Golden Signals의 'Errors' 메트릭입니다."
+
+4. **Loki 로그에서 에러 추적**:
+```bash
+# kubectl로 로그 확인
+echo "API Gateway 로그 확인:"
+kubectl logs -n titanium-prod -l app.kubernetes.io/name=titanium,app=api-gateway -c api-gateway-container --tail=20 | grep -E "404|405|ERROR"
+```
+
+**또는 Grafana Explore에서**:
+- Grafana → Explore 메뉴
+- Loki 데이터소스 선택
+- Log browser: `{namespace="titanium-prod"}`
+- Line contains: `404` 또는 `405` 또는 `ERROR`
+
+**스크립트**:
+> "Loki 중앙 로깅 시스템을 통해 에러 로그를 추적할 수 있습니다.
+>
+> API Gateway에서 발생한 404, 405 에러를 모두 확인할 수 있으며,
+> 어떤 경로에서, 어떤 시간에, 어떤 메서드로 요청이 들어왔는지 상세히 확인할 수 있습니다."
+
+5. **AlertManager 알림 확인** (선택사항):
+```bash
+# PrometheusRule 확인
+kubectl get prometheusrule -n monitoring
+
+# 특정 Rule 상세 확인
+kubectl get prometheusrule titanium-alerts -n monitoring -o yaml | grep -A 10 "alert: HighErrorRate"
+```
+
+**스크립트**:
+> "에러율이 일정 임계값(5%)을 초과하면 AlertManager가 자동으로 알림을 발송하도록 설정되어 있습니다.
+>
+> 현재 짧은 시간에 발생한 에러라 임계값을 넘지 않았지만,
+> 지속적으로 에러가 발생하면 Slack이나 이메일로 알림이 전송됩니다."
+
+6. **에러율 정상화 확인**:
+```bash
+# 정상 요청 다시 전송
+echo "정상 요청 재개:"
+for i in {1..10}; do
+  curl -s -o /dev/null -w "Request $i: HTTP %{http_code}\n" http://10.0.11.168:31304/blog/
+  sleep 1
+done
+```
+
+**스크립트**:
+> "정상 요청을 다시 보내면, 1-2분 후 Grafana 대시보드에서 에러율이 다시 0%로 돌아가는 것을 확인할 수 있습니다.
+>
+> 이처럼 모니터링 시스템은 에러를 실시간으로 감지하고, 로그로 추적하며, 심각한 경우 알림을 발송합니다."
+
+**확인 사항**:
+- Grafana Errors 패널에 에러율 표시
+- response_code별 404, 405 에러 카운트
+- Loki 로그에서 에러 메시지 확인
+- 시간이 지나면 에러율 정상화
+
+---
+
+### 6부: 고가용성 및 자동 복구 (4분)
 
 **화면**: 터미널 + Grafana
 
@@ -476,4 +586,137 @@ done
 
 **작성자**: 이동주
 **작성일**: 2025년 11월 3일
-**프로젝트 기간**: 2025년 9월 30일 ~ 11월 3일
+--- 
+
+## 부록: Grafana 및 Kiali 대시보드 상세 가이드
+
+### 1. Grafana Golden Signals Dashboard
+
+#### 접속 정보
+- **URL**: http://10.0.11.168:30300
+- **계정**: admin / prom-operator
+- **경로**: Dashboards → Browse → "Golden Signals Dashboard"
+
+---
+
+##### 1.1. Panel 1 - Latency (응답 시간)
+
+**패널 제목**: Latency (Response Time)
+
+**확인 가능한 메트릭**:
+- **P95 (95th Percentile)**: 95% 사용자가 경험하는 응답 시간
+  - 목표: < 100ms
+  - 정상 범위: 10-50ms
+  - 주의: 50-100ms
+  - 위험: > 100ms
+
+- **P99 (99th Percentile)**: 99% 사용자가 경험하는 응답 시간 (최악 케이스)
+  - 목표: < 200ms
+  - 정상 범위: 20-100ms
+  - 주의: 100-200ms
+  - 위험: > 200ms
+
+**그래프 해석**:
+- 시간에 따른 백분위수 응답 시간 추이를 선 그래프로 표시
+- 선이 평평하면 안정적인 상태
+- 급격한 스파이크는 일시적 부하
+- 지속적 상승은 시스템 문제 신호
+
+**데모 시 강조 포인트**:
+- "P95가 20ms 이하로 매우 빠른 응답 속도를 보입니다"
+- "P99도 100ms 이하로 대부분 사용자가 빠른 경험을 합니다"
+
+---
+
+##### 1.2. Panel 2 - Traffic (처리량)
+
+**패널 제목**: Traffic (Requests per Second)
+
+**확인 가능한 메트릭**:
+- 서비스별 초당 요청 수 (RPS)
+- 스택 영역 차트(Stacked Area Chart) 형태로 표시
+
+**정상 범위**:
+- 평상시: 5-20 RPS
+- 부하 테스트 시: 50-100 RPS
+
+**문제 신호**:
+- 모든 서비스 0 RPS: Prometheus 메트릭 수집 문제
+- 특정 서비스만 0 RPS: 해당 서비스 다운 또는 라우팅 문제
+
+---
+
+##### 1.3. Panel 3 - Errors (에러율)
+
+**패널 제목**: Errors (Error Rate %)
+
+**확인 가능한 메트릭**:
+- **4xx 에러**: 클라이언트 에러 발생률 (%)
+- **5xx 에러**: 서버 에러 발생률 (%)
+
+**HTTP 상태 코드별 의미**:
+- **5xx (서버 에러)**:
+  - 목표: 0%
+  - 허용: < 0.1%
+  - 위험: > 1%
+
+**문제 진단**:
+- 5xx 에러 지속 발생: 백엔드 서비스 문제
+- 4xx 에러 급증: API 호출 방식 변경 또는 클라이언트 버그
+
+---
+
+##### 1.4. Panel 4 - Saturation (리소스 포화도)
+
+**패널 제목**: Saturation (Resource Usage)
+
+**확인 가능한 메트릭**:
+- **CPU 사용률 (%)**: Pod별 CPU 사용 비율
+- **Memory 사용률 (%)**: Pod별 메모리 사용 비율
+
+**문제 신호**:
+- CPU 지속적 > 80%: 리소스 부족, replica 증가 필요
+- Memory 지속적 증가: 메모리 누수 가능성
+
+---
+
+### 2. Kiali Service Mesh Dashboard
+
+#### 접속 정보
+- **URL**: http://10.0.11.168:30164
+- **인증**: 자동 로그인 (인증 설정 없음)
+- **네임스페이스**: titanium-prod 선택
+
+---
+
+##### 2.1. Graph 메뉴 (핵심 기능)
+
+**Display 옵션**:
+- Traffic Animation: 실시간 트래픽 흐름 애니메이션
+- Service Nodes: 서비스 노드 표시
+- Security: mTLS 잠금 아이콘 표시
+
+**서비스 토폴로지 확인**:
+- **istio-ingressgateway**: 외부 트래픽 진입점
+- **prod-auth-service, prod-user-service, prod-blog-service**: 마이크로서비스
+- **postgresql-service, prod-redis-service**: 데이터베이스 및 캐시 (mTLS 비활성화)
+
+**트래픽 흐름 분석**:
+- **초록색 화살표**: 정상 요청 (HTTP 2xx)
+- **빨간색 화살표**: 서버 에러 (HTTP 5xx)
+
+---
+
+##### 2.2. Istio Config 메뉴
+
+**리소스 목록**:
+- **VirtualService**: 라우팅 규칙
+- **DestinationRule**: 트래픽 정책 및 mTLS 설정
+- **PeerAuthentication**: mTLS 모드 (STRICT, PERMISSIVE, DISABLE)
+- **Gateway**: 외부 노출 포트 및 프로토콜
+
+**Config Validation**:
+- "0 errors found, 0 warnings found" 확인 → 모든 설정이 유효함
+
+---
+
