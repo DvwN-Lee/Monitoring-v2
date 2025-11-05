@@ -46,9 +46,11 @@
 
 ---
 
-## 아키텍처 다이어그램
+## 아키텍처 개요
 
-### 전체 시스템 구조 (Solid Cloud 기반)
+### 전체 시스템 구조 (High-level)
+
+다음은 시스템의 고수준 아키텍처 개요입니다. 상세한 아키텍처 설계, 서비스 간 통신 흐름, CI/CD 파이프라인 등은 **[시스템 아키텍처 문서](./docs/02-architecture/architecture.md)**를 참고하세요.
 
 ```mermaid
 graph TD
@@ -176,10 +178,14 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 ### 핵심 문서 바로가기
 
-- **[시스템 아키텍처](./docs/architecture.md)**: 최종 결과물의 기술적 설계를 설명합니다.
-- **[운영 가이드](./docs/operations-guide.md)**: 시스템 운영, 모니터링, 장애 대응 방법을 안내하는 Runbook입니다.
-- **[프로젝트 회고](./docs/project-retrospective.md)**: 5주간의 프로젝트를 통해 얻은 기술적 성과와 배운 점을 요약합니다.
-- **[기술 결정 기록 (ADR)](./docs/adr/)**: "왜 이 기술을 선택했는가?"에 대한 논리적 근거를 기록합니다.
+- **[시스템 아키텍처](./docs/02-architecture/architecture.md)**: 전체 시스템의 상세 설계 문서
+  - 전체 시스템 아키텍처 (Mermaid 다이어그램)
+  - 서비스 간 통신 흐름 (Sequence Diagram)
+  - CI/CD 파이프라인 상세 설계
+  - 네트워크 구조 및 보안 설계
+- **[운영 가이드](./docs/04-operations/operations-guide.md)**: 시스템 운영, 모니터링, 장애 대응 Runbook
+- **[프로젝트 회고](./docs/07-retrospective/project-retrospective.md)**: 5주간의 프로젝트 성과 및 회고
+- **[기술 결정 기록 (ADR)](./docs/02-architecture/adr/)**: 주요 기술 선택의 배경과 근거
 
 ---
 
