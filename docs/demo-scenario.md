@@ -3,7 +3,7 @@
 ## 문서 정보
 - **버전**: 1.0
 - **작성일**: 2025년 11월 3일
-- **예상 데모 시간**: 15-20분
+- **예상 데모 시간**: 20-25분
 - **대상**: 평가위원, 기술 팀
 
 ---
@@ -71,7 +71,7 @@ kubectl logs -n titanium-prod -l app=load-generator -c load-generator --tail=10
 
 ---
 
-## 데모 시나리오 (20분)
+## 데모 시나리오 (25분)
 
 ### 1부: 프로젝트 소개 (3분)
 
@@ -171,7 +171,6 @@ while true; do clear; kubectl get pods -n titanium-prod; sleep 2; done
 
 **스크립트**:
 > "Istio 서비스 메시를 통해 모든 서비스 간 통신을 모니터링합니다.
->
 > 각 서비스의 응답 코드별 요청 수와 응답 시간을 실시간으로 확인할 수 있습니다."
 
 3. **Kiali 서비스 메시 시각화**:
@@ -260,7 +259,118 @@ kubectl get pods -n titanium-prod -o jsonpath='{range .items[*]}{.metadata.name}
 
 ---
 
-### 5부: 고가용성 및 자동 복구 (4분)
+### 5부: 에러 시나리오 및 모니터링 (5분)
+
+**화면**: 터미널 + Grafana
+
+**시나리오**:
+
+**목적**: 에러 발생 시 모니터링 시스템이 어떻게 감지하고, 로그를 통해 추적하며, 알림이 작동하는지 시연
+
+1. **정상 상태 확인**:
+```bash
+# 현재 에러율 확인
+curl -s http://10.0.11.168:31304/blog/ | head -5
+echo "HTTP 200 OK - 정상 응답"
+```
+
+**스크립트**:
+> "먼저 정상 상태의 시스템을 확인하겠습니다. 모든 요청이 HTTP 200으로 정상 응답합니다."
+
+2. **의도적인 에러 발생**:
+```bash
+# 존재하지 않는 엔드포인트 호출 (404 에러)
+echo "에러 시나리오: 잘못된 엔드포인트 호출"
+for i in {1..20}; do
+  curl -s -o /dev/null -w "Request $i: HTTP %{http_code}\n" http://10.0.11.168:31304/nonexistent-endpoint
+  sleep 0.5
+done
+
+# 잘못된 메서드로 호출 (405 에러)
+echo ""
+echo "에러 시나리오: 잘못된 HTTP 메서드"
+for i in {1..10}; do
+  curl -s -o /dev/null -w "Request $i: HTTP %{http_code}\n" -X DELETE http://10.0.11.168:31304/blog/
+  sleep 0.5
+done
+```
+
+**스크립트**:
+> "이제 의도적으로 에러를 발생시켜보겠습니다.
+>
+> 먼저 존재하지 않는 엔드포인트를 호출하여 404 에러를 발생시킵니다.
+> 그 다음 지원하지 않는 HTTP 메서드를 사용하여 405 에러를 발생시킵니다."
+
+3. **Grafana에서 에러 감지 확인**:
+   - Golden Signals 대시보드로 이동
+   - Errors 패널에서 에러율 증가 확인
+   - response_code별 요청 수 그래프 확인 (404, 405 표시)
+
+**스크립트**:
+> "Grafana 대시보드를 보시면, Errors 패널에 에러율이 증가한 것을 실시간으로 확인할 수 있습니다.
+>
+> response_code별 요청 수 그래프에서 404와 405 에러가 발생한 것을 명확히 볼 수 있습니다.
+>
+> 이것이 Golden Signals의 'Errors' 메트릭입니다."
+
+4. **Loki 로그에서 에러 추적**:
+```bash
+# kubectl로 로그 확인
+echo "API Gateway 로그 확인:"
+kubectl logs -n titanium-prod -l app.kubernetes.io/name=titanium,app=api-gateway -c api-gateway-container --tail=20 | grep -E "404|405|ERROR"
+```
+
+**또는 Grafana Explore에서**:
+- Grafana → Explore 메뉴
+- Loki 데이터소스 선택
+- Log browser: `{namespace="titanium-prod"}`
+- Line contains: `404` 또는 `405` 또는 `ERROR`
+
+**스크립트**:
+> "Loki 중앙 로깅 시스템을 통해 에러 로그를 추적할 수 있습니다.
+>
+> API Gateway에서 발생한 404, 405 에러를 모두 확인할 수 있으며,
+> 어떤 경로에서, 어떤 시간에, 어떤 메서드로 요청이 들어왔는지 상세히 확인할 수 있습니다."
+
+5. **AlertManager 알림 확인** (선택사항):
+```bash
+# PrometheusRule 확인
+kubectl get prometheusrule -n monitoring
+
+# 특정 Rule 상세 확인
+kubectl get prometheusrule titanium-alerts -n monitoring -o yaml | grep -A 10 "alert: HighErrorRate"
+```
+
+**스크립트**:
+> "에러율이 일정 임계값(5%)을 초과하면 AlertManager가 자동으로 알림을 발송하도록 설정되어 있습니다.
+>
+> 현재 짧은 시간에 발생한 에러라 임계값을 넘지 않았지만,
+> 지속적으로 에러가 발생하면 Slack이나 이메일로 알림이 전송됩니다."
+
+6. **에러율 정상화 확인**:
+```bash
+# 정상 요청 다시 전송
+echo "정상 요청 재개:"
+for i in {1..10}; do
+  curl -s -o /dev/null -w "Request $i: HTTP %{http_code}\n" http://10.0.11.168:31304/blog/
+  sleep 1
+done
+```
+
+**스크립트**:
+> "정상 요청을 다시 보내면, 1-2분 후 Grafana 대시보드에서 에러율이 다시 0%로 돌아가는 것을 확인할 수 있습니다.
+>
+> 이처럼 모니터링 시스템은 에러를 실시간으로 감지하고, 로그로 추적하며, 심각한 경우 알림을 발송합니다."
+
+**확인 사항**:
+- ✅ Grafana Errors 패널에 에러율 표시
+- ✅ response_code별 404, 405 에러 카운트
+- ✅ Loki 로그에서 에러 메시지 확인
+- ✅ 시간이 지나면 에러율 정상화
+
+---
+
+### 6부: 고가용성 및 자동 복구 (4분)
 
 **화면**: 터미널 + Grafana
 
