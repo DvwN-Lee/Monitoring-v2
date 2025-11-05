@@ -363,10 +363,10 @@ done
 > 이처럼 모니터링 시스템은 에러를 실시간으로 감지하고, 로그로 추적하며, 심각한 경우 알림을 발송합니다."
 
 **확인 사항**:
-- ✅ Grafana Errors 패널에 에러율 표시
-- ✅ response_code별 404, 405 에러 카운트
-- ✅ Loki 로그에서 에러 메시지 확인
-- ✅ 시간이 지나면 에러율 정상화
+- Grafana Errors 패널에 에러율 표시
+- response_code별 404, 405 에러 카운트
+- Loki 로그에서 에러 메시지 확인
+- 시간이 지나면 에러율 정상화
 
 ---
 
@@ -586,4 +586,137 @@ done
 
 **작성자**: 이동주
 **작성일**: 2025년 11월 3일
-**프로젝트 기간**: 2025년 9월 30일 ~ 11월 3일
+--- 
+
+## 부록: Grafana 및 Kiali 대시보드 상세 가이드
+
+### 1. Grafana Golden Signals Dashboard
+
+#### 접속 정보
+- **URL**: http://10.0.11.168:30300
+- **계정**: admin / prom-operator
+- **경로**: Dashboards → Browse → "Golden Signals Dashboard"
+
+---
+
+##### 1.1. Panel 1 - Latency (응답 시간)
+
+**패널 제목**: Latency (Response Time)
+
+**확인 가능한 메트릭**:
+- **P95 (95th Percentile)**: 95% 사용자가 경험하는 응답 시간
+  - 목표: < 100ms
+  - 정상 범위: 10-50ms
+  - 주의: 50-100ms
+  - 위험: > 100ms
+
+- **P99 (99th Percentile)**: 99% 사용자가 경험하는 응답 시간 (최악 케이스)
+  - 목표: < 200ms
+  - 정상 범위: 20-100ms
+  - 주의: 100-200ms
+  - 위험: > 200ms
+
+**그래프 해석**:
+- 시간에 따른 백분위수 응답 시간 추이를 선 그래프로 표시
+- 선이 평평하면 안정적인 상태
+- 급격한 스파이크는 일시적 부하
+- 지속적 상승은 시스템 문제 신호
+
+**데모 시 강조 포인트**:
+- "P95가 20ms 이하로 매우 빠른 응답 속도를 보입니다"
+- "P99도 100ms 이하로 대부분 사용자가 빠른 경험을 합니다"
+
+---
+
+##### 1.2. Panel 2 - Traffic (처리량)
+
+**패널 제목**: Traffic (Requests per Second)
+
+**확인 가능한 메트릭**:
+- 서비스별 초당 요청 수 (RPS)
+- 스택 영역 차트(Stacked Area Chart) 형태로 표시
+
+**정상 범위**:
+- 평상시: 5-20 RPS
+- 부하 테스트 시: 50-100 RPS
+
+**문제 신호**:
+- 모든 서비스 0 RPS: Prometheus 메트릭 수집 문제
+- 특정 서비스만 0 RPS: 해당 서비스 다운 또는 라우팅 문제
+
+---
+
+##### 1.3. Panel 3 - Errors (에러율)
+
+**패널 제목**: Errors (Error Rate %)
+
+**확인 가능한 메트릭**:
+- **4xx 에러**: 클라이언트 에러 발생률 (%)
+- **5xx 에러**: 서버 에러 발생률 (%)
+
+**HTTP 상태 코드별 의미**:
+- **5xx (서버 에러)**:
+  - 목표: 0%
+  - 허용: < 0.1%
+  - 위험: > 1%
+
+**문제 진단**:
+- 5xx 에러 지속 발생: 백엔드 서비스 문제
+- 4xx 에러 급증: API 호출 방식 변경 또는 클라이언트 버그
+
+---
+
+##### 1.4. Panel 4 - Saturation (리소스 포화도)
+
+**패널 제목**: Saturation (Resource Usage)
+
+**확인 가능한 메트릭**:
+- **CPU 사용률 (%)**: Pod별 CPU 사용 비율
+- **Memory 사용률 (%)**: Pod별 메모리 사용 비율
+
+**문제 신호**:
+- CPU 지속적 > 80%: 리소스 부족, replica 증가 필요
+- Memory 지속적 증가: 메모리 누수 가능성
+
+---
+
+### 2. Kiali Service Mesh Dashboard
+
+#### 접속 정보
+- **URL**: http://10.0.11.168:30164
+- **인증**: 자동 로그인 (인증 설정 없음)
+- **네임스페이스**: titanium-prod 선택
+
+---
+
+##### 2.1. Graph 메뉴 (핵심 기능)
+
+**Display 옵션**:
+- Traffic Animation: 실시간 트래픽 흐름 애니메이션
+- Service Nodes: 서비스 노드 표시
+- Security: mTLS 잠금 아이콘 표시
+
+**서비스 토폴로지 확인**:
+- **istio-ingressgateway**: 외부 트래픽 진입점
+- **prod-auth-service, prod-user-service, prod-blog-service**: 마이크로서비스
+- **postgresql-service, prod-redis-service**: 데이터베이스 및 캐시 (mTLS 비활성화)
+
+**트래픽 흐름 분석**:
+- **초록색 화살표**: 정상 요청 (HTTP 2xx)
+- **빨간색 화살표**: 서버 에러 (HTTP 5xx)
+
+---
+
+##### 2.2. Istio Config 메뉴
+
+**리소스 목록**:
+- **VirtualService**: 라우팅 규칙
+- **DestinationRule**: 트래픽 정책 및 mTLS 설정
+- **PeerAuthentication**: mTLS 모드 (STRICT, PERMISSIVE, DISABLE)
+- **Gateway**: 외부 노출 포트 및 프로토콜
+
+**Config Validation**:
+- "0 errors found, 0 warnings found" 확인 → 모든 설정이 유효함
+
+---
+
