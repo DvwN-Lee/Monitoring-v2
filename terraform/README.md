@@ -2,7 +2,7 @@
 
 Terraform 모듈을 사용하여 Solid Cloud 인프라를 자동화합니다.
 
-## 📁 디렉토리 구조
+## 디렉토리 구조
 
 ```
 terraform/
@@ -18,7 +18,7 @@ terraform/
         └── outputs.tf
 ```
 
-## 🚀 사용 방법
+## 사용 방법
 
 ### 1. 사전 요구사항
 
@@ -78,7 +78,7 @@ kubectl get pods -n titanium-prod
 kubectl get svc -n titanium-prod
 ```
 
-## 📦 모듈 설명
+## 모듈 설명
 
 ### Network Module
 
@@ -115,7 +115,7 @@ PostgreSQL을 StatefulSet으로 배포합니다.
 - posts 테이블 생성
 - 인덱스 생성
 
-## 🔐 보안 고려사항
+## 보안 고려사항
 
 ### Secrets 관리
 
@@ -144,7 +144,7 @@ terraform {
 }
 ```
 
-## 🧪 테스트
+## 테스트
 
 ### PostgreSQL 연결 테스트
 
@@ -171,7 +171,7 @@ kubectl run -it --rm debug --image=postgres:15-alpine --restart=Never -n titaniu
   psql -h postgresql-service -U postgres -d titanium
 ```
 
-## 🔄 업데이트 및 변경
+## 업데이트 및 변경
 
 ```bash
 # 변수 수정 후
@@ -184,16 +184,16 @@ terraform plan
 terraform apply
 ```
 
-## 🗑️ 인프라 삭제
+## 인프라 삭제
 
 ```bash
-# ⚠️ 주의: 모든 리소스가 삭제됩니다
+# 주의: 모든 리소스가 삭제됩니다
 terraform destroy
 
 # 확인 메시지에서 'yes' 입력
 ```
 
-## 🐛 트러블슈팅
+## 트러블슈팅
 
 ### 1. Kubernetes Provider 연결 실패
 
@@ -226,12 +226,12 @@ kubectl get pvc -n titanium-prod
 terraform force-unlock <LOCK_ID>
 ```
 
-## 📚 참고 문서
+## 참고 문서
 
 - [Terraform 공식 문서](https://www.terraform.io/docs)
 - [Kubernetes Provider 문서](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs)
 - [PostgreSQL 공식 문서](https://www.postgresql.org/docs/)
 
-## 🤝 기여
+## 기여
 
 Terraform 모듈 개선 사항이나 버그는 Issue로 등록해주세요.

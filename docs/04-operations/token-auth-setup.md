@@ -102,7 +102,7 @@ CA Certificate를 얻을 수 없는 경우, 개발 환경에서만 TLS 검증을
 K8S_SKIP_TLS_VERIFY=true
 ```
 
-⚠️ **주의**: 운영 환경에서는 반드시 CA Certificate를 사용하세요!
+**주의**: 운영 환경에서는 반드시 CA Certificate를 사용하세요!
 
 ### 3단계: .env.k8s 파일 편집
 
@@ -316,5 +316,4 @@ steps:
 
 ---
 
-**작성자**: Claude AI
 **최종 수정**: 2025-10-27
