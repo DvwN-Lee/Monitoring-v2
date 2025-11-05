@@ -52,6 +52,23 @@ curl http://10.0.11.168:31304/blog/
    - 주요 성과 슬라이드
    - 기술 스택 목록
 
+5. **Load Generator 배포** (Grafana 메트릭 활성화):
+```bash
+# 데모 전 Load Generator 배포 (메트릭 지속 생성)
+kubectl apply -f k8s-manifests/overlays/solid-cloud/load-generator.yaml
+
+# 배포 확인
+kubectl get pods -n titanium-prod -l app=load-generator
+
+# 로그 확인 (정상 작동 여부)
+kubectl logs -n titanium-prod -l app=load-generator -c load-generator --tail=10
+```
+
+**설명**:
+- Load Generator는 10초마다 blog 서비스에 요청을 보내 Grafana 대시보드 메트릭을 활성화합니다
+- Kubernetes Deployment로 관리되어 데모 중 안정적으로 트래픽을 생성합니다
+- 데모 종료 후: `kubectl delete -f k8s-manifests/overlays/solid-cloud/load-generator.yaml`
+
 ---
 
 ## 데모 시나리오 (20분)
@@ -176,7 +193,36 @@ while true; do clear; kubectl get pods -n titanium-prod; sleep 2; done
 - Workloads: Pod 상태 및 Istio 구성 확인
 - Istio Config: VirtualService, DestinationRule 등 확인
 
-4. **로그 조회** (시간이 있다면):
+4. **부하 테스트 시연** (동적 메트릭 확인):
+
+**스크립트**:
+> "지금까지는 Load Generator가 생성하는 안정적인 트래픽을 확인했습니다.
+>
+> 이제 사용자가 몰리는 피크 타임을 가정하여 트래픽을 급증시켜보겠습니다."
+
+```bash
+# 5초간 100개의 요청 전송 (트래픽 급증 시뮬레이션)
+echo "부하 테스트 시작..."
+for i in {1..100}; do
+  curl -s -o /dev/null http://10.0.11.168:31304/blog/
+  sleep 0.05
+done
+echo "부하 테스트 완료 (100개 요청 전송)"
+```
+
+**스크립트**:
+> "Grafana 대시보드를 보시면, RPS가 약 20 req/s로 급증하고
+> P95 Latency가 어떻게 변화하는지 실시간으로 확인하실 수 있습니다.
+>
+> 1-2분 후에는 부하가 감소하면서 시스템이 다시 안정화되는 모습을 관찰할 수 있습니다."
+
+**확인 사항** (Grafana에서):
+- Traffic 패널: RPS 급증 (약 20 req/s)
+- Latency 패널: P95/P99 응답 시간 변화
+- Errors 패널: 에러율 (정상 시 0% 유지)
+- Saturation 패널: CPU/Memory 사용률 증가
+
+5. **로그 조회** (시간이 있다면):
    - Grafana Explore 메뉴로 이동
    - Loki 데이터소스 선택
    - titanium-prod 네임스페이스 로그 조회
@@ -359,6 +405,8 @@ done
 
 ### 데모 당일 (30분 전)
 - [ ] 모든 Pod Running 상태 확인
+- [ ] Load Generator 배포 및 동작 확인
+- [ ] Grafana 대시보드에서 메트릭 표시 확인 (0이 아닌 값)
 - [ ] 브라우저 탭 준비 (Grafana, GitHub, 애플리케이션)
 - [ ] 터미널 준비 (kubectl 설정 확인)
 - [ ] 네트워크 연결 확인

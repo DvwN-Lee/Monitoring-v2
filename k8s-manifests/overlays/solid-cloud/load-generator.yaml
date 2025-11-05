@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: load-generator
+  namespace: titanium-prod
+  labels:
+    app: load-generator
+    environment: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: load-generator
+  template:
+    metadata:
+      labels:
+        app: load-generator
+        environment: demo
+    spec:
+      containers:
+      - name: load-generator
+        image: curlimages/curl:8.5.0
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          echo "Load Generator started - generating traffic to blog service"
+          echo "Target: istio-ingressgateway.istio-system.svc.cluster.local/blog/"
+          echo "Interval: 10 seconds"
+          echo "---"
+
+          while true; do
+            timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+
+            # Send request through Istio Ingress Gateway
+            response=$(curl -s -o /dev/null -w "%{http_code}" \
+              http://istio-ingressgateway.istio-system.svc.cluster.local/blog/ \
+              2>&1)
+
+            if [ "$response" = "200" ] || [ "$response" = "307" ]; then
+              echo "[$timestamp] Request successful (HTTP $response)"
+            else
+              echo "[$timestamp] Request failed (HTTP $response)"
+            fi
+
+            sleep 10
+          done
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "20Mi"
+          limits:
+            cpu: "50m"
+            memory: "50Mi"
+      restartPolicy: Always
