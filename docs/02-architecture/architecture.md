@@ -62,43 +62,123 @@
 
 ### 2.1. 아키텍처 다이어그램
 
+```mermaid
+graph TB
+    subgraph GitHub["GitHub Repository"]
+        AppCode["Application<br/>Source Code"]
+        GitOpsConfig["GitOps Config<br/>(k8s manifests)"]
+    end
+
+    subgraph CI["CI Pipeline"]
+        GHA["GitHub Actions"]
+        Build["1. Lint & Test"]
+        Security["2. Security Scan<br/>(Trivy)"]
+        Push["3. Push Image"]
+    end
+
+    subgraph Registry["Container Registry"]
+        DockerReg["Docker Hub /<br/>Container Registry"]
+    end
+
+    subgraph CD["CD Pipeline"]
+        ArgoCD["Argo CD"]
+        Sync["Auto Sync"]
+    end
+
+    subgraph SolidCloud["Solid Cloud - Kubernetes Cluster"]
+        subgraph IstioMesh["Istio Service Mesh"]
+            subgraph Gateway["Ingress"]
+                IstioGW["Istio Gateway<br/>(NodePort: 31304)"]
+            end
+
+            subgraph Services["Application Services"]
+                APIGW["API Gateway<br/>(Go)"]
+                AuthSvc["Auth Service<br/>(Python)"]
+                UserSvc["User Service<br/>(Python)"]
+                BlogSvc["Blog Service<br/>(Python)"]
+            end
+        end
+
+        subgraph Data["Data Layer"]
+            PG["PostgreSQL<br/>(Persistent Storage)"]
+            Redis["Redis<br/>(Cache)"]
+        end
+
+        subgraph Monitoring["Monitoring Stack"]
+            Prom["Prometheus"]
+            Graf["Grafana"]
+            Loki["Loki"]
+        end
+    end
+
+    %% CI Flow
+    AppCode -->|"Git Push"| GHA
+    GHA --> Build
+    Build --> Security
+    Security --> Push
+    Push --> DockerReg
+    Push -->|"Update Image Tag"| GitOpsConfig
+
+    %% CD Flow
+    GitOpsConfig -->|"Git Push<br/>(Trigger)"| ArgoCD
+    ArgoCD --> Sync
+    Sync -->|"Apply Manifests"| SolidCloud
+    DockerReg -.->|"Pull Image<br/>(by Kubelet)"| SolidCloud
+
+    %% Request Flow
+    User([User]) -->|"HTTP Request"| IstioGW
+    IstioGW -->|"mTLS"| APIGW
+    APIGW -->|"mTLS"| AuthSvc
+    APIGW -->|"mTLS"| UserSvc
+    APIGW -->|"mTLS"| BlogSvc
+
+    %% Data Access
+    AuthSvc --> PG
+    UserSvc --> PG
+    UserSvc --> Redis
+    BlogSvc --> PG
+
+    %% Monitoring
+    Prom -.->|"Scrape Metrics"| Services
+    Graf --> Prom
+    Graf --> Loki
+    Loki -.->|"Collect Logs"| Services
+
+    %% Styling
+    classDef ciStyle fill:#2088FF,stroke:#333,color:#fff
+    classDef cdStyle fill:#F44336,stroke:#333,color:#fff
+    classDef serviceStyle fill:#4CAF50,stroke:#333,color:#fff
+    classDef dataStyle fill:#FF9800,stroke:#333,color:#fff
+    classDef monStyle fill:#9C27B0,stroke:#333,color:#fff
+
+    class GHA,Build,Security,Push ciStyle
+    class ArgoCD,Sync cdStyle
+    class APIGW,AuthSvc,UserSvc,BlogSvc serviceStyle
+    class PG,Redis dataStyle
+    class Prom,Graf,Loki monStyle
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        GitHub Repository                     │
-│  ┌─────────────────┐              ┌────────────────────┐   │
-│  │  Application    │              │  GitOps Config     │   │
-│  │  Source Code    │              │  (k8s manifests)   │   │
-│  └────────┬────────┘              └─────────┬──────────┘   │
-└───────────┼──────────────────────────────────┼──────────────┘
-            │                                   │
-            │ Git Push                          │ Git Push
-            ▼                                   ▼
-   ┌────────────────────┐            ┌──────────────────┐
-   │  GitHub Actions    │            │    Argo CD       │
-   │  (CI Pipeline)     │            │  (CD Pipeline)   │
-   └────────┬───────────┘            └────────┬─────────┘
-            │                                  │
-            │ Push Image                       │ Pull & Deploy
-            ▼                                  ▼
-   ┌──────────────────┐            ┌─────────────────────────┐
-   │ Container        │            │    Solid Cloud          │
-   │ Registry         │            │  Kubernetes Cluster     │
-   └──────────────────┘            │                         │
-                                   │  ┌───────────────────┐ │
-                                   │  │  API Gateway (Go) │ │
-                                   │  └─────────┬─────────┘ │
-                                   │            │           │
-                                   │  ┌─────────▼─────────┐ │
-                                   │  │  Microservices    │ │
-                                   │  │  (Python/FastAPI) │ │
-                                   │  └─────────┬─────────┘ │
-                                   │            │           │
-                                   │  ┌─────────▼─────────┐ │
-                                   │  │   PostgreSQL      │ │
-                                   │  │     Redis         │ │
-                                   │  └───────────────────┘ │
-                                   └─────────────────────────┘
-```
+
+**주요 특징:**
+
+1. **CI Pipeline (GitHub Actions)**
+   - 코드 Push 시 자동으로 빌드, 테스트, 보안 스캔 수행
+   - 컨테이너 이미지를 빌드하여 레지스트리에 Push
+   - GitOps Config 저장소의 이미지 태그를 자동 업데이트
+
+2. **CD Pipeline (Argo CD)**
+   - GitOps Config 변경을 감지하여 자동 동기화
+   - Kubernetes 클러스터에 모든 리소스를 선언적으로 배포
+   - 실제 이미지 Pull은 Kubernetes 노드의 Kubelet이 수행
+
+3. **Service Mesh (Istio)**
+   - 모든 서비스 간 통신을 mTLS로 자동 암호화
+   - 트래픽 라우팅 및 로드 밸런싱
+   - 메트릭 수집 및 관측성 제공
+
+4. **Monitoring Stack**
+   - Prometheus: 메트릭 수집 및 저장
+   - Grafana: 시각화 및 대시보드
+   - Loki: 중앙 로그 수집 및 조회
 
 ### 2.2. 네트워크 구조
 
@@ -134,23 +214,68 @@
 
 ### 3.3. 서비스 간 통신 흐름
 
+#### 사용자 요청 처리 흐름
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant IGW as Istio Gateway<br/>(NodePort: 31304)
+    participant VS as VirtualService<br/>(Routing Rules)
+    participant API as API Gateway<br/>(Go)
+    participant Auth as Auth Service<br/>(Python)
+    participant UserSvc as User Service<br/>(Python)
+    participant Blog as Blog Service<br/>(Python)
+    participant PG as PostgreSQL
+    participant Redis as Redis
+
+    Note over User,Redis: 블로그 게시글 조회 시나리오
+
+    User->>IGW: HTTP GET /blog/posts
+    IGW->>VS: Forward Request
+    Note over VS: mTLS 암호화 시작
+    VS->>API: Route to API Gateway
+
+    API->>Auth: Validate JWT Token
+    Auth->>PG: Check User Session
+    PG-->>Auth: Session Valid
+    Auth-->>API: Token Valid
+
+    API->>Blog: GET /posts
+    Blog->>PG: SELECT * FROM posts
+    PG-->>Blog: Posts Data
+    Blog-->>API: 200 OK + Posts
+
+    API-->>IGW: Response
+    IGW-->>User: 200 OK + Posts
+
+    Note over User,Redis: 사용자 프로필 조회 (캐시 활용)
+
+    User->>IGW: HTTP GET /user/profile
+    IGW->>API: Forward Request
+
+    API->>Auth: Validate JWT
+    Auth-->>API: Valid
+
+    API->>UserSvc: GET /profile/{id}
+    UserSvc->>Redis: Check Cache
+    alt Cache Hit
+        Redis-->>UserSvc: Cached Data
+    else Cache Miss
+        UserSvc->>PG: SELECT * FROM users
+        PG-->>UserSvc: User Data
+        UserSvc->>Redis: Store Cache
+    end
+
+    UserSvc-->>API: 200 OK + Profile
+    API-->>IGW: Response
+    IGW-->>User: 200 OK + Profile
 ```
-User Request
-    ↓
-Istio Ingress Gateway (NodePort: 31304)
-    ↓
-VirtualService (Routing Rules)
-    ↓
-┌───────────┬───────────┬───────────┐
-│           │           │           │
-Auth     User       Blog
-Service  Service    Service
-(Python) (Python)   (Python)
-    │        │           │
-    └────────┴───────────┘
-             ↓
-        PostgreSQL
-```
+
+**주요 특징:**
+- **mTLS 암호화**: Istio Service Mesh를 통해 모든 서비스 간 통신이 자동으로 암호화됩니다.
+- **중앙 인증**: Auth Service에서 JWT 토큰을 검증하여 인증을 중앙화합니다.
+- **캐시 레이어**: User Service는 Redis를 활용하여 자주 조회되는 데이터를 캐싱합니다.
+- **데이터베이스 접근**: 각 서비스는 필요한 경우에만 PostgreSQL에 접근합니다.
 
 ---
 
@@ -160,11 +285,60 @@ Service  Service    Service
 
 **트리거**: `main` 브랜치에 코드 Push
 
+```mermaid
+flowchart TD
+    Start([Git Push to main]) --> Checkout[Checkout Code]
+    Checkout --> Lint[Lint & Test]
+
+    subgraph LintTest["Lint & Test Stage"]
+        Lint --> GoLint{Go Service?}
+        GoLint -->|Yes| GoLintCmd[golangci-lint]
+        GoLint -->|No| PyLint[flake8]
+        GoLintCmd --> Test
+        PyLint --> Test[pytest]
+    end
+
+    Test --> Build[Docker Build]
+
+    subgraph BuildStage["Build Stage"]
+        Build --> MultiStage[Multi-stage Build]
+        MultiStage --> Optimize[Image Optimization]
+    end
+
+    Optimize --> Scan[Security Scan]
+
+    subgraph SecurityStage["Security Scan Stage"]
+        Scan --> Trivy[Trivy Scan]
+        Trivy --> CheckVuln{Vulnerabilities?}
+        CheckVuln -->|HIGH/CRITICAL| Fail[Build Failed]
+        CheckVuln -->|None/LOW/MEDIUM| Pass[Scan Passed]
+    end
+
+    Pass --> Push[Push to Registry]
+
+    subgraph PushStage["Push & Update Stage"]
+        Push --> TagImage[Tag Image]
+        TagImage --> UploadReg[Upload to Registry]
+        UploadReg --> UpdateManifest[Update GitOps Manifests]
+        UpdateManifest --> CommitPush[Git Commit & Push]
+    end
+
+    CommitPush --> TriggerCD[Trigger Argo CD]
+    TriggerCD --> End([CI Complete])
+
+    Fail --> End
+
+    style Start fill:#4CAF50,stroke:#333,color:#fff
+    style End fill:#2196F3,stroke:#333,color:#fff
+    style Fail fill:#F44336,stroke:#333,color:#fff
+    style TriggerCD fill:#FF9800,stroke:#333,color:#fff
+```
+
 **실행 단계**:
 1. **Lint & Test**
    - `golangci-lint` (Go 서비스)
    - `flake8`, `pytest` (Python 서비스)
-   
+
 2. **Build**
    - Docker 멀티 스테이지 빌드
    - 경량화된 이미지 생성
@@ -182,15 +356,78 @@ Service  Service    Service
 
 ### 4.2. CD 파이프라인 (Argo CD)
 
+```mermaid
+flowchart TD
+    Start([GitOps Config Updated]) --> Monitor[Argo CD Monitoring]
+
+    subgraph ArgoCD["Argo CD Controller"]
+        Monitor --> Poll[Poll Git Repository]
+        Poll --> Detect{Changes<br/>Detected?}
+        Detect -->|No| Wait[Wait 3 minutes]
+        Wait --> Poll
+        Detect -->|Yes| Fetch[Fetch Manifests]
+    end
+
+    subgraph Sync["Sync Process"]
+        Fetch --> Compare[Compare Desired vs Current]
+        Compare --> Diff{Drift<br/>Detected?}
+        Diff -->|No| InSync[Already Synced]
+        Diff -->|Yes| Plan[Plan Sync]
+        Plan --> Apply[Apply Manifests]
+
+        Apply --> Deploy1[Deploy Deployments]
+        Apply --> Deploy2[Deploy Services]
+        Apply --> Deploy3[Deploy ConfigMaps]
+        Apply --> Deploy4[Deploy VirtualServices]
+
+        Deploy1 --> Validate
+        Deploy2 --> Validate
+        Deploy3 --> Validate
+        Deploy4 --> Validate[Validate Resources]
+    end
+
+    subgraph K8s["Kubernetes Cluster"]
+        Validate --> Kubelet[Kubelet]
+        Kubelet --> Pull[Pull Images<br/>from Registry]
+        Pull --> CreatePod[Create Pods]
+        CreatePod --> HealthCheck{Health<br/>Check}
+        HealthCheck -->|Failed| Rollback[Rollback]
+        HealthCheck -->|Passed| Running[Pods Running]
+    end
+
+    subgraph SelfHeal["Self-Heal (선택 사항)"]
+        Running --> ManualChange{Manual<br/>Change?}
+        ManualChange -->|Yes| AutoRevert[Auto Revert to Git]
+        AutoRevert --> Apply
+        ManualChange -->|No| Monitor2[Continue Monitoring]
+    end
+
+    Running --> Success([Deployment Complete])
+    InSync --> Success
+    Rollback --> Failed([Deployment Failed])
+
+    style Start fill:#4CAF50,stroke:#333,color:#fff
+    style Success fill:#2196F3,stroke:#333,color:#fff
+    style Failed fill:#F44336,stroke:#333,color:#fff
+    style Running fill:#FF9800,stroke:#333,color:#fff
+```
+
 **동작 방식**:
-- GitOps 저장소를 주기적으로 모니터링
+- GitOps 저장소를 주기적으로 모니터링 (기본 3분 간격)
 - 변경 사항 감지 시 자동으로 Kubernetes에 배포
 - 배포 상태를 UI에서 실시간 확인 가능
+- Self-Heal 기능으로 수동 변경 사항을 Git 상태로 자동 복구
+- Health Check 실패 시 자동 롤백 기능 활용
 
 **주요 설정**:
 - `Sync Policy`: Automated (자동 동기화)
 - `Prune`: true (Git에서 삭제된 리소스 자동 제거)
 - `Self Heal`: true (수동 변경 시 Git 상태로 자동 복구)
+
+**롤백 전략**:
+- Pod의 Health Check (Readiness/Liveness Probe) 실패 시 Kubernetes가 자동으로 이전 버전으로 롤백
+- Argo CD는 배포 실패를 감지하고 상태를 보고
+- 수동 롤백도 Argo CD UI 또는 CLI를 통해 가능
 
 ---
 
