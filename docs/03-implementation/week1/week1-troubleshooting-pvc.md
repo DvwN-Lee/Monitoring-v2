@@ -278,7 +278,7 @@ kubectl exec -it postgresql-0 -n titanium-prod -- psql -U postgres -d titanium
 
 ---
 
-## 🎓 핵심 학습 내용
+## 핵심 학습 내용
 
 ### 1. WaitForFirstConsumer 볼륨 바인딩 모드
 
