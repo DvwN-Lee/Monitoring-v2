@@ -70,16 +70,11 @@ configMapGenerator:
       - APP_VERSION=2.0.0
       - CORS_ALLOWED_ORIGINS=*
 
-# Secret generator (will be replaced by actual secrets)
-# Note: In production, manage secrets separately or use external secret managers
-secretGenerator:
-  - name: app-secrets
-    behavior: merge
-    literals:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=CHANGE_THIS_SECURE_PASSWORD
-      - JWT_SECRET_KEY=CHANGE_THIS_JWT_SECRET
-      - INTERNAL_API_SECRET=EXNOz8PzwtGzCFUFtaSR/MAKcijj39DBTImiaMbi3xA=
+# Secret management
+# SECURITY: Secrets are managed separately and NOT committed to Git
+# For local development: Create secrets manually using kubectl
+# For production: Use External Secrets Operator or cloud-native secret management
+# Reference: docs/SECRET_MANAGEMENT.md
 
 # Common labels for all resources
 labels:
