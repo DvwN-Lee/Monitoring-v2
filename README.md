@@ -50,7 +50,7 @@
 
 ### 전체 시스템 구조 (High-level)
 
-다음은 시스템의 고수준 아키텍처 개요입니다. 상세한 아키텍처 설계, 서비스 간 통신 흐름, CI/CD 파이프라인 등은 **[시스템 아키텍처 문서](./docs/02-architecture/architecture.md)**를 참고하세요.
+다음은 시스템의 고수준 아키텍처 개요입니다. 상세한 아키텍처 설계, 서비스 간 통신 흐름, CI/CD 파이프라인 등은 [시스템 아키텍처 문서](./docs/02-architecture/architecture.md)를 참고하세요.
 
 ```mermaid
 graph TD
