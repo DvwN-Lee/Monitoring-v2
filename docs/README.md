@@ -27,25 +27,25 @@ docs/
 
 프로젝트를 처음 접하는 경우, 다음 순서로 문서를 읽는 것을 권장합니다:
 
-1. **프로젝트 개요 파악** (5분)
+1. **프로젝트 개요 파악**
    - [루트 README.md](../README.md) - 프로젝트 소개 및 핵심 기능
 
-2. **요구사항 및 계획 이해** (10분)
+2. **요구사항 및 계획 이해**
    - [01-planning/requirements.md](01-planning/requirements.md) - 기능 요구사항
    - [01-planning/project-plan.md](01-planning/project-plan.md) - 5주 개발 계획
 
-3. **시스템 설계 확인** (15분)
+3. **시스템 설계 확인**
    - [02-architecture/architecture.md](02-architecture/architecture.md) - 시스템 아키텍처
    - [02-architecture/adr/](02-architecture/adr/) - 주요 기술 결정 기록
 
-4. **구현 과정 살펴보기** (선택적)
+4. **구현 과정 살펴보기** (선택)
    - [03-implementation/week1/](03-implementation/week1/) - 인프라 구축
    - [03-implementation/week2/](03-implementation/week2/) - CI/CD 파이프라인
    - [03-implementation/week3/](03-implementation/week3/) - 모니터링 시스템
    - [03-implementation/week4/](03-implementation/week4/) - Istio 서비스 메시
    - [03-implementation/week5/](03-implementation/week5/) - 최종 완성
 
-5. **최종 성과 확인** (10분)
+5. **최종 성과 확인**
    - [05-performance/week5-performance-analysis.md](05-performance/week5-performance-analysis.md) - 성능 측정 결과
    - [07-retrospective/project-retrospective.md](07-retrospective/project-retrospective.md) - 프로젝트 회고
 
