@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateAuthStatus();
         if (path === '/') {
             await loadPosts();
+            setupCategoryTabs();
         } else if (path.startsWith('/posts/') && path.endsWith('/edit')) {
             await setupPostForm('edit', params.id);
         } else if (path === '/posts/new') {
@@ -208,6 +209,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (getUsernameFromToken() !== post.author) { alert('작성자만 수정할 수 있습니다.'); window.location.hash = `#/posts/${id}`; return; }
                 titleEl.value = post.title;
                 contentEl.value = post.content;
+                // 카테고리 선택 복원
+                const categoryRadio = document.querySelector(`input[name="category"][value="${post.category.id}"]`);
+                if (categoryRadio) categoryRadio.checked = true;
             } catch (_) { errorEl.textContent = '게시물을 불러오지 못했습니다.'; }
         } else {
             h2.textContent = '글 작성';
@@ -219,7 +223,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('post-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             errorEl.textContent = '';
-            const payload = { title: (titleEl.value || '').trim(), content: (contentEl.value || '').trim() };
+            const selectedCategory = document.querySelector('input[name="category"]:checked');
+            if (!selectedCategory) { errorEl.textContent = '카테고리를 선택하세요.'; return; }
+            const payload = {
+                title: (titleEl.value || '').trim(),
+                content: (contentEl.value || '').trim(),
+                category_id: parseInt(selectedCategory.value)
+            };
             if (!payload.title || !payload.content) { errorEl.textContent = '제목/내용을 입력하세요.'; return; }
             try {
                 let url = '/api/posts', method = 'POST';
@@ -237,20 +247,42 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // 카테고리 탭 설정
+    const setupCategoryTabs = () => {
+        const tabs = document.querySelectorAll('.category-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', async () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const category = tab.getAttribute('data-category');
+                await loadPosts(category);
+            });
+        });
+    };
+
     // 데이터 로딩
-    const loadPosts = async () => {
+    const loadPosts = async (categorySlug = '') => {
         try {
-            const response = await fetch('/api/posts');
+            const url = categorySlug ? `/api/posts?category=${categorySlug}` : '/api/posts';
+            const response = await fetch(url);
             if (!response.ok) throw new Error('Network response was not ok');
             const posts = await response.json();
             const container = document.getElementById('posts-container');
             container.innerHTML = '';
+            if (posts.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #777; padding: 40px;">게시물이 없습니다.</p>';
+                return;
+            }
             posts.forEach(post => {
                 const li = document.createElement('li');
                 li.className = 'post-list-item';
+                const categoryBadge = `<span class="category-badge ${post.category.slug}">${post.category.name}</span>`;
                 li.innerHTML = `
                     <div class="post-list-header">
-                        <h3 class="post-title"><a href="#/posts/${post.id}">${post.title}</a></h3>
+                        <h3 class="post-title">
+                            <a href="#/posts/${post.id}">${post.title}</a>
+                            ${categoryBadge}
+                        </h3>
                         <span class="post-author">by ${post.author}</span>
                     </div>
                     <div class="post-excerpt">${(post.excerpt || '').replace(/</g, '&lt;')}</div>
@@ -270,10 +302,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Network response was not ok');
             const post = await response.json();
             const container = document.getElementById('post-detail-container');
+            const categoryBadge = `<span class="category-badge ${post.category.slug}">${post.category.name}</span>`;
             container.innerHTML = `
                 <div class="post-detail-header">
                     <div class="post-header-left">
-                        <h2 class="post-title">${post.title}</h2>
+                        <h2 class="post-title">${post.title} ${categoryBadge}</h2>
                         <span class="meta">by ${post.author}</span>
                     </div>
                     <div class="post-actions" id="post-actions"></div>

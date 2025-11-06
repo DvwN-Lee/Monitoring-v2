@@ -217,3 +217,106 @@ footer {
     color: #e53e3e;
     text-align: center;
 }
+
+/* 카테고리 탭 스타일 */
+.category-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 12px;
+}
+
+.category-tab {
+    background: transparent;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #777;
+    border-radius: 6px 6px 0 0;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.category-tab:hover {
+    color: var(--primary-color);
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.category-tab.active {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.category-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary-color);
+}
+
+/* 카테고리 배지 스타일 */
+.category-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: white;
+    margin-left: 8px;
+}
+
+.category-badge.tech-stack {
+    background: #3b82f6;
+}
+
+.category-badge.troubleshooting {
+    background: #f59e0b;
+}
+
+.category-badge.test {
+    background: #10b981;
+}
+
+/* 라디오 버튼 그룹 스타일 */
+.radio-group {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.category-label {
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.radio-label input[type="radio"] {
+    cursor: pointer;
+    margin: 0;
+    width: 18px;
+    height: 18px;
+}
+
+.radio-label span {
+    user-select: none;
+}
