@@ -1,6 +1,4 @@
-console.log('[DEBUG] app.js loaded');
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('[DEBUG] DOMContentLoaded event fired');
     const mainContent = document.getElementById('main-content');
 
     // 전역 상태
@@ -43,21 +41,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const router = () => {
         const path = window.location.hash.slice(1) || '/';
-        console.log('[DEBUG] router called with path:', path);
 
         if (path === '/') {
-            console.log('[DEBUG] routing to root');
             routes['/']();
         } else if (path === '/posts/new') {
-            console.log('[DEBUG] routing to new post');
             routes['/posts/new']('create');
         } else if (path.match(/^\/posts\/\d+$/)) {
             const id = path.split('/')[2];
-            console.log('[DEBUG] routing to post detail:', id);
             routes['/posts/:id'](id);
         } else if (path.match(/^\/posts\/\d+\/edit$/)) {
             const id = path.split('/')[2];
-            console.log('[DEBUG] routing to edit post:', id);
             routes['/posts/:id/edit']('edit', id);
         }
 
@@ -202,15 +195,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 게시물 목록 로드
     async function loadPostList() {
-        console.log('[DEBUG] loadPostList started');
         renderTemplate('post-list-template');
-        console.log('[DEBUG] template rendered');
         await loadCategoryCounts();
-        console.log('[DEBUG] category counts loaded');
         await loadPosts();
-        console.log('[DEBUG] posts loaded');
         setupCategoryTabs();
-        console.log('[DEBUG] category tabs setup complete');
     }
 
     const setupCategoryTabs = () => {
