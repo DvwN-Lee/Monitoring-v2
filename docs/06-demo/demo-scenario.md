@@ -22,7 +22,7 @@
 
 ## 데모 준비 사항
 
-### 사전 준비 (데모 30분 전)
+### 사전 준비
 
 1. **시스템 상태 확인**:
 ```bash
@@ -71,9 +71,9 @@ kubectl logs -n titanium-prod -l app=load-generator -c load-generator --tail=10
 
 ---
 
-## 데모 시나리오 (25분)
+## 데모 시나리오
 
-### 1부: 프로젝트 소개 (3분)
+### 1부: 프로젝트 소개
 
 **화면**: 프로젝트 README 또는 발표 자료
 
@@ -98,7 +98,7 @@ kubectl logs -n titanium-prod -l app=load-generator -c load-generator --tail=10
 
 ---
 
-### 2부: CI/CD 파이프라인 시연 (5분)
+### 2부: CI/CD 파이프라인 시연
 
 **화면**: GitHub Actions + 터미널
 
@@ -146,7 +146,7 @@ while true; do clear; kubectl get pods -n titanium-prod; sleep 2; done
 
 ---
 
-### 3부: 모니터링 시스템 시연 (5분)
+### 3부: 모니터링 시스템 시연
 
 **화면**: Grafana 대시보드
 
@@ -231,7 +231,7 @@ echo "부하 테스트 완료 (100개 요청 전송)"
 
 ---
 
-### 4부: 보안 및 서비스 메시 (3분)
+### 4부: 보안 및 서비스 메시
 
 **화면**: 터미널 + 발표 자료
 
@@ -259,7 +259,7 @@ kubectl get pods -n titanium-prod -o jsonpath='{range .items[*]}{.metadata.name}
 
 ---
 
-### 5부: 에러 시나리오 및 모니터링 (5분)
+### 5부: 에러 시나리오 및 모니터링
 
 **화면**: 터미널 + Grafana
 
@@ -370,7 +370,7 @@ done
 
 ---
 
-### 6부: 고가용성 및 자동 복구 (4분)
+### 6부: 고가용성 및 자동 복구
 
 **화면**: 터미널 + Grafana
 
@@ -417,7 +417,7 @@ done
 
 ---
 
-## 데모 마무리 (1분)
+## 데모 마무리
 
 **화면**: 프로젝트 성과 슬라이드
 
