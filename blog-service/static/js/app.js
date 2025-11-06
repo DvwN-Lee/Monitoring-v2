@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // 게시물 목록 로드
-    const loadPostList = async () => {
+    async function loadPostList() {
         console.log('[DEBUG] loadPostList started');
         renderTemplate('post-list-template');
         console.log('[DEBUG] template rendered');
@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('[DEBUG] posts loaded');
         setupCategoryTabs();
         console.log('[DEBUG] category tabs setup complete');
-    };
+    }
 
     const setupCategoryTabs = () => {
         document.querySelectorAll('.category-tab').forEach(tab => {
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // 게시물 상세
-    const showPostDetail = async (id) => {
+    async function showPostDetail(id) {
         renderTemplate('post-detail-template');
         try {
             const res = await fetch(`/api/posts/${id}`);
@@ -325,10 +325,10 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('게시물 상세 로드 실패:', err);
             mainContent.innerHTML = '<div class="view-container"><p>게시물을 불러올 수 없습니다.</p></div>';
         }
-    };
+    }
 
     // 게시물 작성/수정 폼
-    const showPostForm = async (mode, id) => {
+    async function showPostForm(mode, id) {
         if (!getToken()) {
             alert('로그인이 필요합니다.');
             showLoginModal();
@@ -400,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 errorEl.textContent = '서버와 통신할 수 없습니다.';
             }
         };
-    };
+    }
 
     // 초기화
     window.addEventListener('hashchange', router);
