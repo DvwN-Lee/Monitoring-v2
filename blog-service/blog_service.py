@@ -208,10 +208,12 @@ class UserRegister(BaseModel):
 class PostCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=120)
     content: str = Field(..., min_length=1, max_length=20000)
+    category_id: int = Field(..., ge=1, le=3)
 
 class PostUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=120)
     content: Optional[str] = Field(None, min_length=1, max_length=20000)
+    category_id: Optional[int] = Field(None, ge=1, le=3)
 
 # --- 인증 유틸 ---
 async def require_user(request: Request) -> str:
@@ -235,29 +237,56 @@ async def require_user(request: Request) -> str:
 
 # --- API 핸들러 함수 ---
 @app.get("/api/posts")
-async def handle_get_posts(offset: int = Query(0, ge=0), limit: int = Query(20, ge=1, le=100)):
-    """모든 블로그 게시물 목록을 반환합니다(최신순, 페이지네이션)."""
+async def handle_get_posts(
+    offset: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
+    category: Optional[str] = Query(None)
+):
+    """모든 블로그 게시물 목록을 반환합니다(최신순, 페이지네이션, 카테고리 필터링)."""
     conn = get_db_connection()
     try:
+        # Build query based on category filter
+        base_query = """
+            SELECT p.id, p.title, p.content, p.author, p.created_at, p.updated_at, p.category_id,
+                   c.name as category_name, c.slug as category_slug
+            FROM posts p
+            LEFT JOIN categories c ON p.category_id = c.id
+        """
+        where_clause = ""
+        params = []
+
+        if category:
+            where_clause = " WHERE c.slug = "
+            if USE_POSTGRES:
+                where_clause += "%s"
+                params.append(category)
+            else:
+                where_clause += "?"
+                params.append(category)
+
+        order_limit = " ORDER BY p.id DESC LIMIT "
+        if USE_POSTGRES:
+            order_limit += "%s OFFSET %s"
+            params.extend([limit, offset])
+        else:
+            order_limit += "? OFFSET ?"
+            params.extend([limit, offset])
+
+        full_query = base_query + where_clause + order_limit
+
         if USE_POSTGRES:
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                cursor.execute(
-                    "SELECT id, title, content, author, created_at, updated_at FROM posts ORDER BY id DESC LIMIT %s OFFSET %s",
-                    (limit, offset)
-                )
+                cursor.execute(full_query, tuple(params))
                 rows = cursor.fetchall()
-                items = [row_to_post(dict(r)) for r in rows]
+                items = [dict(r) for r in rows]
         else:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
-            cursor.execute(
-                "SELECT id, title, content, author, created_at, updated_at FROM posts ORDER BY id DESC LIMIT ? OFFSET ?",
-                (limit, offset)
-            )
+            cursor.execute(full_query, tuple(params))
             rows = cursor.fetchall()
-            items = [row_to_post(r) for r in rows]
+            items = [dict(r) for r in rows]
 
-        # 목록 응답은 요약 정보 위주로 반환 + 발췌(excerpt)
+        # 목록 응답은 요약 정보 위주로 반환 + 발췌(excerpt) + 카테고리 정보
         summaries = []
         for p in items:
             content = (p.get("content") or "").replace("\r", " ").replace("\n", " ")
@@ -266,8 +295,13 @@ async def handle_get_posts(offset: int = Query(0, ge=0), limit: int = Query(20, 
                 "id": p["id"],
                 "title": p["title"],
                 "author": p["author"],
-                "created_at": p["created_at"],
+                "created_at": p["created_at"].isoformat() if hasattr(p["created_at"], 'isoformat') else str(p["created_at"]),
                 "excerpt": excerpt,
+                "category": {
+                    "id": p["category_id"],
+                    "name": p["category_name"],
+                    "slug": p["category_slug"]
+                }
             })
         return JSONResponse(content=summaries)
     finally:
@@ -278,27 +312,46 @@ async def handle_get_post_by_id(post_id: int):
     """ID로 특정 게시물을 찾아 반환합니다."""
     conn = get_db_connection()
     try:
+        query = """
+            SELECT p.id, p.title, p.content, p.author, p.created_at, p.updated_at, p.category_id,
+                   c.name as category_name, c.slug as category_slug
+            FROM posts p
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.id = """
+
         if USE_POSTGRES:
+            query += "%s"
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                cursor.execute(
-                    "SELECT id, title, content, author, created_at, updated_at FROM posts WHERE id = %s",
-                    (post_id,)
-                )
+                cursor.execute(query, (post_id,))
                 row = cursor.fetchone()
                 if not row:
                     raise HTTPException(status_code=404, detail={'error': 'Post not found'})
-                return JSONResponse(content=row_to_post(dict(row)))
+                post_dict = dict(row)
         else:
+            query += "?"
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
-            cursor.execute(
-                "SELECT id, title, content, author, created_at, updated_at FROM posts WHERE id = ?",
-                (post_id,)
-            )
+            cursor.execute(query, (post_id,))
             row = cursor.fetchone()
             if not row:
                 raise HTTPException(status_code=404, detail={'error': 'Post not found'})
-            return JSONResponse(content=row_to_post(row))
+            post_dict = dict(row)
+
+        # Format response with category info
+        response = {
+            "id": post_dict["id"],
+            "title": post_dict["title"],
+            "content": post_dict["content"],
+            "author": post_dict["author"],
+            "created_at": post_dict["created_at"].isoformat() if hasattr(post_dict["created_at"], 'isoformat') else str(post_dict["created_at"]),
+            "updated_at": post_dict["updated_at"].isoformat() if hasattr(post_dict["updated_at"], 'isoformat') else str(post_dict["updated_at"]),
+            "category": {
+                "id": post_dict["category_id"],
+                "name": post_dict["category_name"],
+                "slug": post_dict["category_slug"]
+            }
+        }
+        return JSONResponse(content=response)
     finally:
         conn.close()
 
@@ -329,25 +382,38 @@ async def create_post(request: Request, payload: PostCreate, username: str = Dep
         if USE_POSTGRES:
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
                 cursor.execute(
-                    "INSERT INTO posts (title, content, author) VALUES (%s, %s, %s) RETURNING id, created_at, updated_at",
-                    (payload.title, payload.content, username)
+                    "INSERT INTO posts (title, content, author, category_id) VALUES (%s, %s, %s, %s) RETURNING id, created_at, updated_at",
+                    (payload.title, payload.content, username, payload.category_id)
                 )
                 result = cursor.fetchone()
                 post_id = result["id"]
                 created_at = result["created_at"].isoformat()
                 updated_at = result["updated_at"].isoformat()
                 conn.commit()
+
+                # Get category info
+                cursor.execute("SELECT name, slug FROM categories WHERE id = %s", (payload.category_id,))
+                cat = cursor.fetchone()
+                category_name = cat["name"] if cat else None
+                category_slug = cat["slug"] if cat else None
         else:
             cursor = conn.cursor()
             now = datetime.utcnow().isoformat()
             cursor.execute(
-                "INSERT INTO posts (title, content, author, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-                (payload.title, payload.content, username, now, now)
+                "INSERT INTO posts (title, content, author, category_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+                (payload.title, payload.content, username, payload.category_id, now, now)
             )
             post_id = cursor.lastrowid
             created_at = now
             updated_at = now
             conn.commit()
+
+            # Get category info
+            conn.row_factory = sqlite3.Row
+            cursor.execute("SELECT name, slug FROM categories WHERE id = ?", (payload.category_id,))
+            cat = cursor.fetchone()
+            category_name = cat["name"] if cat else None
+            category_slug = cat["slug"] if cat else None
 
         return JSONResponse(content={
             "id": post_id,
@@ -356,6 +422,11 @@ async def create_post(request: Request, payload: PostCreate, username: str = Dep
             "author": username,
             "created_at": created_at,
             "updated_at": updated_at,
+            "category": {
+                "id": payload.category_id,
+                "name": category_name,
+                "slug": category_slug
+            }
         })
     finally:
         conn.close()
@@ -381,6 +452,9 @@ async def update_post_partial(post_id: int, request: Request, payload: PostUpdat
                 if payload.content is not None:
                     fields.append("content = %s")
                     params.append(payload.content)
+                if payload.category_id is not None:
+                    fields.append("category_id = %s")
+                    params.append(payload.category_id)
                 if not fields:
                     return JSONResponse(content={"message": "No changes"})
 
@@ -394,11 +468,14 @@ async def update_post_partial(post_id: int, request: Request, payload: PostUpdat
                 conn.commit()
 
                 cursor.execute(
-                    "SELECT id, title, content, author, created_at, updated_at FROM posts WHERE id = %s",
+                    """SELECT p.id, p.title, p.content, p.author, p.created_at, p.updated_at, p.category_id,
+                              c.name as category_name, c.slug as category_slug
+                       FROM posts p LEFT JOIN categories c ON p.category_id = c.id
+                       WHERE p.id = %s""",
                     (post_id,)
                 )
                 out = cursor.fetchone()
-                return JSONResponse(content=row_to_post(dict(out)))
+                post_dict = dict(out)
         else:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
@@ -417,6 +494,9 @@ async def update_post_partial(post_id: int, request: Request, payload: PostUpdat
             if payload.content is not None:
                 fields.append("content = ?")
                 params.append(payload.content)
+            if payload.category_id is not None:
+                fields.append("category_id = ?")
+                params.append(payload.category_id)
             if not fields:
                 return JSONResponse(content={"message": "No changes"})
 
@@ -427,9 +507,64 @@ async def update_post_partial(post_id: int, request: Request, payload: PostUpdat
             cursor.execute(f"UPDATE posts SET {', '.join(fields)} WHERE id = ?", tuple(params))
             conn.commit()
 
-            cursor.execute("SELECT id, title, content, author, created_at, updated_at FROM posts WHERE id = ?", (post_id,))
+            cursor.execute(
+                """SELECT p.id, p.title, p.content, p.author, p.created_at, p.updated_at, p.category_id,
+                          c.name as category_name, c.slug as category_slug
+                   FROM posts p LEFT JOIN categories c ON p.category_id = c.id
+                   WHERE p.id = ?""",
+                (post_id,)
+            )
             out = cursor.fetchone()
-            return JSONResponse(content=row_to_post(out))
+            post_dict = dict(out)
+
+        # Format response with category info
+        response = {
+            "id": post_dict["id"],
+            "title": post_dict["title"],
+            "content": post_dict["content"],
+            "author": post_dict["author"],
+            "created_at": post_dict["created_at"].isoformat() if hasattr(post_dict["created_at"], 'isoformat') else str(post_dict["created_at"]),
+            "updated_at": post_dict["updated_at"].isoformat() if hasattr(post_dict["updated_at"], 'isoformat') else str(post_dict["updated_at"]),
+            "category": {
+                "id": post_dict["category_id"],
+                "name": post_dict["category_name"],
+                "slug": post_dict["category_slug"]
+            }
+        }
+        return JSONResponse(content=response)
+    finally:
+        conn.close()
+
+@app.get("/api/categories")
+async def handle_get_categories():
+    """모든 카테고리 목록과 각 카테고리별 게시물 수를 반환합니다."""
+    conn = get_db_connection()
+    try:
+        if USE_POSTGRES:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("""
+                    SELECT c.id, c.name, c.slug, COUNT(p.id) as post_count
+                    FROM categories c
+                    LEFT JOIN posts p ON c.id = p.category_id
+                    GROUP BY c.id, c.name, c.slug
+                    ORDER BY c.id
+                """)
+                rows = cursor.fetchall()
+                categories = [dict(r) for r in rows]
+        else:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT c.id, c.name, c.slug, COUNT(p.id) as post_count
+                FROM categories c
+                LEFT JOIN posts p ON c.id = p.category_id
+                GROUP BY c.id, c.name, c.slug
+                ORDER BY c.id
+            """)
+            rows = cursor.fetchall()
+            categories = [dict(r) for r in rows]
+
+        return JSONResponse(content=categories)
     finally:
         conn.close()
 
