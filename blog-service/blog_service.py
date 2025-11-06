@@ -263,11 +263,20 @@ class PostUpdate(BaseModel):
     category_id: Optional[int] = Field(None, gt=0)
 
 # --- 인증 유틸 ---
+SKIP_AUTH = os.getenv('SKIP_AUTH', 'false').lower() == 'true'
+
 async def require_user(request: Request) -> str:
     auth_header = request.headers.get('Authorization', '')
     if not auth_header.startswith('Bearer '):
         raise HTTPException(status_code=401, detail='Authorization header missing or invalid')
     token = auth_header.split(' ')[1]
+
+    # 로컬 테스트 모드: 간단한 토큰으로 사용자 이름 추출
+    if SKIP_AUTH or not USE_POSTGRES:
+        if token.startswith('session-token-for-'):
+            username = token.replace('session-token-for-', '')
+            return username
+
     verify_url = f"{AUTH_SERVICE_URL}/verify"
     try:
         async with aiohttp.ClientSession() as session:
@@ -477,8 +486,9 @@ async def create_post(request: Request, payload: PostCreate, username: str = Dep
 
             # Get category info
             conn.row_factory = sqlite3.Row
-            cursor.execute("SELECT name, slug FROM categories WHERE id = ?", (payload.category_id,))
-            cat = cursor.fetchone()
+            cat_cursor = conn.cursor()
+            cat_cursor.execute("SELECT name, slug FROM categories WHERE id = ?", (payload.category_id,))
+            cat = cat_cursor.fetchone()
             category_name = cat["name"] if cat else None
             category_slug = cat["slug"] if cat else None
 
