@@ -133,12 +133,32 @@ def init_db():
         if USE_POSTGRES:
             conn = get_db_connection()
             with conn.cursor() as cursor:
+                # Create categories table
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS categories (
+                        id SERIAL PRIMARY KEY,
+                        name VARCHAR(50) NOT NULL UNIQUE,
+                        slug VARCHAR(50) NOT NULL UNIQUE
+                    )
+                ''')
+                # Insert default categories if not exist
+                cursor.execute("SELECT COUNT(*) FROM categories")
+                if cursor.fetchone()[0] == 0:
+                    cursor.execute('''
+                        INSERT INTO categories (id, name, slug) VALUES
+                        (1, '기술 스택', 'tech-stack'),
+                        (2, 'Troubleshooting', 'troubleshooting'),
+                        (3, 'Test', 'test')
+                    ''')
+
+                # Create posts table
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS posts (
                         id SERIAL PRIMARY KEY,
                         title VARCHAR(200) NOT NULL,
                         content TEXT NOT NULL,
                         author VARCHAR(100) NOT NULL,
+                        category_id INTEGER NOT NULL REFERENCES categories(id),
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
@@ -149,6 +169,9 @@ def init_db():
                 cursor.execute('''
                     CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC)
                 ''')
+                cursor.execute('''
+                    CREATE INDEX IF NOT EXISTS idx_posts_category_id ON posts(category_id)
+                ''')
                 conn.commit()
             conn.close()
             logger.info("PostgreSQL blog database initialized successfully")
@@ -156,15 +179,39 @@ def init_db():
             os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
             with sqlite3.connect(DATABASE_PATH) as conn:
                 cursor = conn.cursor()
+                # Create categories table
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS categories (
+                        id INTEGER PRIMARY KEY,
+                        name TEXT NOT NULL UNIQUE,
+                        slug TEXT NOT NULL UNIQUE
+                    )
+                ''')
+                # Insert default categories if not exist
+                cursor.execute("SELECT COUNT(*) FROM categories")
+                if cursor.fetchone()[0] == 0:
+                    cursor.execute('''
+                        INSERT INTO categories (id, name, slug) VALUES
+                        (1, '기술 스택', 'tech-stack'),
+                        (2, 'Troubleshooting', 'troubleshooting'),
+                        (3, 'Test', 'test')
+                    ''')
+
+                # Create posts table
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS posts (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         title TEXT NOT NULL,
                         content TEXT NOT NULL,
                         author TEXT NOT NULL,
+                        category_id INTEGER NOT NULL,
                         created_at TEXT NOT NULL,
-                        updated_at TEXT NOT NULL
+                        updated_at TEXT NOT NULL,
+                        FOREIGN KEY (category_id) REFERENCES categories(id)
                     )
+                ''')
+                cursor.execute('''
+                    CREATE INDEX IF NOT EXISTS idx_posts_category_id ON posts(category_id)
                 ''')
                 conn.commit()
             logger.info("SQLite blog database initialized successfully")
