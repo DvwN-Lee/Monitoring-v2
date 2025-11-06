@@ -54,6 +54,12 @@
     <template id="post-list-template">
         <div class="view-container">
             <h2>최신 글</h2>
+            <div class="category-tabs">
+                <button class="category-tab active" data-category="">전체</button>
+                <button class="category-tab" data-category="tech-stack">기술 스택</button>
+                <button class="category-tab" data-category="troubleshooting">Troubleshooting</button>
+                <button class="category-tab" data-category="test">Test</button>
+            </div>
             <ul id="posts-container" class="post-list">
                 </ul>
         </div>
@@ -71,6 +77,21 @@
             <form id="post-form" class="form-container">
                 <input type="text" id="post-title" placeholder="제목 (1~120자)" required maxlength="120">
                 <textarea id="post-content" placeholder="내용 (1~20000자)" required></textarea>
+                <div class="radio-group">
+                    <label class="category-label">카테고리:</label>
+                    <label class="radio-label">
+                        <input type="radio" name="category" value="1" required>
+                        <span>기술 스택</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="category" value="2">
+                        <span>Troubleshooting</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="category" value="3">
+                        <span>Test</span>
+                    </label>
+                </div>
                 <button type="submit">저장</button>
                 <button type="button" id="post-cancel" class="secondary-btn">취소</button>
                 <p id="post-error" class="error-message"></p>
