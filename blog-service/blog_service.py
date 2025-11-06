@@ -208,12 +208,12 @@ class UserRegister(BaseModel):
 class PostCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=120)
     content: str = Field(..., min_length=1, max_length=20000)
-    category_id: int = Field(..., ge=1, le=3)
+    category_id: int = Field(..., gt=0)
 
 class PostUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=120)
     content: Optional[str] = Field(None, min_length=1, max_length=20000)
-    category_id: Optional[int] = Field(None, ge=1, le=3)
+    category_id: Optional[int] = Field(None, gt=0)
 
 # --- 인증 유틸 ---
 async def require_user(request: Request) -> str:
@@ -234,6 +234,22 @@ async def require_user(request: Request) -> str:
                 return username
     except aiohttp.ClientError:
         raise HTTPException(status_code=502, detail='Auth service not reachable')
+
+def validate_category_id(category_id: int) -> bool:
+    """Validate that category_id exists in the database."""
+    conn = get_db_connection()
+    try:
+        if USE_POSTGRES:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT id FROM categories WHERE id = %s", (category_id,))
+                result = cursor.fetchone()
+        else:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM categories WHERE id = ?", (category_id,))
+            result = cursor.fetchone()
+        return result is not None
+    finally:
+        conn.close()
 
 # --- API 핸들러 함수 ---
 @app.get("/api/posts")
@@ -377,6 +393,10 @@ async def handle_register(user_register: UserRegister):
 
 @app.post("/api/posts", status_code=201)
 async def create_post(request: Request, payload: PostCreate, username: str = Depends(require_user)):
+    # Validate category_id exists
+    if not validate_category_id(payload.category_id):
+        raise HTTPException(status_code=422, detail=f'Category with id {payload.category_id} does not exist')
+
     conn = get_db_connection()
     try:
         if USE_POSTGRES:
@@ -433,6 +453,10 @@ async def create_post(request: Request, payload: PostCreate, username: str = Dep
 
 @app.patch("/api/posts/{post_id}")
 async def update_post_partial(post_id: int, request: Request, payload: PostUpdate, username: str = Depends(require_user)):
+    # Validate category_id if provided
+    if payload.category_id is not None and not validate_category_id(payload.category_id):
+        raise HTTPException(status_code=422, detail=f'Category with id {payload.category_id} does not exist')
+
     conn = get_db_connection()
     try:
         if USE_POSTGRES:
