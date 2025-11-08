@@ -6,3 +6,5 @@ aiohttp
 psycopg2-binary==2.9.9
 prometheus-client
 prometheus-fastapi-instrumentator
+alembic
+sqlalchemy
