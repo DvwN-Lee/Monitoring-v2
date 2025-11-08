@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const errorEl = document.getElementById('login-error');
 
         try {
-            const res = await fetch('/api/login', {
+            const res = await fetch('/blog/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const errorEl = document.getElementById('signup-error');
 
         try {
-            const res = await fetch('/api/register', {
+            const res = await fetch('/blog/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, email, password })
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 카테고리 카운트 가져오기
     const loadCategoryCounts = async () => {
         try {
-            const res = await fetch('/api/categories');
+            const res = await fetch('/blog/api/categories');
             const cats = await res.json();
             categoryCounts.all = cats.reduce((sum, c) => sum + c.post_count, 0);
             cats.forEach(c => {
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadPosts = async () => {
         try {
-            const url = currentCategory ? `/api/posts?category=${currentCategory}` : '/api/posts';
+            const url = currentCategory ? `/blog/api/posts?category=${currentCategory}` : '/blog/api/posts';
             const res = await fetch(url);
             const posts = await res.json();
             renderPosts(posts);
@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function showPostDetail(id) {
         renderTemplate('post-detail-template');
         try {
-            const res = await fetch(`/api/posts/${id}`);
+            const res = await fetch(`/blog/api/posts/${id}`);
             const post = await res.json();
 
             document.getElementById('detail-title').innerHTML = `${post.title} <span class="category-badge ${post.category.slug}">${post.category.name}</span>`;
@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('edit-btn').onclick = () => { window.location.hash = `/posts/${id}/edit`; };
                 document.getElementById('delete-btn').onclick = async () => {
                     if (!confirm('삭제하시겠습니까?')) return;
-                    const res = await fetch(`/api/posts/${id}`, { method: 'DELETE', headers: authHeader() });
+                    const res = await fetch(`/blog/api/posts/${id}`, { method: 'DELETE', headers: authHeader() });
                     if (res.status === 204) { alert('삭제되었습니다.'); window.location.hash = '/'; }
                     else { alert('삭제 실패'); }
                 };
@@ -389,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mode === 'edit') {
             formTitle.textContent = '글 수정';
             try {
-                const res = await fetch(`/api/posts/${id}`);
+                const res = await fetch(`/blog/api/posts/${id}`);
                 const post = await res.json();
                 if (getUsernameFromToken() !== post.author) {
                     alert('작성자만 수정할 수 있습니다.');
@@ -427,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                const url = mode === 'edit' ? `/api/posts/${id}` : '/api/posts';
+                const url = mode === 'edit' ? `/blog/api/posts/${id}` : '/blog/api/posts';
                 const method = mode === 'edit' ? 'PATCH' : 'POST';
                 const res = await fetch(url, {
                     method,
