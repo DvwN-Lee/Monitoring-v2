@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 전역 상태
     let currentPage = 1;
     let currentCategory = '';
-    let categoryCounts = { all: 0, 'tech-stack': 0, 'troubleshooting': 0, 'test': 0 };
+    let categoryCounts = { all: 0, 'infrastructure': 0, 'cicd': 0, 'service-mesh': 0, 'monitoring': 0, 'troubleshooting': 0, 'test': 0 };
     const postsPerPage = 5;
 
     // JWT helpers
@@ -17,7 +17,16 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch { return null; }
     };
     const getUsernameFromToken = () => {
-        const p = parseJwt(getToken());
+        const token = getToken();
+        if (!token) return '';
+
+        // 로컬 테스트용 간단한 토큰 처리
+        if (token.startsWith('session-token-for-')) {
+            return token.replace('session-token-for-', '');
+        }
+
+        // JWT 토큰 처리
+        const p = parseJwt(token);
         return (p && p.username) ? p.username : '';
     };
     const authHeader = () => ({ 'Authorization': `Bearer ${getToken()}` });
@@ -183,33 +192,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateCategoryCountsUI = () => {
         const countAll = document.getElementById('count-all');
-        const countTechStack = document.getElementById('count-tech-stack');
+        const countInfrastructure = document.getElementById('count-infrastructure');
+        const countCICD = document.getElementById('count-cicd');
+        const countServiceMesh = document.getElementById('count-service-mesh');
+        const countMonitoring = document.getElementById('count-monitoring');
         const countTroubleshooting = document.getElementById('count-troubleshooting');
         const countTest = document.getElementById('count-test');
 
         if (countAll) countAll.innerText = `(${categoryCounts.all})`;
-        if (countTechStack) countTechStack.innerText = `(${categoryCounts['tech-stack']})`;
+        if (countInfrastructure) countInfrastructure.innerText = `(${categoryCounts['infrastructure']})`;
+        if (countCICD) countCICD.innerText = `(${categoryCounts['cicd']})`;
+        if (countServiceMesh) countServiceMesh.innerText = `(${categoryCounts['service-mesh']})`;
+        if (countMonitoring) countMonitoring.innerText = `(${categoryCounts['monitoring']})`;
         if (countTroubleshooting) countTroubleshooting.innerText = `(${categoryCounts['troubleshooting']})`;
         if (countTest) countTest.innerText = `(${categoryCounts['test']})`;
     };
 
     // 게시물 목록 로드
     async function loadPostList() {
+        currentCategory = '';  // 카테고리 필터 초기화
+        currentPage = 1;        // 페이지도 첫 페이지로 초기화
         renderTemplate('post-list-template');
+
         await loadCategoryCounts();
         await loadPosts();
         setupCategoryTabs();
     }
 
     const setupCategoryTabs = () => {
-        document.querySelectorAll('.category-tab').forEach(tab => {
-            tab.addEventListener('click', async () => {
-                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+        const tabs = document.querySelectorAll('.category-tab');
+
+        tabs.forEach(tab => {
+            const category = tab.getAttribute('data-category') || '';
+
+            // currentCategory와 비교하여 active 클래스 설정
+            if (category === (currentCategory || '')) {
                 tab.classList.add('active');
-                currentCategory = tab.getAttribute('data-category') || '';
+            } else {
+                tab.classList.remove('active');
+            }
+
+            // onclick을 사용하여 중복 할당 방지
+            tab.onclick = async () => {
+                // 이미 활성화된 탭이면 아무것도 안함
+                if (category === currentCategory) return;
+
+                currentCategory = category;
                 currentPage = 1;
+
+                // UI 즉시 업데이트
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
                 await loadPosts();
-            });
+            };
         });
     };
 
@@ -293,7 +329,28 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('detail-title').innerHTML = `${post.title} <span class="category-badge ${post.category.slug}">${post.category.name}</span>`;
             document.getElementById('detail-category').innerHTML = '';
             document.getElementById('detail-author').textContent = `작성자: ${post.author}`;
-            document.getElementById('detail-content').innerHTML = post.content.replace(/\n/g, '<br>');
+
+            // Markdown 콘텐츠 렌더링 (XSS 방어 포함)
+            if (window.marked && window.DOMPurify) {
+                // highlight.js 통합 설정
+                if (window.hljs) {
+                    marked.setOptions({
+                        highlight: function(code, lang) {
+                            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                            return hljs.highlight(code, { language }).value;
+                        },
+                        breaks: true,
+                        gfm: true
+                    });
+                }
+                const rawHTML = marked.parse(post.content);
+                const cleanHTML = DOMPurify.sanitize(rawHTML);
+                document.getElementById('detail-content').innerHTML = cleanHTML;
+            } else if (window.marked) {
+                document.getElementById('detail-content').innerHTML = marked.parse(post.content);
+            } else {
+                document.getElementById('detail-content').innerHTML = post.content.replace(/\n/g, '<br>');
+            }
 
             document.getElementById('back-btn').onclick = () => { window.location.hash = '/'; };
 
@@ -388,6 +445,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 errorEl.textContent = '서버와 통신할 수 없습니다.';
             }
         };
+    }
+
+    // 블로그 제목 클릭 시 전체 게시글로 돌아가기
+    const blogTitleLink = document.getElementById('blog-title');
+    if (blogTitleLink) {
+        blogTitleLink.addEventListener('click', (e) => {
+            // 현재 카테고리가 설정되어 있으면 강제로 loadPostList 호출
+            if (currentCategory !== '') {
+                e.preventDefault();
+                window.location.hash = '/';
+                loadPostList();
+            }
+        });
     }
 
     // 초기화

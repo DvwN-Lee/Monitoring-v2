@@ -308,7 +308,7 @@ def validate_category_id(category_id: int) -> bool:
         conn.close()
 
 # --- API 핸들러 함수 ---
-@app.get("/api/posts")
+@app.get("/blog/api/posts")
 async def handle_get_posts(
     offset: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
@@ -379,7 +379,7 @@ async def handle_get_posts(
     finally:
         conn.close()
 
-@app.get("/api/posts/{post_id}")
+@app.get("/blog/api/posts/{post_id}")
 async def handle_get_post_by_id(post_id: int):
     """ID로 특정 게시물을 찾아 반환합니다."""
     conn = get_db_connection()
@@ -427,7 +427,7 @@ async def handle_get_post_by_id(post_id: int):
     finally:
         conn.close()
 
-@app.post("/api/login")
+@app.post("/blog/api/login")
 async def handle_login(user_login: UserLogin):
     """사용자 로그인을 처리합니다."""
     user = users_db.get(user_login.username)
@@ -435,7 +435,7 @@ async def handle_login(user_login: UserLogin):
         return JSONResponse(content={'token': f'session-token-for-{user_login.username}'})
     raise HTTPException(status_code=401, detail={'error': 'Invalid credentials'})
 
-@app.post("/api/register", status_code=201)
+@app.post("/blog/api/register", status_code=201)
 async def handle_register(user_register: UserRegister):
     """사용자 등록을 처리합니다."""
     if not user_register.username or not user_register.password:
@@ -447,7 +447,7 @@ async def handle_register(user_register: UserRegister):
     logger.info(f"New user registered: {user_register.username}")
     return JSONResponse(content={'message': 'Registration successful'})
 
-@app.post("/api/posts", status_code=201)
+@app.post("/blog/api/posts", status_code=201)
 async def create_post(request: Request, payload: PostCreate, username: str = Depends(require_user)):
     # Validate category_id exists
     if not validate_category_id(payload.category_id):
@@ -616,7 +616,7 @@ async def update_post_partial(post_id: int, request: Request, payload: PostUpdat
     finally:
         conn.close()
 
-@app.get("/api/categories")
+@app.get("/blog/api/categories")
 async def handle_get_categories():
     """모든 카테고리 목록과 각 카테고리별 게시물 수를 반환합니다."""
     conn = get_db_connection()
@@ -649,7 +649,7 @@ async def handle_get_categories():
     finally:
         conn.close()
 
-@app.delete("/api/posts/{post_id}", status_code=204)
+@app.delete("/blog/api/posts/{post_id}", status_code=204)
 async def delete_post(post_id: int, request: Request, username: str = Depends(require_user)):
     conn = get_db_connection()
     try:
