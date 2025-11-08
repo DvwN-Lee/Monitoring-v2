@@ -31,11 +31,11 @@ spec:
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
-              name: app-secrets
+              name: postgresql-secret
               key: POSTGRES_USER
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: app-secrets
+              name: postgresql-secret
               key: POSTGRES_PASSWORD
         # Remove BLOG_DATABASE_PATH (SQLite)
