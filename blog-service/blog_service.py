@@ -133,12 +133,32 @@ def init_db():
         if USE_POSTGRES:
             conn = get_db_connection()
             with conn.cursor() as cursor:
+                # Create categories table
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS categories (
+                        id SERIAL PRIMARY KEY,
+                        name VARCHAR(50) NOT NULL UNIQUE,
+                        slug VARCHAR(50) NOT NULL UNIQUE
+                    )
+                ''')
+                # Insert default categories if not exist
+                cursor.execute("SELECT COUNT(*) FROM categories")
+                if cursor.fetchone()[0] == 0:
+                    cursor.execute('''
+                        INSERT INTO categories (id, name, slug) VALUES
+                        (1, '기술 스택', 'tech-stack'),
+                        (2, 'Troubleshooting', 'troubleshooting'),
+                        (3, 'Test', 'test')
+                    ''')
+
+                # Create posts table
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS posts (
                         id SERIAL PRIMARY KEY,
                         title VARCHAR(200) NOT NULL,
                         content TEXT NOT NULL,
                         author VARCHAR(100) NOT NULL,
+                        category_id INTEGER NOT NULL REFERENCES categories(id),
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
@@ -149,6 +169,9 @@ def init_db():
                 cursor.execute('''
                     CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC)
                 ''')
+                cursor.execute('''
+                    CREATE INDEX IF NOT EXISTS idx_posts_category_id ON posts(category_id)
+                ''')
                 conn.commit()
             conn.close()
             logger.info("PostgreSQL blog database initialized successfully")
@@ -156,15 +179,39 @@ def init_db():
             os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
             with sqlite3.connect(DATABASE_PATH) as conn:
                 cursor = conn.cursor()
+                # Create categories table
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS categories (
+                        id INTEGER PRIMARY KEY,
+                        name TEXT NOT NULL UNIQUE,
+                        slug TEXT NOT NULL UNIQUE
+                    )
+                ''')
+                # Insert default categories if not exist
+                cursor.execute("SELECT COUNT(*) FROM categories")
+                if cursor.fetchone()[0] == 0:
+                    cursor.execute('''
+                        INSERT INTO categories (id, name, slug) VALUES
+                        (1, '기술 스택', 'tech-stack'),
+                        (2, 'Troubleshooting', 'troubleshooting'),
+                        (3, 'Test', 'test')
+                    ''')
+
+                # Create posts table
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS posts (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         title TEXT NOT NULL,
                         content TEXT NOT NULL,
                         author TEXT NOT NULL,
+                        category_id INTEGER NOT NULL,
                         created_at TEXT NOT NULL,
-                        updated_at TEXT NOT NULL
+                        updated_at TEXT NOT NULL,
+                        FOREIGN KEY (category_id) REFERENCES categories(id)
                     )
+                ''')
+                cursor.execute('''
+                    CREATE INDEX IF NOT EXISTS idx_posts_category_id ON posts(category_id)
                 ''')
                 conn.commit()
             logger.info("SQLite blog database initialized successfully")
@@ -208,17 +255,28 @@ class UserRegister(BaseModel):
 class PostCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=120)
     content: str = Field(..., min_length=1, max_length=20000)
+    category_id: int = Field(..., gt=0)
 
 class PostUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=120)
     content: Optional[str] = Field(None, min_length=1, max_length=20000)
+    category_id: Optional[int] = Field(None, gt=0)
 
 # --- 인증 유틸 ---
+SKIP_AUTH = os.getenv('SKIP_AUTH', 'false').lower() == 'true'
+
 async def require_user(request: Request) -> str:
     auth_header = request.headers.get('Authorization', '')
     if not auth_header.startswith('Bearer '):
         raise HTTPException(status_code=401, detail='Authorization header missing or invalid')
     token = auth_header.split(' ')[1]
+
+    # 로컬 테스트 모드: 간단한 토큰으로 사용자 이름 추출
+    if SKIP_AUTH or not USE_POSTGRES:
+        if token.startswith('session-token-for-'):
+            username = token.replace('session-token-for-', '')
+            return username
+
     verify_url = f"{AUTH_SERVICE_URL}/verify"
     try:
         async with aiohttp.ClientSession() as session:
@@ -233,31 +291,74 @@ async def require_user(request: Request) -> str:
     except aiohttp.ClientError:
         raise HTTPException(status_code=502, detail='Auth service not reachable')
 
-# --- API 핸들러 함수 ---
-@app.get("/api/posts")
-async def handle_get_posts(offset: int = Query(0, ge=0), limit: int = Query(20, ge=1, le=100)):
-    """모든 블로그 게시물 목록을 반환합니다(최신순, 페이지네이션)."""
+def validate_category_id(category_id: int) -> bool:
+    """Validate that category_id exists in the database."""
     conn = get_db_connection()
     try:
         if USE_POSTGRES:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT id FROM categories WHERE id = %s", (category_id,))
+                result = cursor.fetchone()
+        else:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM categories WHERE id = ?", (category_id,))
+            result = cursor.fetchone()
+        return result is not None
+    finally:
+        conn.close()
+
+# --- API 핸들러 함수 ---
+@app.get("/blog/api/posts")
+async def handle_get_posts(
+    offset: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
+    category: Optional[str] = Query(None)
+):
+    """모든 블로그 게시물 목록을 반환합니다(최신순, 페이지네이션, 카테고리 필터링)."""
+    conn = get_db_connection()
+    try:
+        # Build query based on category filter
+        base_query = """
+            SELECT p.id, p.title, p.content, p.author, p.created_at, p.updated_at, p.category_id,
+                   c.name as category_name, c.slug as category_slug
+            FROM posts p
+            LEFT JOIN categories c ON p.category_id = c.id
+        """
+        where_clause = ""
+        params = []
+
+        if category:
+            where_clause = " WHERE c.slug = "
+            if USE_POSTGRES:
+                where_clause += "%s"
+                params.append(category)
+            else:
+                where_clause += "?"
+                params.append(category)
+
+        order_limit = " ORDER BY p.id DESC LIMIT "
+        if USE_POSTGRES:
+            order_limit += "%s OFFSET %s"
+            params.extend([limit, offset])
+        else:
+            order_limit += "? OFFSET ?"
+            params.extend([limit, offset])
+
+        full_query = base_query + where_clause + order_limit
+
+        if USE_POSTGRES:
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                cursor.execute(
-                    "SELECT id, title, content, author, created_at, updated_at FROM posts ORDER BY id DESC LIMIT %s OFFSET %s",
-                    (limit, offset)
-                )
+                cursor.execute(full_query, tuple(params))
                 rows = cursor.fetchall()
-                items = [row_to_post(dict(r)) for r in rows]
+                items = [dict(r) for r in rows]
         else:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
-            cursor.execute(
-                "SELECT id, title, content, author, created_at, updated_at FROM posts ORDER BY id DESC LIMIT ? OFFSET ?",
-                (limit, offset)
-            )
+            cursor.execute(full_query, tuple(params))
             rows = cursor.fetchall()
-            items = [row_to_post(r) for r in rows]
+            items = [dict(r) for r in rows]
 
-        # 목록 응답은 요약 정보 위주로 반환 + 발췌(excerpt)
+        # 목록 응답은 요약 정보 위주로 반환 + 발췌(excerpt) + 카테고리 정보
         summaries = []
         for p in items:
             content = (p.get("content") or "").replace("\r", " ").replace("\n", " ")
@@ -266,43 +367,67 @@ async def handle_get_posts(offset: int = Query(0, ge=0), limit: int = Query(20, 
                 "id": p["id"],
                 "title": p["title"],
                 "author": p["author"],
-                "created_at": p["created_at"],
+                "created_at": p["created_at"].isoformat() if hasattr(p["created_at"], 'isoformat') else str(p["created_at"]),
                 "excerpt": excerpt,
+                "category": {
+                    "id": p["category_id"],
+                    "name": p["category_name"],
+                    "slug": p["category_slug"]
+                }
             })
         return JSONResponse(content=summaries)
     finally:
         conn.close()
 
-@app.get("/api/posts/{post_id}")
+@app.get("/blog/api/posts/{post_id}")
 async def handle_get_post_by_id(post_id: int):
     """ID로 특정 게시물을 찾아 반환합니다."""
     conn = get_db_connection()
     try:
+        query = """
+            SELECT p.id, p.title, p.content, p.author, p.created_at, p.updated_at, p.category_id,
+                   c.name as category_name, c.slug as category_slug
+            FROM posts p
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.id = """
+
         if USE_POSTGRES:
+            query += "%s"
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                cursor.execute(
-                    "SELECT id, title, content, author, created_at, updated_at FROM posts WHERE id = %s",
-                    (post_id,)
-                )
+                cursor.execute(query, (post_id,))
                 row = cursor.fetchone()
                 if not row:
                     raise HTTPException(status_code=404, detail={'error': 'Post not found'})
-                return JSONResponse(content=row_to_post(dict(row)))
+                post_dict = dict(row)
         else:
+            query += "?"
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
-            cursor.execute(
-                "SELECT id, title, content, author, created_at, updated_at FROM posts WHERE id = ?",
-                (post_id,)
-            )
+            cursor.execute(query, (post_id,))
             row = cursor.fetchone()
             if not row:
                 raise HTTPException(status_code=404, detail={'error': 'Post not found'})
-            return JSONResponse(content=row_to_post(row))
+            post_dict = dict(row)
+
+        # Format response with category info
+        response = {
+            "id": post_dict["id"],
+            "title": post_dict["title"],
+            "content": post_dict["content"],
+            "author": post_dict["author"],
+            "created_at": post_dict["created_at"].isoformat() if hasattr(post_dict["created_at"], 'isoformat') else str(post_dict["created_at"]),
+            "updated_at": post_dict["updated_at"].isoformat() if hasattr(post_dict["updated_at"], 'isoformat') else str(post_dict["updated_at"]),
+            "category": {
+                "id": post_dict["category_id"],
+                "name": post_dict["category_name"],
+                "slug": post_dict["category_slug"]
+            }
+        }
+        return JSONResponse(content=response)
     finally:
         conn.close()
 
-@app.post("/api/login")
+@app.post("/blog/api/login")
 async def handle_login(user_login: UserLogin):
     """사용자 로그인을 처리합니다."""
     user = users_db.get(user_login.username)
@@ -310,7 +435,7 @@ async def handle_login(user_login: UserLogin):
         return JSONResponse(content={'token': f'session-token-for-{user_login.username}'})
     raise HTTPException(status_code=401, detail={'error': 'Invalid credentials'})
 
-@app.post("/api/register", status_code=201)
+@app.post("/blog/api/register", status_code=201)
 async def handle_register(user_register: UserRegister):
     """사용자 등록을 처리합니다."""
     if not user_register.username or not user_register.password:
@@ -322,32 +447,50 @@ async def handle_register(user_register: UserRegister):
     logger.info(f"New user registered: {user_register.username}")
     return JSONResponse(content={'message': 'Registration successful'})
 
-@app.post("/api/posts", status_code=201)
+@app.post("/blog/api/posts", status_code=201)
 async def create_post(request: Request, payload: PostCreate, username: str = Depends(require_user)):
+    # Validate category_id exists
+    if not validate_category_id(payload.category_id):
+        raise HTTPException(status_code=422, detail=f'Category with id {payload.category_id} does not exist')
+
     conn = get_db_connection()
     try:
         if USE_POSTGRES:
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
                 cursor.execute(
-                    "INSERT INTO posts (title, content, author) VALUES (%s, %s, %s) RETURNING id, created_at, updated_at",
-                    (payload.title, payload.content, username)
+                    "INSERT INTO posts (title, content, author, category_id) VALUES (%s, %s, %s, %s) RETURNING id, created_at, updated_at",
+                    (payload.title, payload.content, username, payload.category_id)
                 )
                 result = cursor.fetchone()
                 post_id = result["id"]
                 created_at = result["created_at"].isoformat()
                 updated_at = result["updated_at"].isoformat()
                 conn.commit()
+
+                # Get category info
+                cursor.execute("SELECT name, slug FROM categories WHERE id = %s", (payload.category_id,))
+                cat = cursor.fetchone()
+                category_name = cat["name"] if cat else None
+                category_slug = cat["slug"] if cat else None
         else:
             cursor = conn.cursor()
             now = datetime.utcnow().isoformat()
             cursor.execute(
-                "INSERT INTO posts (title, content, author, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-                (payload.title, payload.content, username, now, now)
+                "INSERT INTO posts (title, content, author, category_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+                (payload.title, payload.content, username, payload.category_id, now, now)
             )
             post_id = cursor.lastrowid
             created_at = now
             updated_at = now
             conn.commit()
+
+            # Get category info
+            conn.row_factory = sqlite3.Row
+            cat_cursor = conn.cursor()
+            cat_cursor.execute("SELECT name, slug FROM categories WHERE id = ?", (payload.category_id,))
+            cat = cat_cursor.fetchone()
+            category_name = cat["name"] if cat else None
+            category_slug = cat["slug"] if cat else None
 
         return JSONResponse(content={
             "id": post_id,
@@ -356,12 +499,21 @@ async def create_post(request: Request, payload: PostCreate, username: str = Dep
             "author": username,
             "created_at": created_at,
             "updated_at": updated_at,
+            "category": {
+                "id": payload.category_id,
+                "name": category_name,
+                "slug": category_slug
+            }
         })
     finally:
         conn.close()
 
 @app.patch("/api/posts/{post_id}")
 async def update_post_partial(post_id: int, request: Request, payload: PostUpdate, username: str = Depends(require_user)):
+    # Validate category_id if provided
+    if payload.category_id is not None and not validate_category_id(payload.category_id):
+        raise HTTPException(status_code=422, detail=f'Category with id {payload.category_id} does not exist')
+
     conn = get_db_connection()
     try:
         if USE_POSTGRES:
@@ -381,6 +533,9 @@ async def update_post_partial(post_id: int, request: Request, payload: PostUpdat
                 if payload.content is not None:
                     fields.append("content = %s")
                     params.append(payload.content)
+                if payload.category_id is not None:
+                    fields.append("category_id = %s")
+                    params.append(payload.category_id)
                 if not fields:
                     return JSONResponse(content={"message": "No changes"})
 
@@ -394,11 +549,14 @@ async def update_post_partial(post_id: int, request: Request, payload: PostUpdat
                 conn.commit()
 
                 cursor.execute(
-                    "SELECT id, title, content, author, created_at, updated_at FROM posts WHERE id = %s",
+                    """SELECT p.id, p.title, p.content, p.author, p.created_at, p.updated_at, p.category_id,
+                              c.name as category_name, c.slug as category_slug
+                       FROM posts p LEFT JOIN categories c ON p.category_id = c.id
+                       WHERE p.id = %s""",
                     (post_id,)
                 )
                 out = cursor.fetchone()
-                return JSONResponse(content=row_to_post(dict(out)))
+                post_dict = dict(out)
         else:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
@@ -417,6 +575,9 @@ async def update_post_partial(post_id: int, request: Request, payload: PostUpdat
             if payload.content is not None:
                 fields.append("content = ?")
                 params.append(payload.content)
+            if payload.category_id is not None:
+                fields.append("category_id = ?")
+                params.append(payload.category_id)
             if not fields:
                 return JSONResponse(content={"message": "No changes"})
 
@@ -427,13 +588,68 @@ async def update_post_partial(post_id: int, request: Request, payload: PostUpdat
             cursor.execute(f"UPDATE posts SET {', '.join(fields)} WHERE id = ?", tuple(params))
             conn.commit()
 
-            cursor.execute("SELECT id, title, content, author, created_at, updated_at FROM posts WHERE id = ?", (post_id,))
+            cursor.execute(
+                """SELECT p.id, p.title, p.content, p.author, p.created_at, p.updated_at, p.category_id,
+                          c.name as category_name, c.slug as category_slug
+                   FROM posts p LEFT JOIN categories c ON p.category_id = c.id
+                   WHERE p.id = ?""",
+                (post_id,)
+            )
             out = cursor.fetchone()
-            return JSONResponse(content=row_to_post(out))
+            post_dict = dict(out)
+
+        # Format response with category info
+        response = {
+            "id": post_dict["id"],
+            "title": post_dict["title"],
+            "content": post_dict["content"],
+            "author": post_dict["author"],
+            "created_at": post_dict["created_at"].isoformat() if hasattr(post_dict["created_at"], 'isoformat') else str(post_dict["created_at"]),
+            "updated_at": post_dict["updated_at"].isoformat() if hasattr(post_dict["updated_at"], 'isoformat') else str(post_dict["updated_at"]),
+            "category": {
+                "id": post_dict["category_id"],
+                "name": post_dict["category_name"],
+                "slug": post_dict["category_slug"]
+            }
+        }
+        return JSONResponse(content=response)
     finally:
         conn.close()
 
-@app.delete("/api/posts/{post_id}", status_code=204)
+@app.get("/blog/api/categories")
+async def handle_get_categories():
+    """모든 카테고리 목록과 각 카테고리별 게시물 수를 반환합니다."""
+    conn = get_db_connection()
+    try:
+        if USE_POSTGRES:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("""
+                    SELECT c.id, c.name, c.slug, COUNT(p.id) as post_count
+                    FROM categories c
+                    LEFT JOIN posts p ON c.id = p.category_id
+                    GROUP BY c.id, c.name, c.slug
+                    ORDER BY c.id
+                """)
+                rows = cursor.fetchall()
+                categories = [dict(r) for r in rows]
+        else:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT c.id, c.name, c.slug, COUNT(p.id) as post_count
+                FROM categories c
+                LEFT JOIN posts p ON c.id = p.category_id
+                GROUP BY c.id, c.name, c.slug
+                ORDER BY c.id
+            """)
+            rows = cursor.fetchall()
+            categories = [dict(r) for r in rows]
+
+        return JSONResponse(content=categories)
+    finally:
+        conn.close()
+
+@app.delete("/blog/api/posts/{post_id}", status_code=204)
 async def delete_post(post_id: int, request: Request, username: str = Depends(require_user)):
     conn = get_db_connection()
     try:
