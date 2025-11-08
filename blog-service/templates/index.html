@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MSA 기반 기술 블로그</title>
+    <title>DvwN's Blog</title>
     <link rel="stylesheet" href="/blog/static/css/style.css">
+    <!-- Syntax Highlighting CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 </head>
 <body>
     <!-- 헤더 -->
     <header>
         <div class="container">
-            <h1><a href="#/">MSA 기반 기술 블로그</a></h1>
+            <h1><a href="#/" id="blog-title">DvwN's Blog</a></h1>
             <div class="header-actions" id="auth-status">
                 <button class="btn btn-primary" id="login-btn">로그인</button>
             </div>
@@ -29,8 +31,17 @@
                 <button class="category-tab active" data-category="">
                     전체 <span class="post-count" id="count-all">(0)</span>
                 </button>
-                <button class="category-tab" data-category="tech-stack">
-                    기술 스택 <span class="post-count" id="count-tech-stack">(0)</span>
+                <button class="category-tab" data-category="infrastructure">
+                    인프라 <span class="post-count" id="count-infrastructure">(0)</span>
+                </button>
+                <button class="category-tab" data-category="cicd">
+                    CI/CD <span class="post-count" id="count-cicd">(0)</span>
+                </button>
+                <button class="category-tab" data-category="service-mesh">
+                    Service Mesh <span class="post-count" id="count-service-mesh">(0)</span>
+                </button>
+                <button class="category-tab" data-category="monitoring">
+                    모니터링 <span class="post-count" id="count-monitoring">(0)</span>
                 </button>
                 <button class="category-tab" data-category="troubleshooting">
                     Troubleshooting <span class="post-count" id="count-troubleshooting">(0)</span>
@@ -84,8 +95,20 @@
                     <label>카테고리<span class="required-star">*</span></label>
                     <div class="radio-group">
                         <label class="radio-label">
-                            <input type="radio" name="category" value="1" required>
-                            <span>기술 스택</span>
+                            <input type="radio" name="category" value="4" required>
+                            <span>인프라</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="category" value="5">
+                            <span>CI/CD</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="category" value="6">
+                            <span>Service Mesh</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="category" value="7">
+                            <span>모니터링</span>
                         </label>
                         <label class="radio-label">
                             <input type="radio" name="category" value="2">
@@ -166,6 +189,12 @@
         </div>
     </div>
 
+    <!-- Markdown 라이브러리 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- XSS 방어 라이브러리 -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <!-- Syntax Highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="/blog/static/js/app.js"></script>
 </body>
 </html>
