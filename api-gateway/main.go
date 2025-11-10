@@ -133,6 +133,7 @@ func main() {
 	})
 
 	mux.Handle("/api/", apiHandler)
+	mux.Handle("/blog/api/", apiHandler)
 	mux.Handle("/metrics", promhttp.Handler())
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
