@@ -244,14 +244,6 @@ def row_to_post(row: Dict) -> Dict:
 init_db()
 
 # --- Pydantic 모델 ---
-class UserLogin(BaseModel):
-    username: str
-    password: str
-
-class UserRegister(BaseModel):
-    username: str
-    password: str
-
 class PostCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=120)
     content: str = Field(..., min_length=1, max_length=20000)
@@ -426,26 +418,6 @@ async def handle_get_post_by_id(post_id: int):
         return JSONResponse(content=response)
     finally:
         conn.close()
-
-@app.post("/blog/api/login")
-async def handle_login(user_login: UserLogin):
-    """사용자 로그인을 처리합니다."""
-    user = users_db.get(user_login.username)
-    if user and user['password'] == user_login.password:
-        return JSONResponse(content={'token': f'session-token-for-{user_login.username}'})
-    raise HTTPException(status_code=401, detail={'error': 'Invalid credentials'})
-
-@app.post("/blog/api/register", status_code=201)
-async def handle_register(user_register: UserRegister):
-    """사용자 등록을 처리합니다."""
-    if not user_register.username or not user_register.password:
-        raise HTTPException(status_code=400, detail={'error': 'Username and password are required'})
-    if user_register.username in users_db:
-        raise HTTPException(status_code=409, detail={'error': 'Username already exists'})
-
-    users_db[user_register.username] = {'password': user_register.password}
-    logger.info(f"New user registered: {user_register.username}")
-    return JSONResponse(content={'message': 'Registration successful'})
 
 @app.post("/blog/api/posts", status_code=201)
 async def create_post(request: Request, payload: PostCreate, username: str = Depends(require_user)):
@@ -705,17 +677,14 @@ async def serve_spa(request: Request, path: str):
 @app.on_event("startup")
 def setup_sample_data():
     """서비스 시작 시 샘플 데이터를 생성합니다."""
-    global posts_db, users_db
+    global posts_db
     posts_db = {
         1: {"id": 1, "title": "첫 번째 블로그 글", "author": "admin",
             "content": "마이크로서비스 아키텍처에 오신 것을 환영합니다! 이 블로그는 FastAPI로 리팩터링되었습니다."},
         2: {"id": 2, "title": "Kustomize와 Skaffold 활용하기", "author": "dev",
             "content": "인프라 관리가 이렇게 쉬울 수 있습니다. CI/CD 파이프라인을 통해 자동으로 배포됩니다."},
     }
-    users_db = {
-        'admin': {'password': 'password123'}
-    }
-    logger.info(f"{len(posts_db)}개의 샘플 게시물과 {len(users_db)}명의 사용자로 초기화되었습니다.")
+    logger.info(f"{len(posts_db)}개의 샘플 게시물로 초기화되었습니다.")
 
 if __name__ == "__main__":
     import uvicorn
