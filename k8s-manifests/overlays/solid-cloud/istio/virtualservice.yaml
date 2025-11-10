@@ -19,52 +19,6 @@ spec:
             port:
               number: 8005
 
-    # Auth API routes
-    - match:
-        - uri:
-            exact: /api/login
-      rewrite:
-        uri: /login
-      route:
-        - destination:
-            host: prod-auth-service
-            port:
-              number: 8002
-
-    - match:
-        - uri:
-            exact: /api/register
-      rewrite:
-        uri: /register
-      route:
-        - destination:
-            host: prod-auth-service
-            port:
-              number: 8002
-
-    # Blog Auth routes (must come before /blog prefix)
-    - match:
-        - uri:
-            exact: /blog/api/login
-      rewrite:
-        uri: /login
-      route:
-        - destination:
-            host: prod-auth-service
-            port:
-              number: 8002
-
-    - match:
-        - uri:
-            exact: /blog/api/register
-      rewrite:
-        uri: /register
-      route:
-        - destination:
-            host: prod-auth-service
-            port:
-              number: 8002
-
     # Blog static files and pages
     - match:
         - uri:
@@ -74,30 +28,6 @@ spec:
             host: prod-blog-service
             port:
               number: 8005
-
-    # User API routes
-    - match:
-        - uri:
-            prefix: /api/users
-      rewrite:
-        uri: /users
-      route:
-        - destination:
-            host: prod-user-service
-            port:
-              number: 8001
-
-    # Auth API routes (fallback)
-    - match:
-        - uri:
-            prefix: /api/auth
-      rewrite:
-        uri: /
-      route:
-        - destination:
-            host: prod-auth-service
-            port:
-              number: 8002
 
     # API Gateway (catch-all for other /api/ routes)
     - match:
