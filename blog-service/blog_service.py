@@ -480,7 +480,7 @@ async def create_post(request: Request, payload: PostCreate, username: str = Dep
     finally:
         conn.close()
 
-@app.patch("/api/posts/{post_id}")
+@app.patch("/blog/api/posts/{post_id}")
 async def update_post_partial(post_id: int, request: Request, payload: PostUpdate, username: str = Depends(require_user)):
     # Validate category_id if provided
     if payload.category_id is not None and not validate_category_id(payload.category_id):
