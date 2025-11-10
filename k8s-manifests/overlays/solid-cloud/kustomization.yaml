@@ -92,7 +92,7 @@ images:
   - name: dongju101/auth-service
     newTag: main-19bd713
   - name: dongju101/api-gateway
-    newTag: bugfix-812a298
+    newTag: bugfix-3fffdf1
 
 
 # Resource modifications
