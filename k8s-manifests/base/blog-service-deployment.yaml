@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: blog-service-container
-        image: dongju101/blog-service:v1.0
+        image: dongju101/blog-service:bugfix-e213548
         imagePullPolicy: Always
         ports:
         - containerPort: 8005
