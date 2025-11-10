@@ -90,17 +90,30 @@ func main() {
 	authServiceURL, _ := url.Parse(getEnv("AUTH_SERVICE_URL", "http://auth-service:8002"))
 	blogServiceURL, _ := url.Parse(getEnv("BLOG_SERVICE_URL", "http://blog-service:8005"))
 
-	transport := &http.Transport{
-		ResponseHeaderTimeout: 2 * time.Second,
-		IdleConnTimeout:       30 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
+	// Create proxies with custom director to preserve hostname for Istio
+	userProxy := &httputil.ReverseProxy{
+		Director: func(req *http.Request) {
+			req.URL.Scheme = userServiceURL.Scheme
+			req.URL.Host = userServiceURL.Host
+			req.Host = userServiceURL.Host
+		},
 	}
-	userProxy := httputil.NewSingleHostReverseProxy(userServiceURL)
-	userProxy.Transport = transport
-	authProxy := httputil.NewSingleHostReverseProxy(authServiceURL)
-	authProxy.Transport = transport
-	blogProxy := httputil.NewSingleHostReverseProxy(blogServiceURL)
-	blogProxy.Transport = transport
+
+	authProxy := &httputil.ReverseProxy{
+		Director: func(req *http.Request) {
+			req.URL.Scheme = authServiceURL.Scheme
+			req.URL.Host = authServiceURL.Host
+			req.Host = authServiceURL.Host
+		},
+	}
+
+	blogProxy := &httputil.ReverseProxy{
+		Director: func(req *http.Request) {
+			req.URL.Scheme = blogServiceURL.Scheme
+			req.URL.Host = blogServiceURL.Host
+			req.Host = blogServiceURL.Host
+		},
+	}
 
 	mux := http.NewServeMux()
 
