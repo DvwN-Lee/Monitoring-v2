@@ -19,6 +19,16 @@ spec:
             port:
               number: 8005
 
+    # Blog Auth/API routes (Must come before /blog prefix)
+    - match:
+        - uri:
+            prefix: /blog/api/
+      route:
+        - destination:
+            host: prod-api-gateway-service
+            port:
+              number: 8000
+
     # Blog static files and pages
     - match:
         - uri:
