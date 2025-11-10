@@ -106,24 +106,31 @@ func main() {
 
 	apiHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
+
+		// /api/ 접두사를 제거하여 실제 경로 추출
 		trimmedPath := strings.TrimPrefix(path, "/api")
 
-		if strings.HasPrefix(trimmedPath, "/login") {
-			r.URL.Path = trimmedPath
+		// /blog/api/ 같은 다른 접두사도 처리
+		if strings.HasPrefix(path, "/blog/api/") {
+			trimmedPath = strings.TrimPrefix(path, "/blog/api")
+		}
+
+		if strings.HasSuffix(trimmedPath, "/login") {
+			r.URL.Path = "/login"
 			authProxy.ServeHTTP(w, r)
-		} else if strings.HasPrefix(trimmedPath, "/register") {
-			r.URL.Path = "/users"
+		} else if strings.HasSuffix(trimmedPath, "/register") {
+			r.URL.Path = "/users" // Register는 user-service의 /users 엔드포인트를 사용
 			userProxy.ServeHTTP(w, r)
 		} else if strings.HasPrefix(trimmedPath, "/users") {
 			r.URL.Path = trimmedPath
 			userProxy.ServeHTTP(w, r)
 		} else if strings.HasPrefix(trimmedPath, "/posts") {
-			r.URL.Path = path
+			r.URL.Path = path // /api/posts 전체 경로 사용
 			blogProxy.ServeHTTP(w, r)
 		} else {
 			http.NotFound(w, r)
 		}
-})
+	})
 
 	mux.Handle("/api/", apiHandler)
 	mux.Handle("/metrics", promhttp.Handler())
