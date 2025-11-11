@@ -96,7 +96,7 @@ class UserServiceDatabase:
 
     async def add_user(self, username: str, email: str, password: str) -> Optional[int]:
         """Add a new user with hashed password."""
-        password_hash = generate_password_hash(password)
+        password_hash = generate_password_hash(password, method='pbkdf2:sha256:100000')
         async with self.lock:
             try:
                 if self.use_postgres:
