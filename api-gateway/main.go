@@ -137,8 +137,8 @@ func main() {
 		} else if strings.HasPrefix(trimmedPath, "/users") {
 			r.URL.Path = trimmedPath
 			userProxy.ServeHTTP(w, r)
-		} else if strings.HasPrefix(trimmedPath, "/posts") {
-			r.URL.Path = path // /api/posts 전체 경로 사용
+		} else if strings.HasPrefix(trimmedPath, "/posts") || strings.HasPrefix(trimmedPath, "/categories") {
+			r.URL.Path = path // blog service의 전체 경로 사용
 			blogProxy.ServeHTTP(w, r)
 		} else {
 			http.NotFound(w, r)

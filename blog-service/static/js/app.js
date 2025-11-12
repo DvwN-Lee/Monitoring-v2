@@ -1,4 +1,91 @@
+// Toast Notification 시스템
+const Toast = {
+    container: null,
+
+    init() {
+        this.container = document.getElementById('toast-container');
+        if (!this.container) {
+            this.container = document.createElement('div');
+            this.container.id = 'toast-container';
+            document.body.appendChild(this.container);
+        }
+    },
+
+    show(message, type = 'info', duration = 3000) {
+        if (!this.container) this.init();
+
+        const icons = {
+            success: '✓',
+            error: '✕',
+            warning: '⚠',
+            info: 'ℹ'
+        };
+
+        const titles = {
+            success: '성공',
+            error: '오류',
+            warning: '경고',
+            info: '알림'
+        };
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+            <div class="toast-icon">${icons[type] || icons.info}</div>
+            <div class="toast-content">
+                <div class="toast-title">${titles[type] || titles.info}</div>
+                <div class="toast-message">${message}</div>
+            </div>
+            <button class="toast-close" aria-label="닫기">&times;</button>
+        `;
+
+        // 닫기 버튼 이벤트
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            this.hide(toast);
+        });
+
+        this.container.appendChild(toast);
+
+        // 자동 숨김
+        if (duration > 0) {
+            setTimeout(() => {
+                this.hide(toast);
+            }, duration);
+        }
+
+        return toast;
+    },
+
+    hide(toast) {
+        toast.classList.add('hiding');
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    },
+
+    success(message, duration) {
+        return this.show(message, 'success', duration);
+    },
+
+    error(message, duration) {
+        return this.show(message, 'error', duration);
+    },
+
+    warning(message, duration) {
+        return this.show(message, 'warning', duration);
+    },
+
+    info(message, duration) {
+        return this.show(message, 'info', duration);
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Toast 초기화
+    Toast.init();
+
     const mainContent = document.getElementById('main-content');
 
     // 전역 상태
@@ -157,7 +244,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const data = await res.json();
             if (res.ok) {
-                alert('회원가입 성공! 로그인 페이지로 이동합니다.');
+                Toast.success('회원가입이 완료되었습니다. 로그인해주세요.');
+                closeAllModals();
                 showLoginModal();
             } else {
                 errorEl.textContent = data.detail || data.error || '회원가입 실패';
@@ -172,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.removeItem('authToken');
         updateAuthStatus();
         window.location.hash = '/';
-        alert('로그아웃 되었습니다.');
+        Toast.info('로그아웃되었습니다.');
     };
 
     // 카테고리 카운트 가져오기
@@ -225,11 +313,13 @@ document.addEventListener('DOMContentLoaded', () => {
         tabs.forEach(tab => {
             const category = tab.getAttribute('data-category') || '';
 
-            // currentCategory와 비교하여 active 클래스 설정
+            // currentCategory와 비교하여 active 클래스 및 ARIA 속성 설정
             if (category === (currentCategory || '')) {
                 tab.classList.add('active');
+                tab.setAttribute('aria-selected', 'true');
             } else {
                 tab.classList.remove('active');
+                tab.setAttribute('aria-selected', 'false');
             }
 
             // onclick을 사용하여 중복 할당 방지
@@ -240,16 +330,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentCategory = category;
                 currentPage = 1;
 
-                // UI 즉시 업데이트
-                tabs.forEach(t => t.classList.remove('active'));
+                // UI 즉시 업데이트 (ARIA 속성 포함)
+                tabs.forEach(t => {
+                    t.classList.remove('active');
+                    t.setAttribute('aria-selected', 'false');
+                });
                 tab.classList.add('active');
+                tab.setAttribute('aria-selected', 'true');
 
                 await loadPosts();
             };
         });
     };
 
+    // 로딩 상태 표시 함수
+    const showLoading = (container) => {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'loading-overlay';
+        loadingDiv.innerHTML = '<div><div class="loading-spinner"></div><div class="loading-text">로딩 중...</div></div>';
+        container.style.position = 'relative';
+        container.appendChild(loadingDiv);
+        return loadingDiv;
+    };
+
+    const hideLoading = (loadingDiv) => {
+        if (loadingDiv && loadingDiv.parentNode) {
+            loadingDiv.parentNode.removeChild(loadingDiv);
+        }
+    };
+
     const loadPosts = async () => {
+        const container = document.getElementById('posts-container');
+        const loadingDiv = showLoading(container.parentNode);
+
         try {
             const url = currentCategory ? `/blog/api/posts?category=${currentCategory}` : '/blog/api/posts';
             const res = await fetch(url);
@@ -257,7 +370,10 @@ document.addEventListener('DOMContentLoaded', () => {
             renderPosts(posts);
         } catch (err) {
             console.error('게시물 로드 실패:', err);
-            document.getElementById('posts-container').innerHTML = '<p>게시물을 불러오는 데 실패했습니다.</p>';
+            container.innerHTML = '<p>게시물을 불러오는 데 실패했습니다.</p>';
+            Toast.error('게시물을 불러오는 데 실패했습니다.');
+        } finally {
+            hideLoading(loadingDiv);
         }
     };
 
@@ -362,8 +478,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('delete-btn').onclick = async () => {
                     if (!confirm('삭제하시겠습니까?')) return;
                     const res = await fetch(`/blog/api/posts/${id}`, { method: 'DELETE', headers: authHeader() });
-                    if (res.status === 204) { alert('삭제되었습니다.'); window.location.hash = '/'; }
-                    else { alert('삭제 실패'); }
+                    if (res.status === 204) {
+                        Toast.success('게시물이 삭제되었습니다.');
+                        window.location.hash = '/';
+                    } else {
+                        Toast.error('게시물 삭제에 실패했습니다.');
+                    }
                 };
             }
         } catch (err) {
@@ -375,7 +495,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 게시물 작성/수정 폼
     async function showPostForm(mode, id) {
         if (!getToken()) {
-            alert('로그인이 필요합니다.');
+            Toast.warning('로그인이 필요한 기능입니다.');
             showLoginModal();
             return;
         }
@@ -392,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const res = await fetch(`/blog/api/posts/${id}`);
                 const post = await res.json();
                 if (getUsernameFromToken() !== post.author) {
-                    alert('작성자만 수정할 수 있습니다.');
+                    Toast.warning('작성자만 수정할 수 있습니다.');
                     window.location.hash = `/posts/${id}`;
                     return;
                 }
