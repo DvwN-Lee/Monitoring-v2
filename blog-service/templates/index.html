@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 </head>
 <body>
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
     <!-- 헤더 -->
     <header>
         <div class="container">
@@ -27,38 +30,38 @@
     <!-- 게시물 목록 템플릿 -->
     <template id="post-list-template">
         <div class="view-container">
-            <div class="category-filter">
-                <button class="category-tab active" data-category="">
+            <div class="category-filter" role="tablist" aria-label="카테고리 필터">
+                <button class="category-tab active" data-category="" role="tab" aria-selected="true" aria-controls="posts-container">
                     전체 <span class="post-count" id="count-all">(0)</span>
                 </button>
-                <button class="category-tab" data-category="infrastructure">
+                <button class="category-tab" data-category="infrastructure" role="tab" aria-selected="false" aria-controls="posts-container">
                     인프라 <span class="post-count" id="count-infrastructure">(0)</span>
                 </button>
-                <button class="category-tab" data-category="cicd">
+                <button class="category-tab" data-category="cicd" role="tab" aria-selected="false" aria-controls="posts-container">
                     CI/CD <span class="post-count" id="count-cicd">(0)</span>
                 </button>
-                <button class="category-tab" data-category="service-mesh">
+                <button class="category-tab" data-category="service-mesh" role="tab" aria-selected="false" aria-controls="posts-container">
                     Service Mesh <span class="post-count" id="count-service-mesh">(0)</span>
                 </button>
-                <button class="category-tab" data-category="monitoring">
+                <button class="category-tab" data-category="monitoring" role="tab" aria-selected="false" aria-controls="posts-container">
                     모니터링 <span class="post-count" id="count-monitoring">(0)</span>
                 </button>
-                <button class="category-tab" data-category="troubleshooting">
+                <button class="category-tab" data-category="troubleshooting" role="tab" aria-selected="false" aria-controls="posts-container">
                     Troubleshooting <span class="post-count" id="count-troubleshooting">(0)</span>
                 </button>
-                <button class="category-tab" data-category="test">
+                <button class="category-tab" data-category="test" role="tab" aria-selected="false" aria-controls="posts-container">
                     Test <span class="post-count" id="count-test">(0)</span>
                 </button>
             </div>
 
             <h2>최신 글</h2>
-            <ul class="post-list" id="posts-container"></ul>
+            <ul class="post-list" id="posts-container" role="tabpanel"></ul>
 
-            <div class="pagination">
-                <button class="nav-button" id="prev-btn">Previous</button>
-                <div id="page-numbers"></div>
-                <button class="nav-button" id="next-btn">Next</button>
-            </div>
+            <nav class="pagination" aria-label="페이지 네비게이션">
+                <button class="nav-button" id="prev-btn" aria-label="이전 페이지">Previous</button>
+                <div id="page-numbers" role="group" aria-label="페이지 번호"></div>
+                <button class="nav-button" id="next-btn" aria-label="다음 페이지">Next</button>
+            </nav>
         </div>
     </template>
 
@@ -136,54 +139,54 @@
     </template>
 
     <!-- 로그인 모달 -->
-    <div id="login-modal" class="modal">
+    <div id="login-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="login-modal-title">
         <div class="modal-content">
-            <span class="modal-close" id="close-login">&times;</span>
-            <h2>로그인</h2>
+            <span class="modal-close" id="close-login" aria-label="모달 닫기">&times;</span>
+            <h2 id="login-modal-title">로그인</h2>
             <form id="login-form">
                 <div class="form-group">
                     <label for="login-username">사용자 이름</label>
-                    <input type="text" id="login-username" placeholder="사용자 이름을 입력하세요" required>
+                    <input type="text" id="login-username" placeholder="사용자 이름을 입력하세요" required aria-required="true">
                 </div>
                 <div class="form-group">
                     <label for="login-password">비밀번호</label>
-                    <input type="password" id="login-password" placeholder="비밀번호를 입력하세요" required>
+                    <input type="password" id="login-password" placeholder="비밀번호를 입력하세요" required aria-required="true">
                 </div>
-                <p id="login-error" class="error-message"></p>
+                <p id="login-error" class="error-message" role="alert" aria-live="polite"></p>
                 <div class="form-footer">
                     <button type="submit" class="btn btn-primary">로그인</button>
                 </div>
                 <div class="form-link">
-                    계정이 없으신가요? <a id="go-to-signup">회원가입</a>
+                    계정이 없으신가요? <a id="go-to-signup" href="#" role="button">회원가입</a>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- 회원가입 모달 -->
-    <div id="signup-modal" class="modal">
+    <div id="signup-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="signup-modal-title">
         <div class="modal-content">
-            <span class="modal-close" id="close-signup">&times;</span>
-            <h2>회원가입</h2>
+            <span class="modal-close" id="close-signup" aria-label="모달 닫기">&times;</span>
+            <h2 id="signup-modal-title">회원가입</h2>
             <form id="signup-form">
                 <div class="form-group">
                     <label for="signup-username">사용자 이름</label>
-                    <input type="text" id="signup-username" placeholder="사용자 이름을 입력하세요" required>
+                    <input type="text" id="signup-username" placeholder="사용자 이름을 입력하세요" required aria-required="true">
                 </div>
                 <div class="form-group">
                     <label for="signup-email">이메일</label>
-                    <input type="email" id="signup-email" placeholder="example@domain.com" required>
+                    <input type="email" id="signup-email" placeholder="example@domain.com" required aria-required="true">
                 </div>
                 <div class="form-group">
                     <label for="signup-password">비밀번호</label>
-                    <input type="password" id="signup-password" placeholder="비밀번호를 입력하세요" required>
+                    <input type="password" id="signup-password" placeholder="비밀번호를 입력하세요" required aria-required="true">
                 </div>
-                <p id="signup-error" class="error-message"></p>
+                <p id="signup-error" class="error-message" role="alert" aria-live="polite"></p>
                 <div class="form-footer">
                     <button type="submit" class="btn btn-primary">계정 생성</button>
                 </div>
                 <div class="form-link">
-                    이미 계정이 있으신가요? <a id="go-to-login">로그인</a>
+                    이미 계정이 있으신가요? <a id="go-to-login" href="#" role="button">로그인</a>
                 </div>
             </form>
         </div>
