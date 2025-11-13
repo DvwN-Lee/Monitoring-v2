@@ -15,17 +15,24 @@ spec:
           - name: db-backup
             # 간단한 작업을 위해 alpine 리눅스 이미지 사용
             image: alpine:latest
+            resources:
+              requests:
+                cpu: 50m
+                memory: 64Mi
+              limits:
+                cpu: 100m
+                memory: 128Mi
             # 실행할 백업 명령어
-            # /data/users.db 파일을 /backup/users.db.[현재날짜] 형태로 복사
+            # /data/app.db 파일을 /backup/app.db.[현재날짜] 형태로 복사
             command: ["/bin/sh", "-c"]
             args:
             - >
               apk add --no-cache tzdata &&
               cp /usr/share/zoneinfo/Asia/Seoul /etc/localtime &&
               echo "Asia/Seoul" > /etc/timezone &&
-              BACKUP_FILENAME="users.db.$(date +%Y-%m-%d-%H%M%S)" &&
-              echo "Backing up /data/users.db to /backup/$BACKUP_FILENAME" &&
-              cp /data/users.db /backup/$BACKUP_FILENAME
+              BACKUP_FILENAME="app.db.$(date +%Y-%m-%d-%H%M%S)" &&
+              echo "Backing up /data/app.db to /backup/$BACKUP_FILENAME" &&
+              cp /data/app.db /backup/$BACKUP_FILENAME
             volumeMounts:
             # user-service와 동일한 PVC를 마운트
             - name: user-data
