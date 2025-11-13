@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: user-service
+        version: v1
     spec:
       containers:
       - name: user-service-container

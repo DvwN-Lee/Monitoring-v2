@@ -79,7 +79,7 @@ kubectl config use-context solid-cloud
 
 | 서비스 | URL | 인증 |
 |--------|-----|------|
-| Grafana 대시보드 | http://10.0.11.168:30300 | admin/prom-operator |
+| Grafana 대시보드 | http://10.0.11.168:30300 | admin/admin123 |
 | 애플리케이션 | http://10.0.11.168:31304 | - |
 | Argo CD | 클러스터 내부 | admin/초기비밀번호 |
 
@@ -250,7 +250,7 @@ kubectl apply -f k8s-manifests/overlays/solid-cloud/hpa.yaml
    - PersistentVolume 사용량
 
 **메트릭 확인 방법**:
-1. Grafana 로그인 (admin/prom-operator)
+1. Grafana 로그인 (admin/admin123)
 2. Dashboards → Browse
 3. 원하는 대시보드 선택
 4. 시간 범위 선택 (우측 상단)
