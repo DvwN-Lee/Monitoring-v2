@@ -667,9 +667,19 @@ async def handle_stats():
     }
 
 # --- 웹 페이지 서빙 (SPA) ---
+@app.get("/")
+async def serve_root(request: Request):
+    """루트 경로에서 블로그 페이지를 렌더링합니다."""
+    return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/blog/")
+async def serve_blog_root(request: Request):
+    """블로그 루트 경로에서 블로그 페이지를 렌더링합니다."""
+    return templates.TemplateResponse("index.html", {"request": request})
+
 @app.get("/blog/{path:path}")
 async def serve_spa(request: Request, path: str):
-    """메인 블로그 페이지를 렌더링합니다."""
+    """블로그 서브 경로에서 블로그 페이지를 렌더링합니다."""
     return templates.TemplateResponse("index.html", {"request": request})
 
 
