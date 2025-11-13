@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: auth-service
+        version: v1
     spec:
       containers:
       - name: auth-service-container
