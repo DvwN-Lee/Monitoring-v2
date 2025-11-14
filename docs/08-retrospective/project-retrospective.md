@@ -445,7 +445,7 @@ kubectl patch pvc prometheus-grafana -n monitoring -p '{"metadata":{"finalizers"
 - NetworkPolicy로 불필요한 트래픽 차단
 - CI 파이프라인에 Trivy 통합으로 취약점 조기 발견
 
-### 5. 문서화는 미래의 나를 위한 투자
+### 5. 문서화의 중요성
 
 **인사이트**:
 - 상세한 문서는 운영과 유지보수에 필수적
