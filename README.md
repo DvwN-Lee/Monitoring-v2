@@ -1,7 +1,7 @@
 # Cloud-Native 마이크로서비스 플랫폼 v2.0
 
-**문서 버전**: 3.0
-**최종 수정일**: 2025년 11월 3일
+**문서 버전**: 3.1
+**최종 수정일**: 2025년 11월 14일
 
 로컬 환경(Minikube)에서 운영되던 마이크로서비스 블로그 플랫폼을 클라우드 네이티브 아키텍처로 재구축한 프로젝트입니다. Terraform을 이용한 인프라 자동화, GitOps 기반의 CI/CD 파이프라인, 그리고 Istio 서비스 메시를 통한 관측성과 보안 강화를 목표로 합니다.
 
@@ -14,6 +14,7 @@
 | **1.0** | 2025-09-29 | 초안 작성 (AWS EKS 기반 아키텍처) |
 | **2.0** | 2025-10-13 | 단국대학교 자체 클라우드(Solid Cloud) 개발/테스트 후 AWS는 최종 배포하는 것으로 변경 |
 | **3.0** | 2025-11-03 | 프로젝트 완료, Week 5 최종 상태 반영 (CI/CD, 모니터링, Istio 서비스 메시 구축 완료) |
+| **3.1** | 2025-11-14 | README 개선 (마이크로서비스 소개 추가, Grafana 대시보드 스크린샷 추가) |
 
 ---
 
@@ -91,6 +92,18 @@ graph TD
     style B fill:#2088FF,stroke:#333,stroke-width:2px,color:#fff
     style S fill:#F44336,stroke:#333,stroke-width:2px,color:#fff
 ```
+
+### 마이크로서비스 소개
+
+각 서비스의 역할과 책임을 명확히 분리하여 독립적인 개발과 배포가 가능합니다.
+
+- **API Gateway (Go)**: 모든 클라이언트 요청의 단일 진입점(Entry Point)으로, 요청을 적절한 내부 서비스로 라우팅합니다. Go의 높은 성능과 동시성을 활용하여 빠른 프록시 역할을 수행합니다.
+
+- **Auth Service (Python/FastAPI)**: JWT 기반의 사용자 인증 및 토큰 검증을 전담합니다. `/login` 엔드포인트를 통해 토큰을 발급하고, `/validate` 엔드포인트로 다른 서비스의 인가 요청을 처리합니다.
+
+- **User Service (Python/FastAPI)**: 사용자 정보 관리 및 데이터베이스/캐시 처리를 담당합니다. PostgreSQL을 메인 데이터 저장소로, Redis를 캐시 레이어로 사용하여 Cache-Aside 패턴을 구현합니다.
+
+- **Blog Service (Python/FastAPI)**: 블로그 게시물의 CRUD 기능과 웹 UI를 제공합니다. 정적 파일 서빙과 RESTful API를 모두 지원하며, Auth Service를 통해 권한 검증을 수행합니다.
 
 ---
 
@@ -297,6 +310,18 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 - **실시간 성능**: P95 19.2ms, P99 23.8ms, 에러율 0%
 - **보안**: mTLS STRICT, Trivy 자동 스캔, NetworkPolicy 적용
 - **CI/CD**: Git Push → 5분 이내 자동 배포
+
+#### Grafana Golden Signals 대시보드
+
+실시간 모니터링 시스템을 통해 시스템의 안정성과 성능을 지속적으로 확인할 수 있습니다.
+
+![Grafana Golden Signals](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/grafana-golden-signals.png)
+
+**주요 지표**:
+- **Latency (지연시간)**: P95 9.62ms, P99 17.8ms - 매우 빠른 응답 속도 유지
+- **Traffic (트래픽)**: 7.56 req/s - 안정적인 요청 처리량
+- **Errors (에러율)**: 0% - 모든 요청이 성공적으로 처리됨
+- **Saturation (포화도)**: CPU 사용률 0.5% ~ 2.8% - 효율적인 리소스 활용
 
 ### 접속 정보
 - **Grafana 대시보드**: http://10.0.11.168:30300
