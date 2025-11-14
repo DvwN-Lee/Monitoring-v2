@@ -14,7 +14,7 @@
 | **1.0** | 2025-09-29 | 초안 작성 (AWS EKS 기반 아키텍처) |
 | **2.0** | 2025-10-13 | 단국대학교 자체 클라우드(Solid Cloud) 개발/테스트 후 AWS는 최종 배포하는 것으로 변경 |
 | **3.0** | 2025-11-03 | 프로젝트 완료, Week 5 최종 상태 반영 (CI/CD, 모니터링, Istio 서비스 메시 구축 완료) |
-| **3.1** | 2025-11-14 | README 개선 (마이크로서비스 소개 추가, Grafana 대시보드 스크린샷 추가) |
+| **3.1** | 2025-11-14 | README 개선 (대시보드 이미지를 상단으로 이동, Kiali 대시보드 추가, 모든 문서 링크 수정) |
 
 ---
 
@@ -104,6 +104,26 @@ graph TD
 - **User Service (Python/FastAPI)**: 사용자 정보 관리 및 데이터베이스/캐시 처리를 담당합니다. PostgreSQL을 메인 데이터 저장소로, Redis를 캐시 레이어로 사용하여 Cache-Aside 패턴을 구현합니다.
 
 - **Blog Service (Python/FastAPI)**: 블로그 게시물의 CRUD 기능과 웹 UI를 제공합니다. 정적 파일 서빙과 RESTful API를 모두 지원하며, Auth Service를 통해 권한 검증을 수행합니다.
+
+---
+
+## 시스템 현황 및 대시보드
+
+### Grafana Golden Signals 대시보드
+
+![Grafana Golden Signals](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/grafana-golden-signals.png)
+
+**주요 지표**:
+- **Latency**: P95 9.62ms, P99 17.8ms
+- **Traffic**: 7.56 req/s
+- **Errors**: 0%
+- **Saturation**: CPU 0.5% ~ 2.8%
+
+### Kiali 서비스 메시 대시보드
+
+![Kiali Service Graph](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/kiali-service-graph.png)
+
+Istio 서비스 메시를 통한 실시간 트래픽 흐름과 서비스 간 통신 상태를 시각화합니다.
 
 ---
 
@@ -197,7 +217,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
   - CI/CD 파이프라인 상세 설계
   - 네트워크 구조 및 보안 설계
 - **[운영 가이드](./docs/04-operations/operations-guide.md)**: 시스템 운영, 모니터링, 장애 대응 Runbook
-- **[프로젝트 회고](./docs/07-retrospective/project-retrospective.md)**: 5주간의 프로젝트 성과 및 회고
+- **[프로젝트 회고](./docs/08-retrospective/project-retrospective.md)**: 5주간의 프로젝트 성과 및 회고
 - **[기술 결정 기록 (ADR)](./docs/02-architecture/adr/)**: 주요 기술 선택의 배경과 근거
 
 ---
@@ -216,7 +236,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 | **Database/Cache**  | `PostgreSQL`, `Redis`                                                                             |
 | **Local Dev**       | `Minikube`, `Skaffold`                                                                            |
 
-**각 기술을 선택한 이유는 [ADR 문서](./docs/adr/)를 참고하세요.**
+**각 기술을 선택한 이유는 [ADR 문서](./docs/02-architecture/adr/)를 참고하세요.**
 
 ---
 
@@ -334,13 +354,13 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 상세한 기술 문서 및 가이드는 다음을 참고하세요:
 
--   **[요구사항 명세서](./docs/requirements.md)**: 프로젝트에서 구현할 기능과 목표
--   **[시스템 설계서](./docs/architecture.md)**: 시스템 아키텍처와 구조
--   **[프로젝트 계획서](./docs/project-plan.md)**: 개발 일정과 마일스톤
--   **[기술 결정 기록 (ADR)](./docs/adr/)**: 주요 기술 선택의 이유와 배경
--   **[Secret 관리 가이드](./docs/SECRET_MANAGEMENT.md)**: 보안 비밀 정보 관리 방법
--   **[Week 5 최종 상태 보고서](./docs/guides/week5/week5-final-status-report.md)**: 프로젝트 완료 상태
--   **[Week 5 성능 분석](./docs/performance/week5-performance-analysis.md)**: 부하 테스트 및 최적화 결과
+-   **[요구사항 명세서](./docs/01-planning/requirements.md)**: 프로젝트에서 구현할 기능과 목표
+-   **[시스템 설계서](./docs/02-architecture/architecture.md)**: 시스템 아키텍처와 구조
+-   **[프로젝트 계획서](./docs/01-planning/project-plan.md)**: 개발 일정과 마일스톤
+-   **[기술 결정 기록 (ADR)](./docs/02-architecture/adr/)**: 주요 기술 선택의 이유와 배경
+-   **[Secret 관리 가이드](./docs/05-operations/SECRET_MANAGEMENT.md)**: 보안 비밀 정보 관리 방법
+-   **[Week 5 최종 상태 보고서](./docs/05-operations/final-status-report.md)**: 프로젝트 완료 상태
+-   **[Week 5 성능 분석](./docs/06-performance/week5-performance-analysis.md)**: 부하 테스트 및 최적화 결과
 -   **[Week 4 Istio 구현 가이드](./docs/guides/week4/)**: Istio 서비스 메시 구축 과정
 
 ---
@@ -354,4 +374,4 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 - Secret(비밀번호, API 키 등)은 Git 저장소에 커밋하지 마세요
 - 프로덕션 환경에서는 External Secrets Operator 또는 클라우드 네이티브 Secret 관리 솔루션 사용을 권장합니다
-- 자세한 내용은 [Secret 관리 가이드](./docs/SECRET_MANAGEMENT.md)를 참고하세요
+- 자세한 내용은 [Secret 관리 가이드](./docs/05-operations/SECRET_MANAGEMENT.md)를 참고하세요

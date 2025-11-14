@@ -6,17 +6,19 @@ Cloud-Native 마이크로서비스 플랫폼 v2.0 프로젝트의 전체 문서 
 
 ## 문서 구조 개요
 
-이 프로젝트의 문서는 **프로젝트 진행 시간순**으로 7단계로 구성되어 있습니다. 각 단계별로 해당 시점의 작업 내용과 의사결정 과정을 확인할 수 있습니다.
+이 프로젝트의 문서는 **프로젝트 진행 단계별**로 구성되어 있습니다. 각 단계별로 해당 시점의 작업 내용과 의사결정 과정을 확인할 수 있습니다.
 
 ```
 docs/
-├── 01-planning/           # 1단계: 프로젝트 계획
-├── 02-architecture/       # 2단계: 시스템 설계
-├── 03-implementation/     # 3단계: 주차별 구현
-├── 04-operations/         # 4단계: 운영 및 장애대응
-├── 05-performance/        # 5단계: 성능 분석
-├── 06-demo/              # 6단계: 데모 및 시연
-└── 07-retrospective/     # 7단계: 프로젝트 회고
+├── 01-planning/            # 1단계: 프로젝트 계획
+├── 02-architecture/        # 2단계: 시스템 설계
+├── 03-implementation/      # 3단계: 구현 요약
+├── 04-operations/          # 4단계: 운영 가이드 및 스크린샷
+├── 04-troubleshooting/     # 4단계: 트러블슈팅 문서
+├── 05-operations/          # 5단계: 운영 및 시스템 관리
+├── 06-performance/         # 6단계: 성능 분석
+├── 07-demo/                # 7단계: 데모 및 시연
+└── 08-retrospective/       # 8단계: 프로젝트 회고
 ```
 
 ---
@@ -38,27 +40,24 @@ docs/
    - [02-architecture/architecture.md](02-architecture/architecture.md) - 시스템 아키텍처
    - [02-architecture/adr/](02-architecture/adr/) - 주요 기술 결정 기록
 
-4. **구현 과정 살펴보기** (선택)
-   - [03-implementation/week1/](03-implementation/week1/) - 인프라 구축
-   - [03-implementation/week2/](03-implementation/week2/) - CI/CD 파이프라인
-   - [03-implementation/week3/](03-implementation/week3/) - 모니터링 시스템
-   - [03-implementation/week4/](03-implementation/week4/) - Istio 서비스 메시
-   - [03-implementation/week5/](03-implementation/week5/) - 최종 완성
+4. **구현 과정 살펴보기**
+   - [03-implementation/implementation-summary.md](03-implementation/implementation-summary.md) - 전체 구현 요약
 
 5. **최종 성과 확인**
-   - [05-performance/week5-performance-analysis.md](05-performance/week5-performance-analysis.md) - 성능 측정 결과
-   - [07-retrospective/project-retrospective.md](07-retrospective/project-retrospective.md) - 프로젝트 회고
+   - [05-operations/final-status-report.md](05-operations/final-status-report.md) - 프로젝트 최종 상태
+   - [06-performance/week5-performance-analysis.md](06-performance/week5-performance-analysis.md) - 성능 측정 결과
+   - [08-retrospective/project-retrospective.md](08-retrospective/project-retrospective.md) - 프로젝트 회고
 
 ### 특정 목적별 가이드
 
 #### 실행 및 배포 방법을 알고 싶다면
 - [루트 README.md](../README.md) → "시작하기" 섹션
-- [04-operations/token-auth-setup.md](04-operations/token-auth-setup.md) - 인증 설정
+- [05-operations/token-auth-setup.md](05-operations/token-auth-setup.md) - 인증 설정
 - [terraform/README.md](../terraform/README.md) - 인프라 생성
 
 #### 문제 해결 방법을 찾는다면
-- [04-operations/operations-guide.md](04-operations/operations-guide.md) - 운영 가이드
-- [03-implementation/week1/week1-troubleshooting-pvc.md](03-implementation/week1/week1-troubleshooting-pvc.md) - PVC 문제 해결
+- [05-operations/operations-guide.md](05-operations/operations-guide.md) - 운영 가이드
+- [04-troubleshooting/README.md](04-troubleshooting/README.md) - 트러블슈팅 가이드 (모든 문제 해결 사례)
 
 #### 기술적 의사결정 배경이 궁금하다면
 - [02-architecture/adr/](02-architecture/adr/) - 모든 ADR 문서
@@ -69,7 +68,7 @@ docs/
   - [005-terraform-vs-pulumi.md](02-architecture/adr/005-terraform-vs-pulumi.md)
 
 #### 데모 준비를 한다면
-- [06-demo/demo-scenario.md](06-demo/demo-scenario.md) - 20-25분 데모 시나리오
+- [07-demo/demo-scenario.md](07-demo/demo-scenario.md) - 20-25분 데모 시나리오
 
 ---
 
@@ -102,46 +101,68 @@ docs/
 
 ### 3단계: 구현 (03-implementation/)
 
-5주간의 주차별 개발 과정과 문제 해결 기록입니다.
+5주간의 개발 과정에 대한 전체적인 요약입니다.
 
-| 주차 | 내용 | 핵심 문서 |
-|------|------|----------|
-| **Week 1** | 인프라 구축 및 PostgreSQL 마이그레이션 | [week1-implementation-guide.md](03-implementation/week1/week1-implementation-guide.md) |
-| **Week 2** | CI/CD 파이프라인 구축 | [ci-cd-setup.md](03-implementation/week2/ci-cd-setup.md) |
-| **Week 3** | Prometheus + Grafana 모니터링 | [implementation-guide.md](03-implementation/week3/implementation-guide.md) |
-| **Week 4** | Istio 서비스 메시 | [implementation-guide.md](03-implementation/week4/implementation-guide.md) |
-| **Week 5** | 최종 완성 및 테스트 | [week5-final-status-report.md](03-implementation/week5/week5-final-status-report.md) |
+| 문서 | 설명 |
+|------|------|
+| [implementation-summary.md](03-implementation/implementation-summary.md) | 전체 구현 과정의 요약 및 핵심 내용 |
 
-### 4단계: 운영 (04-operations/)
+### 4단계: 운영 및 트러블슈팅 (04-operations/, 04-troubleshooting/)
+
+시스템 운영을 위한 가이드와 트러블슈팅 문서입니다.
+
+#### 04-operations/
+프로젝트 검증 결과 및 스크린샷을 포함합니다.
+
+| 디렉토리/파일 | 설명 |
+|------|------|
+| [screenshots/](04-operations/screenshots/) | Grafana, Kiali, Prometheus 등 모니터링 대시보드 스크린샷 |
+
+#### 04-troubleshooting/
+실제 발생한 모든 문제와 해결 방법을 카테고리별로 정리했습니다.
+
+| 문서 | 설명 |
+|------|------|
+| [README.md](04-troubleshooting/README.md) | 트러블슈팅 가이드 메인 페이지 (모든 문제 해결 사례 인덱스) |
+| [argocd/](04-troubleshooting/argocd/) | Argo CD 관련 문제 해결 |
+| [ci-cd/](04-troubleshooting/ci-cd/) | CI/CD 파이프라인 관련 문제 해결 |
+| [istio/](04-troubleshooting/istio/) | Istio 서비스 메시 관련 문제 해결 |
+| [kubernetes/](04-troubleshooting/kubernetes/) | Kubernetes 관련 문제 해결 |
+| [monitoring/](04-troubleshooting/monitoring/) | Prometheus, Grafana, Loki 등 모니터링 관련 문제 해결 |
+
+### 5단계: 운영 (05-operations/)
 
 시스템 운영, 장애 대응, 보안 관리를 위한 실무 가이드입니다.
 
 | 문서 | 설명 |
 |------|------|
-| [operations-guide.md](04-operations/operations-guide.md) | 일상 운영 작업 및 모니터링 |
-| [token-auth-setup.md](04-operations/token-auth-setup.md) | Kubernetes Token 기반 인증 설정 |
-| [SECRET_MANAGEMENT.md](04-operations/SECRET_MANAGEMENT.md) | Secret 관리 방법 및 보안 고려사항 |
+| [operations-guide.md](05-operations/operations-guide.md) | 일상 운영 작업 및 모니터링 |
+| [token-auth-setup.md](05-operations/token-auth-setup.md) | Kubernetes Token 기반 인증 설정 |
+| [SECRET_MANAGEMENT.md](05-operations/SECRET_MANAGEMENT.md) | Secret 관리 방법 및 보안 고려사항 |
+| [final-status-report.md](05-operations/final-status-report.md) | 프로젝트 최종 상태 보고서 |
+| [comprehensive-test-checklist.md](05-operations/comprehensive-test-checklist.md) | 시스템 검증 체크리스트 |
+| [comprehensive-test-report.md](05-operations/comprehensive-test-report.md) | 종합 테스트 결과 보고서 |
 
-### 5단계: 성능 (05-performance/)
+### 6단계: 성능 (06-performance/)
 
 k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 
 | 문서 | 설명 |
 |------|------|
-| [week5-performance-analysis.md](05-performance/week5-performance-analysis.md) | 부하 테스트 결과, 병목 분석, 최적화 과정 |
+| [week5-performance-analysis.md](06-performance/week5-performance-analysis.md) | 부하 테스트 결과, 병목 분석, 최적화 과정 |
 
 **주요 성과**:
 - P95 응답 시간: 19.2ms
 - HTTP 실패율: 0%
 - HPA 최적화로 11.6% 성능 개선
 
-### 6단계: 데모 (06-demo/)
+### 7단계: 데모 (07-demo/)
 
 프로젝트 시연을 위한 데모 시나리오와 준비 사항입니다.
 
 | 문서 | 설명 |
 |------|------|
-| [demo-scenario.md](06-demo/demo-scenario.md) | 20-25분 데모 시나리오 (준비사항, 스크립트, 예상 질문) |
+| [demo-scenario.md](07-demo/demo-scenario.md) | 20-25분 데모 시나리오 (준비사항, 스크립트, 예상 질문) |
 
 **데모 구성**:
 1. 프로젝트 소개 (3분)
@@ -151,13 +172,13 @@ k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 5. 에러 시나리오 및 모니터링 (5분)
 6. 고가용성 및 자동 복구 (4분)
 
-### 7단계: 회고 (07-retrospective/)
+### 8단계: 회고 (08-retrospective/)
 
 프로젝트 완료 후 작성한 회고록입니다.
 
 | 문서 | 설명 |
 |------|------|
-| [project-retrospective.md](07-retrospective/project-retrospective.md) | 잘한 점, 아쉬운 점, 배운 점, 향후 계획 |
+| [project-retrospective.md](08-retrospective/project-retrospective.md) | 잘한 점, 아쉬운 점, 배운 점, 향후 계획 |
 
 ---
 
@@ -179,9 +200,10 @@ k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 
 - **프로젝트 개요**: [../README.md](../README.md)
 - **시스템 아키텍처**: [02-architecture/architecture.md](02-architecture/architecture.md)
-- **CI/CD 설정**: [03-implementation/week2/ci-cd-setup.md](03-implementation/week2/ci-cd-setup.md)
-- **운영 가이드**: [04-operations/operations-guide.md](04-operations/operations-guide.md)
-- **성능 분석**: [05-performance/week5-performance-analysis.md](05-performance/week5-performance-analysis.md)
+- **운영 가이드**: [05-operations/operations-guide.md](05-operations/operations-guide.md)
+- **트러블슈팅**: [04-troubleshooting/README.md](04-troubleshooting/README.md)
+- **성능 분석**: [06-performance/week5-performance-analysis.md](06-performance/week5-performance-analysis.md)
+- **최종 상태 보고서**: [05-operations/final-status-report.md](05-operations/final-status-report.md)
 
 ### 외부 리소스
 
@@ -191,4 +213,4 @@ k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 
 ---
 
-**최종 업데이트**: 2025년 11월 5일
+**최종 업데이트**: 2025년 11월 14일
