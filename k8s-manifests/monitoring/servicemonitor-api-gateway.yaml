@@ -2,11 +2,14 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: api-gateway
-  namespace: titanium-prod
+  namespace: monitoring
   labels:
     app: api-gateway
     release: prometheus
 spec:
+  namespaceSelector:
+    matchNames:
+    - titanium-prod
   selector:
     matchLabels:
       app: api-gateway
