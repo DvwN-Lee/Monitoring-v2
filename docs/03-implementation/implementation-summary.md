@@ -263,7 +263,7 @@ Kubernetes Cluster
 ### 시스템 상태
 
 **Pod 현황**:
-- 총 14개 Pod (postgresql 제외 13개)
+- 총 12개 Pod (api-gateway:2, auth:2, blog:2, user:2, redis:1, load-generator:2, postgresql:1)
 - 모든 애플리케이션 Pod: 2/2 Running
   - 1: 애플리케이션 컨테이너
   - 1: Istio sidecar (Envoy proxy)
@@ -417,8 +417,8 @@ Kubernetes Cluster
 | **모니터링** | Prometheus | - | 메트릭 수집 및 저장 |
 | | Grafana | - | 시각화 대시보드 |
 | | AlertManager | - | 알림 관리 |
-| **로깅** | Loki | - | 중앙 로그 저장소 |
-| | Promtail | - | 로그 수집 에이전트 |
+| **로깅** | Loki | 3.5.7 | 중앙 로그 저장소 |
+| | Promtail | 3.5.1 | 로그 수집 에이전트 |
 | **서비스 메시** | Istio | 1.20.1 | mTLS, 트래픽 관리 |
 | **데이터베이스** | PostgreSQL | - | 관계형 데이터베이스 |
 | **테스트** | k6 | v1.3.0 | 부하 테스트 |

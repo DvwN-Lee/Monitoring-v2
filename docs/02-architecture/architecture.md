@@ -52,7 +52,7 @@
 
 **상세 구현 정보는 다음 위치를 참고하세요:**
 - **Terraform 코드**: `terraform/` 디렉토리
-- **Kubernetes 매니페스트**: `k8s/` 디렉토리
+- **Kubernetes 매니페스트**: `k8s-manifests/` 디렉토리
 - **CI/CD 스크립트**: `.github/workflows/` 디렉토리
 - **서비스 소스 코드**: 각 서비스 디렉토리의 README
 
@@ -184,7 +184,7 @@ graph TB
 
 #### Kubernetes 클러스터 구성
 - **네임스페이스 구조**
-  - `default`: 애플리케이션 서비스
+  - `titanium-prod`: 애플리케이션 서비스
   - `monitoring`: Prometheus, Grafana, Loki
   - `istio-system`: Istio 컴포넌트
   - `argocd`: Argo CD
@@ -212,7 +212,15 @@ graph TB
 - **PostgreSQL**: 사용자 정보, 블로그 게시글 등 영속 데이터
 - **Redis**: 세션 정보, 캐시 데이터
 
-### 3.3. 서비스 간 통신 흐름
+### 3.3. 데모/테스트 컴포넌트
+
+- **Load Generator**: 모니터링 시스템의 실시간 동작을 시연하기 위한 트래픽 생성기
+  - 역할: 1초마다 API Gateway, Auth Service, Blog Service로 HTTP 요청 전송
+  - 배포: 2개 replica로 지속적인 트래픽 생성
+  - 목적: Grafana 대시보드의 실시간 메트릭 시각화 및 모니터링 시스템 검증
+  - 기술: curl 기반 컨테이너 (Istio sidecar 주입)
+
+### 3.4. 서비스 간 통신 흐름
 
 #### 사용자 요청 처리 흐름
 
