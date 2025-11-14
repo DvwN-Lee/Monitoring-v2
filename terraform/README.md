@@ -2,6 +2,41 @@
 
 Terraform 모듈을 사용하여 Solid Cloud 인프라를 자동화합니다.
 
+## Terraform으로 생성되는 리소스
+
+`terraform apply` 실행 시, Kubernetes 클러스터 내에 다음과 같은 리소스들이 자동으로 생성됩니다:
+
+```mermaid
+graph TD
+    A[Terraform Apply] --> B[Kubernetes Module]
+    A --> C[Database Module]
+
+    B --> D[titanium-prod Namespace]
+    B --> E[monitoring Namespace]
+    B --> F[argocd Namespace]
+
+    C --> G[PostgreSQL StatefulSet]
+    C --> H[PersistentVolumeClaim 10Gi]
+    C --> I[PostgreSQL Service]
+    C --> J[DB Secret]
+    C --> K[Init ConfigMap]
+
+    D -->|contains| G
+    D -->|contains| H
+    D -->|contains| I
+
+    style A fill:#2088FF,stroke:#333,stroke-width:2px,color:#fff
+    style G fill:#4CAF50,stroke:#333,stroke-width:2px
+    style H fill:#FF9800,stroke:#333,stroke-width:2px
+```
+
+**주요 생성 리소스:**
+- **3개 Namespace**: titanium-prod, monitoring, argocd
+- **PostgreSQL StatefulSet**: 1 replica, 10Gi PVC
+- **Kubernetes Service**: PostgreSQL ClusterIP 서비스
+- **Secret**: PostgreSQL 자격 증명
+- **ConfigMap**: 데이터베이스 초기화 스크립트 (users, posts 테이블)
+
 ## 디렉토리 구조
 
 ```
@@ -41,10 +76,37 @@ cd terraform/environments/solid-cloud
 cp terraform.tfvars.example terraform.tfvars
 
 # 필수 변수 업데이트
-# - postgres_password: 강력한 비밀번호로 변경
-# - kubeconfig_path: kubeconfig 파일 경로 설정
 vi terraform.tfvars
 ```
+
+**terraform.tfvars 예시:**
+
+```hcl
+# PostgreSQL 설정
+postgres_password = "your-strong-password-here"  # 강력한 비밀번호로 변경 필수
+postgres_user     = "postgres"
+postgres_db       = "titanium"
+
+# Kubernetes 설정
+kubeconfig_path = "~/.kube/config"  # kubeconfig 파일 경로
+
+# 네임스페이스 설정
+app_namespace        = "titanium-prod"
+monitoring_namespace = "monitoring"
+argocd_namespace     = "argocd"
+
+# PostgreSQL 리소스 설정
+postgres_storage_size = "10Gi"
+postgres_cpu_request  = "500m"
+postgres_mem_request  = "1Gi"
+postgres_cpu_limit    = "2000m"
+postgres_mem_limit    = "2Gi"
+```
+
+**주의사항:**
+- `postgres_password`는 반드시 강력한 비밀번호로 변경하세요
+- `terraform.tfvars` 파일은 `.gitignore`에 포함되어 있어 Git에 커밋되지 않습니다
+- 프로덕션 환경에서는 환경 변수나 Secret 관리 도구 사용을 권장합니다
 
 ### 3. Terraform 초기화
 

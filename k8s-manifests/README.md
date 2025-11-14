@@ -14,7 +14,36 @@
 - **데이터 영속성 및 자동화**: `PersistentVolumeClaim`을 통해 `user-service`의 데이터베이스를 Pod의 생명주기와 무관하게 영속적으로 보존하고, `CronJob`을 통해 DB 백업과 같은 주기적인 작업을 자동화함
 
 ## 3. 기술적 구현 (Kustomize)
-- 이 프로젝트는 Kustomize의 계층적 구조를 활용하여 설정을 효율적으로 관리함
+
+이 프로젝트는 Kustomize의 계층적 구조를 활용하여 설정을 효율적으로 관리합니다.
+
+### Kustomize Base + Overlays 구조
+
+```mermaid
+graph LR
+    A[base/] --> B[kustomization.yaml]
+    A --> C[deployment.yaml]
+    A --> D[service.yaml]
+    A --> E[configmap.yaml]
+
+    F[overlays/local/] --> G[kustomization.yaml]
+    G -->|resources| A
+    G -->|patches| H[Patch: replicas=1]
+    G -->|patches| I[Patch: NodePort]
+    G -->|configMapGenerator| J[Merge: DEBUG=true]
+
+    G --> K[최종 Manifest]
+
+    style A fill:#4CAF50,stroke:#333,stroke-width:2px
+    style F fill:#2088FF,stroke:#333,stroke-width:2px
+    style K fill:#FF9800,stroke:#333,stroke-width:2px
+
+```
+
+**동작 방식:**
+1. **base/**: 모든 환경에 공통적으로 적용되는 기본 설정을 정의
+2. **overlays/local**: base의 설정을 상속받아 로컬 환경에 맞게 수정 (replicas, service type, ConfigMap 등)
+3. **kustomize build**: base와 overlay를 병합하여 최종 매니페스트 생성
 
 ### 3.1. `base` 디렉터리 (공통 리소스 정의)
 `base/kustomization.yaml` 파일은 애플리케이션을 구성하는 모든 기본 리소스 목록을 정의함.
@@ -35,6 +64,75 @@
 - **`patches`**:
     - `load-balancer-service`의 타입을 `ClusterIP`에서 **`NodePort`**로 변경하여, 로컬 머신의 특정 포트(30700)를 통해 외부에서 직접 접근할 수 있도록 함
     - 모든 `Deployment`의 `imagePullPolicy`를 **`IfNotPresent`**로 변경하여, 이미지가 로컬에 있을 경우 다시 내려받지 않도록 해 개발 속도를 향상시킴
+
+### 3.3. Kustomize 빌드 결과 비교
+
+`base`와 `overlays/local`을 빌드했을 때, 설정이 어떻게 변경되는지 비교합니다:
+
+#### base의 api-gateway Deployment
+```yaml
+# base/api-gateway-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  replicas: 3  # 프로덕션 기본값
+  template:
+    spec:
+      containers:
+      - name: api-gateway
+        imagePullPolicy: Always  # 항상 최신 이미지 Pull
+```
+
+#### overlays/local에서 빌드한 결과
+```bash
+# kustomize build overlays/local | grep -A 10 "kind: Deployment"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: local-api-gateway  # namePrefix 적용
+  namespace: titanium-local  # namespace 지정
+spec:
+  replicas: 1  # 로컬 환경용으로 축소
+  template:
+    spec:
+      containers:
+      - name: api-gateway
+        imagePullPolicy: IfNotPresent  # 로컬 캐시 사용
+```
+
+#### load-balancer Service 타입 변경
+```yaml
+# base/load-balancer-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: load-balancer-service
+spec:
+  type: ClusterIP  # 클러스터 내부에서만 접근 가능
+```
+
+```yaml
+# kustomize build overlays/local (결과)
+apiVersion: v1
+kind: Service
+metadata:
+  name: local-load-balancer-service
+  namespace: titanium-local
+spec:
+  type: NodePort  # 외부에서 접근 가능
+  ports:
+  - port: 80
+    nodePort: 30700  # 고정 포트
+```
+
+**주요 변경 사항:**
+- **replicas**: 3 → 1 (로컬 리소스 절약)
+- **namePrefix**: api-gateway → local-api-gateway (환경 구분)
+- **namespace**: default → titanium-local (격리)
+- **service type**: ClusterIP → NodePort (외부 접근)
+- **imagePullPolicy**: Always → IfNotPresent (빠른 개발)
 
 ## 4. 배포 방법
 - 이 프로젝트의 쿠버네티스 배포는 **Skaffold**를 통해 자동화됨
