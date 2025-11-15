@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] GitHub Actions CI 트리거 안 됨 문제 해결
 
 ## 1. 문제 상황
@@ -63,8 +69,89 @@ GitHub Actions 워크플로우가 트리거되지 않는 원인은 대부분 워
 -   VS Code와 같은 코드 에디터에서 YAML 확장 프로그램을 설치하면 실시간으로 문법 오류를 확인할 수 있습니다.
 -   온라인 YAML 린터(linter)를 사용해 파일 내용을 붙여넣고 유효성을 검사하는 것도 좋은 방법입니다.
 
-## 5. 교훈
+## 5. 검증
+
+해결책이 제대로 적용되었는지 확인하는 방법입니다.
+
+### 1. 워크플로우 트리거 확인
+
+코드를 푸시하여 워크플로우가 자동으로 실행되는지 확인합니다.
+
+```bash
+# 1. 테스트 커밋 생성 및 푸시
+git commit --allow-empty -m "test: GitHub Actions 트리거 테스트"
+git push origin main
+
+# 2. GitHub Actions 탭에서 확인
+# Repository > Actions 탭 > 새로운 워크플로우 실행 확인
+
+# 예상 결과: 푸시 후 수초 내에 새로운 워크플로우 실행이 표시됨
+```
+
+### 2. 워크플로우 파일 구문 검증
+
+YAML 파일 구문이 올바른지 확인합니다.
+
+```bash
+# GitHub Actions 탭 확인:
+# - 워크플로우가 목록에 표시되는지 확인
+# - 구문 오류 시 경고 메시지 표시됨
+
+# 로컬에서 YAML 검증:
+yamllint .github/workflows/ci.yml
+```
+
+### 3. 트리거 조건 검증
+
+워크플로우의 on 조건이 올바르게 설정되었는지 확인합니다.
+
+```bash
+# .github/workflows/ci.yml 파일 확인
+cat .github/workflows/ci.yml | grep -A 5 "^on:"
+
+# 예상 출력:
+# on:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+```
+
+### 4. GitHub Actions 활성화 상태 확인
+
+리포지토리 설정에서 GitHub Actions가 활성화되어 있는지 확인합니다.
+
+```bash
+# GitHub UI에서 확인:
+# Repository > Settings > Actions > General
+#
+# Actions permissions:
+# ✅ Allow all actions and reusable workflows
+```
+
+### 5. 워크플로우 실행 로그 확인
+
+워크플로우가 실행되면 로그를 확인하여 모든 단계가 정상 작동하는지 검증합니다.
+
+```bash
+# GitHub Actions 탭에서 확인:
+# - 최근 워크플로우 실행 클릭
+# - 각 job 및 step의 실행 결과 확인
+
+# 예상 결과:
+# ✅ Build
+# ✅ Test
+# ✅ Security scan
+# ✅ Push
+```
+
+## 6. 교훈
 
 1.  **트리거 조건은 명시적이다**: GitHub Actions는 워크플로우 파일에 정의된 조건과 정확히 일치할 때만 작동합니다. 브랜치 이름, 이벤트 타입, 파일 경로 등 모든 조건을 꼼꼼히 검토해야 합니다.
 2.  **`paths` 필터는 양날의 검**: 불필요한 워크플로우 실행을 막아 비용을 절약하는 좋은 기능이지만, 잘못 설정하면 필수적인 CI/CD 파이프라인이 중단되는 원인이 될 수 있습니다. 신중하게 패턴을 설정해야 합니다.
 3.  **GitHub UI는 훌륭한 디버깅 도구**: 'Actions' 탭에서는 워크플로우 실행 기록뿐만 아니라, 문법 오류 등으로 인해 등록되지 않은 워크플로우에 대한 경고도 표시될 수 있으므로 주의 깊게 살펴볼 필요가 있습니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - CI/CD 파이프라인](../../02-architecture/architecture.md#4-cicd-파이프라인)
+- [운영 가이드](../../04-operations/guides/operations-guide.md)

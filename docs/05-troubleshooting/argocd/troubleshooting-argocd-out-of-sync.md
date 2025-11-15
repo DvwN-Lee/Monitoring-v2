@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Argo CD Out of Sync 문제 해결
 
 ## 1. 문제 상황
@@ -72,8 +78,79 @@ Argo CD UI에서 관리 중인 Application의 상태가 초록색 `Synced`가 �
         - /spec/replicas # HPA가 관리하므로 이 필드의 차이는 무시
     ```
 
-## 5. 교훈
+## 5. 검증
+
+해결책이 제대로 적용되었는지 확인하는 방법입니다.
+
+### 1. Application Sync 상태 확인
+
+ArgoCD Application이 Synced 상태로 전환되었는지 확인합니다.
+
+```bash
+kubectl get application -n argocd <app-name> -o jsonpath='{.status.sync.status}'
+
+# 예상 결과: Synced
+```
+
+### 2. DIFF 결과 재확인
+
+ArgoCD UI의 DIFF 탭에서 더 이상 차이점이 없는지 확인합니다.
+
+```bash
+# CLI로 확인하는 경우
+argocd app diff <app-name>
+
+# 예상 결과: No differences found (또는 ignoreDifferences 설정한 필드만 차이 표시)
+```
+
+### 3. SelfHeal 동작 테스트 (설정한 경우)
+
+selfHeal이 활성화된 경우, 의도적으로 변경을 가해 자동 복구되는지 테스트합니다.
+
+```bash
+# 1. 테스트용 수동 변경
+kubectl scale deployment/<deployment-name> -n <namespace> --replicas=10
+
+# 2. ArgoCD가 자동으로 Git 상태로 복구하는지 모니터링 (보통 5분 이내)
+kubectl get deployment/<deployment-name> -n <namespace> -w
+
+# 3. 예상 결과: replicas가 Git에 정의된 원래 값으로 자동 복구됨
+```
+
+### 4. Sync Operation 이력 확인
+
+최근 동기화 작업이 성공적으로 완료되었는지 확인합니다.
+
+```bash
+# ArgoCD UI에서 확인:
+# Application > Sync Status > Last Sync Result: Succeeded
+
+# CLI로 확인:
+argocd app get <app-name> --refresh
+
+# History 탭에서 최근 Sync 작업 확인
+```
+
+### 5. 리소스 정합성 검증
+
+모든 Kubernetes 리소스가 Git에 정의된 대로 배포되었는지 확인합니다.
+
+```bash
+# 배포된 리소스 확인
+kubectl get all -n <namespace>
+
+# Git 매니페스트와 비교
+git show HEAD:<path-to-manifest>
+```
+
+## 6. 교훈
 
 1.  **`OutOfSync`는 GitOps 원칙 위반의 경고등**: 이 상태는 누군가 또는 무언가가 Git이 아닌 다른 방법으로 클러스터를 변경했음을 의미합니다. 클러스터의 모든 변경은 Git을 통해 이루어져야 한다는 원칙을 다시 한번 상기해야 합니다.
 2.  **`kubectl` 직접 사용은 신중하게**: 긴급 장애 대응과 같은 예외적인 상황이 아니라면 `kubectl`로 리소스를 직접 수정하는 것은 지양해야 합니다. 만약 수정했다면, 최대한 빨리 해당 변경사항을 Git 리포지토리에도 반영하여 상태를 일치시켜야 합니다.
 3.  **`selfHeal`은 강력하지만 이해가 필요하다**: `selfHeal`은 Git 상태와의 일관성을 강제하는 매우 유용한 기능이지만, 다른 컨트롤러와의 상호작용을 고려하지 않고 사용하면 의도치 않은 롤백을 유발할 수 있습니다. 동작 방식을 정확히 이해하고 적용해야 합니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - CI/CD 파이프라인](../../02-architecture/architecture.md#4-cicd-파이프라인)
+- [운영 가이드 - ArgoCD 운영](../../04-operations/guides/operations-guide.md)
+- [ArgoCD Git 감지 실패](troubleshooting-argocd-git-detection.md)

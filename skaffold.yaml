@@ -7,11 +7,7 @@ build:
   local:
     push: false
   artifacts:
-    - image: dongju101/titanium-lb    
-      context: load-balancer
-      docker:
-        dockerfile: Dockerfile
-    - image: dongju101/titanium-api   
+    - image: dongju101/titanium-api
       context: api-gateway
       docker:
         dockerfile: Dockerfile
@@ -21,8 +17,6 @@ build:
       context: user-service
     - image: dongju101/titanium-blog-service
       context: blog-service
-    - image: dongju101/titanium-ui
-      context: dashboard-ui
 
 manifests:
   kustomize:

@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Argo CD Git 변경사항 미감지 문제 해결
 
 ## 1. 문제 상황
@@ -67,8 +73,65 @@ Argo CD가 Git 리포지토리의 변경 사항을 자동으로 감지하지 못
     kubectl patch application <app-name> -n argocd --type merge -p '{"metadata": {"annotations": {"argocd.argoproj.io/refresh": "hard"}}}'
     ```
 
-## 5. 교훈
+## 5. 검증
+
+해결책이 제대로 적용되었는지 확인하는 방법입니다.
+
+### 1. Webhook 동작 확인
+
+GitHub에서 Webhook이 정상 작동하는지 확인합니다.
+
+```bash
+# GitHub Repository > Settings > Webhooks > Recent Deliveries 확인
+# 최근 Webhook 전송 내역에서 200 응답 코드 확인
+```
+
+### 2. Git 변경 감지 테스트
+
+실제로 Git 변경사항이 자동으로 감지되는지 테스트합니다.
+
+```bash
+# 1. 테스트 변경사항 커밋 및 푸시
+git commit --allow-empty -m "test: ArgoCD 자동 감지 테스트"
+git push origin main
+
+# 2. ArgoCD Application 상태 모니터링 (30초~3분 이내)
+kubectl get application -n argocd <app-name> -w
+
+# 3. 예상 결과: Sync Status가 OutOfSync로 변경되어야 함
+```
+
+### 3. 자동 동기화 확인
+
+Auto-sync가 활성화된 경우, OutOfSync 상태에서 자동으로 Synced 상태로 전환되는지 확인합니다.
+
+```bash
+# ArgoCD UI에서 확인
+# - Sync Status: Synced
+# - Last Sync: 최근 시간으로 업데이트
+# - Sync Result: Succeeded
+```
+
+### 4. 로그 확인
+
+ArgoCD 컨트롤러 로그에서 변경 감지 및 동기화 로그를 확인합니다.
+
+```bash
+kubectl logs -n argocd -l app.kubernetes.io/name=argocd-application-controller --tail=100 | grep <app-name>
+
+# 예상 로그:
+# "Comparing app state (desired state vs. live state)"
+# "Sync operation to <revision> succeeded"
+```
+
+## 6. 교훈
 
 1.  **GitOps의 실시간성은 Webhook에 의존**: 푸시 즉시 변경이 감지되기를 원한다면, Webhook 설정이 필수적이며 가장 먼저 점검해야 할 대상입니다. 네트워크 연결성을 반드시 확인해야 합니다.
 2.  **Argo CD의 기본 동작 이해**: Argo CD의 기본 폴링 주기가 3분이라는 점을 인지하면, Webhook이 없는 환경에서 "왜 즉시 반영되지 않지?"라는 오해를 줄일 수 있습니다.
 3.  **'Hard Refresh'는 최고의 디버깅 도구**: Argo CD가 Git과 상태가 맞지 않는다고 의심될 때, 'Hard Refresh'는 캐시 문제를 배제하고 실제 Git 리포지토리와의 차이점을 확인하는 가장 빠르고 효과적인 방법입니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - CI/CD 파이프라인](../../02-architecture/architecture.md#4-cicd-파이프라인)
+- [운영 가이드 - ArgoCD 운영](../../04-operations/guides/operations-guide.md)
+- [ArgoCD Health Degraded 문제](troubleshooting-argocd-health-degraded.md)

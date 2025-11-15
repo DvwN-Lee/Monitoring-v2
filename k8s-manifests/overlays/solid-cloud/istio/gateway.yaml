@@ -65,23 +65,6 @@ spec:
         host: prod-api-gateway-service
         port:
           number: 8000
-  # Load Balancer stats/health
-  - match:
-    - uri:
-        prefix: /lb-health
-    route:
-    - destination:
-        host: prod-load-balancer-service
-        port:
-          number: 7100
-  - match:
-    - uri:
-        prefix: /stats
-    route:
-    - destination:
-        host: prod-load-balancer-service
-        port:
-          number: 7100
   # Default route to blog
   - match:
     - uri:

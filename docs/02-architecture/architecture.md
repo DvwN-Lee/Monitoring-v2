@@ -180,7 +180,20 @@ graph TB
    - Grafana: 시각화 및 대시보드
    - Loki: 중앙 로그 수집 및 조회
 
-### 2.2. 네트워크 구조
+### 2.2. 실제 서비스 메시 토폴로지 (Kiali)
+
+위의 mermaid 다이어그램은 설계상의 아키텍처를 보여주며, 아래 Kiali 스크린샷은 실제로 동작하는 시스템의 서비스 간 상호작용과 트래픽 흐름을 실시간으로 시각화합니다.
+
+![Kiali Service Mesh Topology](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/kiali-service-graph-full.png)
+
+**Kiali를 통해 확인 가능한 정보:**
+- 서비스 간 실시간 트래픽 흐름 및 요청 수
+- mTLS STRICT 모드로 암호화된 통신 상태
+- 각 서비스의 응답 시간 및 에러율
+- Istio Ingress Gateway를 통한 외부 트래픽 진입 경로
+- Load Generator가 생성하는 지속적인 테스트 트래픽
+
+### 2.3. 네트워크 구조
 
 #### Kubernetes 클러스터 구성
 - **네임스페이스 구조**

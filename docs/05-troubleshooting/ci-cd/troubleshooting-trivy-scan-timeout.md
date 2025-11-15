@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Trivy 보안 스캔 시간 초과 문제 해결
 
 ## 1. 문제 상황
@@ -94,8 +100,85 @@ Trivy 스캔의 시간 초과는 주로 스캔 준비 과정이나 스캔 자체
         skip-db-update: 'true' # 캐시된 DB를 사용 강제
     ```
 
-## 5. 교훈
+## 5. 검증
+
+해결책이 제대로 적용되었는지 확인하는 방법입니다.
+
+### 1. Trivy 스캔 성공 확인
+
+GitHub Actions 로그에서 Trivy 스캔이 타임아웃 없이 완료되는지 확인합니다.
+
+```bash
+# GitHub Actions 로그에서 확인:
+# Scan image with Trivy
+# ...
+# Total: X vulnerabilities (CRITICAL: Y, HIGH: Z)
+# ✅ Scan completed successfully
+
+# 예상 소요 시간: 2-5분 (캐시 사용 시)
+```
+
+### 2. 스캔 시간 측정
+
+캐시 적용 전후의 스캔 시간을 비교하여 개선되었는지 확인합니다.
+
+```bash
+# GitHub Actions UI에서 각 단계별 소요 시간 확인:
+# - Trivy DB 다운로드: 30초 미만 (캐시 히트 시)
+# - 이미지 스캔: 1-3분
+# - 전체 소요 시간: 5분 이내
+
+# 캐시 미사용 시: 10분 이상
+# 캐시 사용 시: 2-5분 (50-70% 단축)
+```
+
+### 3. Trivy DB 캐시 사용 확인
+
+GitHub Actions 로그에서 캐시가 사용되는지 확인합니다.
+
+```bash
+# GitHub Actions 로그에서 확인:
+# Cache Trivy DB
+# Cache restored from key: trivy-db-Linux-...
+
+# 예상 로그:
+# Cache restored successfully
+# Need to download trivy-db: false
+```
+
+### 4. 취약점 보고서 생성 확인
+
+Trivy 스캔 결과가 올바르게 보고서로 생성되었는지 확인합니다.
+
+```bash
+# GitHub Actions 로그에서 취약점 요약 확인:
+# Total: X (CRITICAL: Y, HIGH: Z, MEDIUM: W, LOW: V)
+
+# 심각한 취약점이 발견된 경우:
+# exit-code: 1 설정 시 워크플로우 실패 (의도된 동작)
+```
+
+### 5. 타임아웃 설정 검증
+
+워크플로우 파일에서 timeout 설정이 올바르게 적용되었는지 확인합니다.
+
+```bash
+# .github/workflows/ci.yml 파일 확인
+grep -A 10 "trivy-action" .github/workflows/ci.yml
+
+# 예상 설정:
+# timeout: '15m'
+# 또는
+# timeout-minutes: 15
+```
+
+## 6. 교훈
 
 1.  **외부 의존 작업에는 항상 `timeout`을 고려**: 보안 스캔, 대용량 파일 다운로드 등 외부 서비스나 네트워크에 의존하는 작업은 예상치 못한 지연이 발생할 수 있으므로, 기본값에 의존하기보다 명시적으로 넉넉한 `timeout`을 설정하는 것이 안정적입니다.
 2.  **캐시는 CI 시간 단축의 핵심**: Trivy DB, 패키지 의존성 등 반복적으로 다운로드되는 데이터는 적극적으로 캐싱하여 CI 실행 시간을 줄이고 비용을 절약해야 합니다.
 3.  **작은 이미지가 모든 면에서 유리하다**: 이미지 크기는 빌드, 푸시, 스캔, 배포 시간뿐만 아니라 저장 비용에도 영향을 미칩니다. Dockerfile 최적화는 CI/CD 파이프라인 전체의 효율성을 높이는 중요한 활동입니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - CI/CD 파이프라인](../../02-architecture/architecture.md#4-cicd-파이프라인)
+- [운영 가이드](../../04-operations/guides/operations-guide.md)

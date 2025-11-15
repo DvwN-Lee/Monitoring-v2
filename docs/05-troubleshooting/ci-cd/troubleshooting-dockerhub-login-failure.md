@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Docker Hub 로그인 실패 문제 해결
 
 ## 1. 문제 상황
@@ -70,8 +76,85 @@ Docker Hub 로그인 실패는 대부분 인증 정보 자체의 문제이거나
 
 -   수정 사항을 커밋하고 푸시하거나, GitHub Actions 탭에서 실패했던 워크플로우를 'Re-run all jobs'를 통해 재실행하여 로그인 및 이미지 푸시가 성공하는지 확인합니다.
 
-## 5. 교훈
+## 5. 검증
+
+해결책이 제대로 적용되었는지 확인하는 방법입니다.
+
+### 1. GitHub Actions 로그인 단계 성공 확인
+
+GitHub Actions 워크플로우 로그에서 Docker Hub 로그인이 성공했는지 확인합니다.
+
+```bash
+# GitHub Actions 로그에서 확인할 내용:
+# Login to Docker Hub
+# Run docker/login-action@v3
+# Login Succeeded
+
+# 예상 결과:
+# Successfully logged in as <username>
+```
+
+### 2. Docker 이미지 푸시 성공 확인
+
+빌드된 이미지가 Docker Hub에 성공적으로 푸시되었는지 확인합니다.
+
+```bash
+# GitHub Actions 로그에서 확인:
+# Pushing image to docker.io/<username>/<repository>:<tag>
+# ...
+# Successfully pushed docker.io/<username>/<repository>:<tag>
+
+# Docker Hub 웹사이트에서 확인:
+# Repositories > <repository> > Tags 탭에서 새로운 이미지 태그 확인
+```
+
+### 3. GitHub Secrets 설정 검증
+
+GitHub 리포지토리에 필요한 시크릿이 올바르게 설정되어 있는지 확인합니다.
+
+```bash
+# GitHub Repository > Settings > Secrets and variables > Actions 확인
+# 필요한 시크릿:
+# - DOCKER_HUB_USERNAME
+# - DOCKER_HUB_TOKEN
+
+# 주의: 시크릿 값은 표시되지 않으며, 이름과 마지막 업데이트 시간만 확인 가능
+```
+
+### 4. Access Token 권한 확인
+
+Docker Hub Access Token의 권한이 적절하게 설정되어 있는지 확인합니다.
+
+```bash
+# Docker Hub > Account Settings > Security > Access Tokens
+# 사용 중인 토큰의 권한 확인:
+# - Read & Write (필수) 또는
+# - Read, Write & Delete (선택)
+
+# Read-only 권한만 있는 경우 푸시 실패
+```
+
+### 5. 워크플로우 재실행 테스트
+
+수정된 설정으로 전체 워크플로우가 성공적으로 완료되는지 테스트합니다.
+
+```bash
+# GitHub Actions 탭에서 재실행
+# Re-run all jobs 클릭
+
+# 예상 결과:
+# ✅ Login to Docker Hub
+# ✅ Build and push Docker image
+# ✅ 전체 워크플로우 성공
+```
+
+## 6. 교훈
 
 1.  **비밀번호 대신 Access Token 사용**: 보안을 위해 Docker Hub 비밀번호를 직접 사용하기보다, 제한된 권한과 유효 기간을 가진 Access Token을 사용하는 것이 훨씬 안전하고 권장되는 방식입니다.
 2.  **시크릿 이름의 일관성**: `DOCKER_HUB_USERNAME`, `DOCKER_HUB_TOKEN` 등 시크릿 이름은 프로젝트 내에서 일관되게 관리해야 혼동과 오류를 줄일 수 있습니다.
 3.  **최소 권한의 원칙**: Access Token을 생성할 때는 필요한 최소한의 권한(예: `Read & Write`)만 부여하여, 토큰이 유출되더라도 피해를 최소화해야 합니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - CI/CD 파이프라인](../../02-architecture/architecture.md#4-cicd-파이프라인)
+- [Secret 관리 가이드](../../04-operations/guides/SECRET_MANAGEMENT.md)
