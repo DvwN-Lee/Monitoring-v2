@@ -167,9 +167,22 @@ k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 | [week5-performance-analysis.md](06-performance/week5-performance-analysis.md) | 부하 테스트 결과, 병목 분석, 최적화 과정 |
 
 **주요 성과**:
-- P95 응답 시간: 19.2ms
-- HTTP 실패율: 0%
-- HPA 최적화로 11.6% 성능 개선
+- **P99 Latency**: **3.71초 → 20.4ms** (**99.5% 개선**)
+- **P95 Latency**: **1.39초 → 9.81ms** (**99.3% 개선**)
+- **5xx 에러율**: **0.460% → 0.00366%** (**99.2% 감소**)
+- **4xx 에러율**: **26.4% → 0%** (**100% 제거**)
+- HTTP 실패율 0% 유지
+- HPA 최적화를 통한 성능 개선
+
+**성능 개선 증명 자료:**
+
+아래는 Grafana 대시보드에서 측정한 골든 시그널(Latency, Error Rate) 지표입니다. P99 Latency가 20.4ms, P95 Latency가 9.81ms로 안정적으로 유지되고, 에러율이 0%를 달성한 것을 확인할 수 있습니다.
+
+![Grafana Golden Signals Dashboard](04-operations/screenshots/grafana-golden-signals.png)
+
+더 상세한 성능 측정 과정과 분석 내용은 아래 보고서에서 확인하실 수 있습니다.
+
+- [상세 성능 분석 보고서 (Week 5 Performance Analysis)](06-performance/week5-performance-analysis.md)
 
 ### 7단계: 데모 (07-demo/)
 

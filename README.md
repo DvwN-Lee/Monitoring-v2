@@ -74,10 +74,10 @@ FastAPI 기반의 블로그 애플리케이션으로, 게시글 CRUD 기능과 �
 ![Grafana Golden Signals](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/grafana-golden-signals.png)
 
 **주요 지표**:
-- **Latency**: P95 9.62ms, P99 17.8ms
-- **Traffic**: 7.56 req/s
-- **Errors**: 0%
-- **Saturation**: CPU 0.5% ~ 2.8%
+- **Latency**: P95/P99 응답 시간 추적
+- **Traffic**: 초당 요청 수 (req/s) 모니터링
+- **Errors**: 에러율 추적
+- **Saturation**: CPU 리소스 사용률 모니터링
 
 ### Prometheus 메트릭 수집
 
