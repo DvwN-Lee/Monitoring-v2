@@ -1,5 +1,7 @@
 # Blog Service (blog-service)
 
+![Blog Service](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/blog-service.png)
+
 ## 1. 개요
 - **블로그 기능 제공 서비스**: `blog-service`는 블로그 게시물(Post)의 CRUD(생성, 조회, 수정, 삭제) 기능을 담당하는 마이크로서비스로, Python의 **FastAPI**를 사용하여 개발됨
 

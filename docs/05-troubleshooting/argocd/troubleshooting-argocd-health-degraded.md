@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Argo CD Health Degraded 문제 해결
 
 ## 1. 문제 상황
@@ -77,8 +83,75 @@ Argo CD Application이 성공적으로 동기화(`Synced`)되었음에도 불구
 -   **리소스 부족 (`Pending`)**: 클러스터 노드를 증설하거나, Pod의 리소스 요청(`resources.requests`)을 줄입니다.
 -   **헬스체크 실패**: 애플리케이션이 헬스체크 경로로 정상 응답하는지 확인하고, Probe의 `initialDelaySeconds`, `timeoutSeconds` 등을 조정합니다.
 
-## 5. 교훈
+## 5. 검증
+
+해결책이 제대로 적용되었는지 확인하는 방법입니다.
+
+### 1. Pod 상태 확인
+
+모든 Pod가 Running 상태이고 재시작 없이 안정적으로 실행되는지 확인합니다.
+
+```bash
+kubectl get pods -n <namespace>
+
+# 예상 결과:
+# NAME                     READY   STATUS    RESTARTS   AGE
+# app-xyz-5d4f7c9b8-abc12  1/1     Running   0          5m
+```
+
+### 2. ArgoCD Application Health 상태 확인
+
+ArgoCD UI 또는 CLI를 통해 Application이 Healthy 상태로 전환되었는지 확인합니다.
+
+```bash
+kubectl get application -n argocd <app-name> -o jsonpath='{.status.health.status}'
+
+# 예상 결과: Healthy
+```
+
+### 3. Deployment 롤아웃 상태 확인
+
+Deployment의 롤아웃이 성공적으로 완료되었는지 확인합니다.
+
+```bash
+kubectl rollout status deployment/<deployment-name> -n <namespace>
+
+# 예상 결과:
+# deployment "<deployment-name>" successfully rolled out
+```
+
+### 4. 리소스 상세 이벤트 확인
+
+이전에 발생했던 문제 이벤트가 해결되었고 새로운 정상 이벤트가 기록되었는지 확인합니다.
+
+```bash
+kubectl describe pod <pod-name> -n <namespace>
+
+# Events 섹션에서 확인:
+# - 이전 오류 이벤트(ImagePullBackOff, CrashLoopBackOff 등)가 사라짐
+# - Started, Pulled, Created 등 정상 이벤트만 존재
+```
+
+### 5. 애플리케이션 기능 테스트
+
+실제 애플리케이션이 정상적으로 동작하는지 기능 테스트를 수행합니다.
+
+```bash
+# 서비스 엔드포인트로 HTTP 요청 테스트
+curl http://<service-endpoint>/health
+
+# 예상 응답: HTTP 200 OK
+```
+
+## 6. 교훈
 
 1.  **`Degraded`는 애플리케이션의 건강 적신호**: `Synced`가 '배포 완료'를 의미한다면, `Healthy`는 '배포 후 정상 동작'을 의미합니다. `Degraded` 상태는 Argo CD의 문제가 아니라, 배포된 애플리케이션이 아프다는 신호입니다.
 2.  **Argo CD는 시작점, `kubectl`은 해결 도구**: 문제 해결은 Argo CD UI에서 시작하여 문제의 범위를 좁히고, 결국 `kubectl describe`와 `kubectl logs`라는 Kubernetes 네이티브 디버깅 도구를 통해 근본 원인을 찾아 해결하게 됩니다.
 3.  **Health Assessment 로직 이해**: Argo CD가 어떤 기준으로 리소스의 건강을 판단하는지 알아두면(예: Deployment는 `availableReplicas`와 `replicas`가 일치하는지 확인), `Degraded` 상태의 원인을 더 빨리 추측할 수 있습니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - CI/CD 파이프라인](../../02-architecture/architecture.md#4-cicd-파이프라인)
+- [운영 가이드 - ArgoCD 운영](../../04-operations/guides/operations-guide.md)
+- [ArgoCD Git 감지 실패](troubleshooting-argocd-git-detection.md)
+- [서비스 엔드포인트 누락](../kubernetes/troubleshooting-service-endpoint-missing.md)
