@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Istio mTLS 인증서 유효성 문제 해결
 
 ## 문제 상황
@@ -39,3 +45,9 @@ kubectl rollout restart deployment <deployment-name> -n <namespace>
 
 ## 교훈
 Istio mTLS 환경에서 인증서 유효성 문제는 서비스 메시의 보안과 안정성에 직접적인 영향을 미칩니다. 인증서 만료, istiod와의 통신 문제, 시스템 시간 불일치 등 다양한 원인이 있을 수 있으므로, `istioctl` 도구와 로그를 활용하여 체계적으로 문제를 진단하는 것이 중요합니다. 특히, 클러스터 내 모든 구성 요소의 시간 동기화는 mTLS 환경에서 매우 중요하게 관리되어야 할 부분입니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - 보안 설계](../../02-architecture/architecture.md#6-보안-설계)
+- [운영 가이드](../../04-operations/guides/operations-guide.md)
+- [Istio mTLS 통신 오류](troubleshooting-istio-mtls-communication.md)

@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # Grafana PVC 권한 거부 문제 해결
 
 ## 문제 현상
@@ -343,8 +349,10 @@ podSecurityContext:
 ```
 
 ## 관련 문서
-- troubleshooting-prometheus-pending-pods.md
-- troubleshooting-pod-crashloopbackoff.md
+
+- [시스템 아키텍처 - 모니터링 및 로깅](../../02-architecture/architecture.md#5-모니터링-및-로깅)
+- [운영 가이드 - 모니터링](../../04-operations/guides/operations-guide.md)
+
 
 ## 참고 사항
 
