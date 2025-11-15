@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Istio Sidecar CrashLoopBackOff 문제 해결
 
 ## 문제 상황
@@ -43,3 +49,9 @@ istio-proxy 컨테이너의 리소스(CPU, Memory) 제한이 너무 낮게 설�
 
 ## 교훈
 Istio Sidecar는 애플리케이션의 네트워크 트래픽을 가로채고 처리하기 때문에, Sidecar 자체의 안정적인 동작은 서비스 메시 전체의 안정성에 매우 중요합니다. Sidecar 관련 문제 발생 시, 로그를 통한 원인 파악, 리소스 및 네트워크 정책 검토, 포트 충돌 확인 등 다각적인 접근이 필요합니다. 특히, 리소스 부족이나 포트 충돌과 같은 기본적인 인프라 문제는 Sidecar의 비정상적인 동작으로 이어질 수 있으므로 주의 깊게 관리해야 합니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - 전체 시스템](../../02-architecture/architecture.md#2-전체-시스템-아키텍처)
+- [운영 가이드](../../04-operations/guides/operations-guide.md)
+- [Pod CrashLoopBackOff](../kubernetes/troubleshooting-pod-crashloopbackoff.md)

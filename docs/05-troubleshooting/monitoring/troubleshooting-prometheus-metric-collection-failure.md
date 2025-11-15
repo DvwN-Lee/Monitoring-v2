@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Prometheus 애플리케이션 메트릭 수집 실패 문제 해결
 
 ## 문제 상황
@@ -76,3 +82,8 @@ Prometheus가 애플리케이션 메트릭을 수집하지 못하는 주요 원�
 - **네임스페이스 `selector` 설정**: `ServiceMonitor`의 `namespaceSelector` 설정을 주의 깊게 확인하여 올바른 네임스페이스의 서비스를 감시하도록 합니다.
 - **`/metrics` 엔드포인트 사전 테스트**: 애플리케이션 배포 전 또는 문제 발생 시 `/metrics` 엔드포인트가 정상적으로 동작하는지 미리 테스트하는 습관을 들입니다.
 - **Prometheus Operator 설정 이해**: Solid Cloud 환경에서는 Prometheus Operator가 `ServiceMonitor`를 관리하므로, `Prometheus` CR의 `serviceMonitorSelector` 설정이 어떻게 동작하는지 이해하는 것이 중요합니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - 모니터링 및 로깅](../../02-architecture/architecture.md#5-모니터링-및-로깅)
+- [운영 가이드 - 모니터링](../../04-operations/guides/operations-guide.md)

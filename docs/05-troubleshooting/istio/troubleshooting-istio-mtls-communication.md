@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Istio mTLS 서비스 간 통신 실패 문제 해결
 
 ## 문제 상황
@@ -56,3 +62,9 @@ kubectl get pod -n <namespace> -l app=<service-label> -o yaml | grep 'istio-prox
 
 ## 교훈
 Istio에서 mTLS를 `STRICT` 모드로 설정하는 것은 서비스 간 보안을 강화하는 중요한 단계입니다. 하지만 이로 인해 통신 문제가 발생할 경우, `DestinationRule`의 `mTLS` 설정, `PeerAuthentication` 정책의 정확성, 그리고 모든 관련 서비스에 Sidecar가 올바르게 주입되었는지 여부를 체계적으로 확인해야 합니다. 특히, `DestinationRule`은 클라이언트 측에서 서버로의 트래픽에 대한 정책을 정의하므로, `PeerAuthentication`과 함께 올바르게 구성하는 것이 중요합니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - 보안 설계](../../02-architecture/architecture.md#6-보안-설계)
+- [운영 가이드](../../04-operations/guides/operations-guide.md)
+- [Istio 인증서 유효성 문제](troubleshooting-istio-certificate-invalid.md)

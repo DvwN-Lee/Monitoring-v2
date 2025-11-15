@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # Loki Log Volume 문제 해결 가이드
 
 **작성일:** 2025-11-14

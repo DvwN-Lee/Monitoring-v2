@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Loki 로그 수집 실패 문제 해결
 
 ## 1. 문제 상황
@@ -93,3 +99,9 @@ kubectl rollout restart daemonset/loki-stack-promtail -n monitoring
 - **데이터소스 연결 사전 검증**: Grafana에서 데이터소스를 추가할 때는 반드시 "Save & Test" 기능을 통해 연결성을 사전에 검증하는 습관이 중요합니다.
 - **JSON 파싱 파이프라인 주의**: 애플리케이션이 JSON 형식으로 로그를 출력하는 경우, Promtail의 `pipeline_stages`에서 `json` 파서 설정을 정확하게 구성해야 합니다. 파싱 실패 시 로그가 드롭될 수 있습니다.
 - **권한 문제 인지**: 컨테이너화된 환경에서 로그 에이전트는 호스트 시스템의 파일에 접근해야 하므로, `SecurityContext`나 `RBAC` 등 Kubernetes의 권한 설정을 항상 염두에 두어야 합니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - 모니터링 및 로깅](../../02-architecture/architecture.md#5-모니터링-및-로깅)
+- [Loki 로그 볼륨 수정 가이드](../../04-operations/guides/loki-log-volume-fix-guide.md)
+- [운영 가이드 - 로그 관리](../../04-operations/guides/operations-guide.md)

@@ -1,79 +1,74 @@
-# Troubleshooting 가이드
+# 트러블슈팅 가이드 인덱스
 
-DevOps 프로젝트 진행 중 발생한 문제들과 해결 과정을 문서화한 사례집입니다.
+이 문서는 시스템 운영 중 발생할 수 있는 다양한 문제 상황에 대한 트러블슈팅 가이드를 체계적으로 정리한 인덱스입니다. 문제 증상, 관련 컴포넌트, 심각도를 기준으로 필요한 문서를 빠르게 찾을 수 있습니다.
 
-## 디렉토리 구조
+## ArgoCD
 
-### ArgoCD (3건)
-GitOps 및 배포 자동화 관련 문제
+| 문제 | 증상 | 관련 컴포넌트 | 심각도 | 문서 |
+|------|------|--------------|--------|------|
+| Git 변경 감지 실패 | ArgoCD가 Git 저장소 변경을 감지하지 못합니다 | ArgoCD, Git Webhook | High | [문서](argocd/troubleshooting-argocd-git-detection.md) |
+| Health Status 'Degraded' | 애플리케이션 상태가 'Degraded'로 표시됩니다 | ArgoCD, Kubernetes | High | [문서](argocd/troubleshooting-argocd-health-degraded.md) |
+| OutOfSync 상태 | Git 소스와 배포된 리소스 간에 불일치가 발생합니다 | ArgoCD | Medium | [문서](argocd/troubleshooting-argocd-out-of-sync.md) |
 
-- [ArgoCD Git 감지 실패](argocd/troubleshooting-argocd-git-detection.md)
-- [ArgoCD Health Degraded 상태](argocd/troubleshooting-argocd-health-degraded.md)
-- [ArgoCD Out-of-Sync 이슈](argocd/troubleshooting-argocd-out-of-sync.md)
+## CI/CD
 
-### CI/CD (4건)
-Docker, GitHub Actions, 보안 스캔 관련 문제
+| 문제 | 증상 | 관련 컴포넌트 | 심각도 | 문서 |
+|------|------|--------------|--------|------|
+| Docker 이미지 캐시 실패 | 빌드 시 Docker 레이어 캐시를 사용하지 못해 빌드 시간이 길어집니다 | Docker, CI/CD Pipeline | Medium | [문서](ci-cd/troubleshooting-docker-cache-failure.md) |
+| DockerHub 로그인 실패 | CI/CD 파이프라인에서 DockerHub에 로그인할 수 없습니다 | DockerHub, CI/CD Pipeline | High | [문서](ci-cd/troubleshooting-dockerhub-login-failure.md) |
+| GitHub Actions 트리거 실패 | 특정 이벤트(push, PR) 발생 시 워크플로우가 실행되지 않습니다 | GitHub Actions | High | [문서](ci-cd/troubleshooting-github-actions-trigger.md) |
+| Trivy 스캔 타임아웃 | 이미지 취약점 스캔(Trivy) 단계에서 시간 초과가 발생합니다 | Trivy, CI/CD Pipeline | Medium | [문서](ci-cd/troubleshooting-trivy-scan-timeout.md) |
 
-- [Docker 캐시 실패](ci-cd/troubleshooting-docker-cache-failure.md)
-- [DockerHub 로그인 실패](ci-cd/troubleshooting-dockerhub-login-failure.md)
-- [GitHub Actions 트리거 문제](ci-cd/troubleshooting-github-actions-trigger.md)
-- [Trivy 스캔 타임아웃](ci-cd/troubleshooting-trivy-scan-timeout.md)
+## Istio
 
-### Istio (7건)
-Service Mesh, 트래픽 관리, 보안 관련 문제
+| 문제 | 증상 | 관련 컴포넌트 | 심각도 | 문서 |
+|------|------|--------------|--------|------|
+| API Gateway 라우팅 오류 | 외부 요청이 예상된 서비스로 라우팅되지 않거나 5xx 오류가 발생합니다 | Istio Gateway, VirtualService | Critical | [문서](istio/troubleshooting-api-gateway-routing-errors.md) |
+| Istio 인증서 유효성 문제 | 서비스 간 mTLS 통신 실패, 인증서 관련 오류가 발생합니다 | Istio, Citadel | High | [문서](istio/troubleshooting-istio-certificate-invalid.md) |
+| mTLS 통신 오류 | 서비스 메시 내에서 암호화된 통신이 실패합니다 | Istio, mTLS | High | [문서](istio/troubleshooting-istio-mtls-communication.md) |
+| 프로토콜 자동 감지 실패 | Istio가 트래픽 프로토콜을 잘못 해석하여 요청이 실패합니다 | Istio, Service | Medium | [문서](istio/troubleshooting-istio-protocol-selection.md) |
+| 속도 제한(Rate Limit) 미적용 | 설정한 속도 제한 규칙이 동작하지 않아 트래픽 제어에 실패합니다 | Istio, EnvoyFilter | Medium | [문서](istio/troubleshooting-istio-rate-limiting.md) |
+| Go Reverse Proxy와 라우팅 충돌 | Go로 구현된 리버스 프록시와 Istio 라우팅 규칙 간 충돌이 발생합니다 | Istio, Go | High | [문서](istio/troubleshooting-istio-routing-with-go-reverseproxy.md) |
+| Sidecar 컨테이너 CrashLoop | `istio-proxy` 컨테이너가 반복적으로 재시작됩니다 | Istio, Sidecar Injector | High | [문서](istio/troubleshooting-istio-sidecar-crashloop.md) |
 
-- [API Gateway 라우팅 에러](istio/troubleshooting-api-gateway-routing-errors.md)
-- [Istio 인증서 무효화](istio/troubleshooting-istio-certificate-invalid.md)
-- [mTLS 통신 문제](istio/troubleshooting-istio-mtls-communication.md)
-- [프로토콜 선택 오류](istio/troubleshooting-istio-protocol-selection.md)
-- [Rate Limiting 설정 이슈](istio/troubleshooting-istio-rate-limiting.md)
-- [Go ReverseProxy 라우팅 문제](istio/troubleshooting-istio-routing-with-go-reverseproxy.md)
-- [Istio Sidecar CrashLoop](istio/troubleshooting-istio-sidecar-crashloop.md)
+## Kubernetes
 
-### Kubernetes (5건)
-Pod, 서비스, 리소스 관리 관련 문제
+| 문제 | 증상 | 관련 컴포넌트 | 심각도 | 문서 |
+|------|------|--------------|--------|------|
+| ImagePullBackOff | Pod가 컨테이너 이미지를 레지스트리에서 가져오지 못합니다 | Kubernetes, Container Registry | High | [문서](kubernetes/troubleshooting-imagepullbackoff.md) |
+| NodePort 서비스 접근 실패 | 외부에서 NodePort를 통해 서비스에 접근할 수 없습니다 | Kubernetes, NodePort Service | Medium | [문서](kubernetes/troubleshooting-nodeport-access-failure.md) |
+| CrashLoopBackOff | Pod 내 컨테이너가 시작 직후 비정상 종료를 반복합니다 | Kubernetes, Application | High | [문서](kubernetes/troubleshooting-pod-crashloopbackoff.md) |
+| ResourceQuota 초과 | 네임스페이스의 리소스 할당량 초과로 새 리소스 생성이 실패합니다 | Kubernetes, ResourceQuota | Medium | [문서](kubernetes/troubleshooting-resourcequota-exceeded.md) |
+| 서비스 엔드포인트 누락 | Service가 Pod에 연결되지 않아 엔드포인트가 없습니다 | Kubernetes, Service, Endpoints | High | [문서](kubernetes/troubleshooting-service-endpoint-missing.md) |
 
-- [ImagePullBackOff 해결](kubernetes/troubleshooting-imagepullbackoff.md)
-- [NodePort 접근 실패](kubernetes/troubleshooting-nodeport-access-failure.md)
-- [Pod CrashLoopBackOff](kubernetes/troubleshooting-pod-crashloopbackoff.md)
-- [ResourceQuota 초과](kubernetes/troubleshooting-resourcequota-exceeded.md)
-- [Service Endpoint 누락](kubernetes/troubleshooting-service-endpoint-missing.md)
+## Monitoring
 
-### Monitoring (10건)
-Prometheus, Grafana, Loki 등 모니터링 스택 관련 문제
+| 문제 | 증상 | 관련 컴포넌트 | 심각도 | 문서 |
+|------|------|--------------|--------|------|
+| Alertmanager 알림 실패 | Prometheus 알림이 슬랙, 이메일 등으로 전송되지 않습니다 | Alertmanager, Prometheus | High | [문서](monitoring/troubleshooting-alertmanager-notification-failure.md) |
+| Grafana 대시보드 접근 불가 | 사용자가 Grafana 대시보드를 보거나 접근할 수 없습니다 | Grafana, Authentication | Medium | [문서](monitoring/troubleshooting-grafana-dashboard-access-issue.md) |
+| Grafana PVC 권한 거부 | Grafana Pod가 PVC에 접근하지 못해 데이터 저장/로딩에 실패합니다 | Grafana, Kubernetes PVC | High | [문서](monitoring/troubleshooting-grafana-pvc-permission-denied.md) |
+| 인증 서비스 높은 지연 시간 | 인증 관련 API 요청의 응답 시간이 비정상적으로 높습니다 | Auth Service, Monitoring | High | [문서](monitoring/troubleshooting-high-latency-on-auth-service.md) |
+| HPA 메트릭 수집 실패 | HPA가 스케일링에 필요한 메트릭을 수집하지 못합니다 | Kubernetes HPA, Metrics Server | High | [문서](monitoring/troubleshooting-hpa-metrics-failure.md) |
+| 부정확한 Latency 백분위수 | 모니터링 시스템에서 집계된 지연 시간 백분위수 값이 실제와 다릅니다 | Prometheus, App Metrics | Medium | [문서](monitoring/troubleshooting-inaccurate-latency-percentiles.md) |
+| Loki 로그 수집 실패 | Log agent가 로그를 수집하여 Loki로 전송하지 못합니다 | Loki, Promtail | High | [문서](monitoring/troubleshooting-loki-log-collection-failure.md) |
+| Metrics Server 실패 | `kubectl top`, HPA 등이 메트릭 부족으로 작동하지 않습니다 | Kubernetes, Metrics Server | High | [문서](monitoring/troubleshooting-metrics-server-failure.md) |
+| Prometheus 메트릭 수집 실패 | Prometheus가 타겟 서비스의 메트릭을 수집(scrape)하지 못합니다 | Prometheus, Service Discovery | High | [문서](monitoring/troubleshooting-prometheus-metric-collection-failure.md) |
+| Prometheus Pod 'Pending' | 리소스 부족 등으로 Prometheus Pod가 스케줄링되지 못합니다 | Prometheus, K8s Scheduler | High | [문서](monitoring/troubleshooting-prometheus-pending-pods.md) |
 
-- [Alertmanager 알림 실패](monitoring/troubleshooting-alertmanager-notification-failure.md)
-- [Grafana 대시보드 접근 이슈](monitoring/troubleshooting-grafana-dashboard-access-issue.md)
-- [Grafana PVC 권한 문제](monitoring/troubleshooting-grafana-pvc-permission-denied.md)
-- [Auth 서비스 고지연](monitoring/troubleshooting-high-latency-on-auth-service.md)
-- [HPA 메트릭 수집 실패](monitoring/troubleshooting-hpa-metrics-failure.md)
-- [부정확한 지연시간 백분위수](monitoring/troubleshooting-inaccurate-latency-percentiles.md)
-- [Loki 로그 수집 실패](monitoring/troubleshooting-loki-log-collection-failure.md)
-- [Metrics Server 실패](monitoring/troubleshooting-metrics-server-failure.md)
-- [Prometheus 메트릭 수집 실패](monitoring/troubleshooting-prometheus-metric-collection-failure.md)
-- [Prometheus Pod Pending 상태](monitoring/troubleshooting-prometheus-pending-pods.md)
+---
 
-## 주요 학습 포인트
+## 사용 가이드
 
-### 1. 체계적인 문제 해결 방법론
-- 증상 관찰 → 원인 분석 → 해결 방안 적용 → 검증의 단계적 접근
-- 로그, 메트릭, 이벤트를 활용한 디버깅
+### 빠른 문제 검색
 
-### 2. 클라우드 네이티브 기술 스택 실전 경험
-- Kubernetes 리소스 관리 및 디버깅
-- Istio Service Mesh 운영
-- GitOps (ArgoCD) 트러블슈팅
-- 모니터링 스택 (Prometheus, Grafana, Loki) 운영
+1. **증상으로 찾기**: 위 테이블의 "증상" 열에서 현재 발생한 문제와 유사한 내용 검색
+2. **컴포넌트로 찾기**: "관련 컴포넌트" 열에서 문제가 발생한 시스템 검색
+3. **심각도로 우선순위 판단**: Critical > High > Medium 순으로 긴급 대응
 
-### 3. DevOps 실무 역량
-- CI/CD 파이프라인 안정화
-- 컨테이너 이미지 빌드/배포 최적화
-- 보안 스캔 및 취약점 관리
-- 인프라 모니터링 및 알림 설정
+### 문서 작성 규칙
 
-## 문서 작성 규칙
-
-각 troubleshooting 문서는 다음 구조를 따릅니다:
+각 트러블슈팅 문서는 다음 구조를 따릅니다:
 
 1. **문제 상황**: 발생한 에러 및 증상
 2. **원인 분석**: 로그, 메트릭을 통한 근본 원인 파악
@@ -81,9 +76,13 @@ Prometheus, Grafana, Loki 등 모니터링 스택 관련 문제
 4. **검증**: 해결 확인 방법
 5. **예방책**: 재발 방지 방안
 
-## 통계
+### 통계
 
 - **전체 문제 해결 건수**: 29건
 - **카테고리**: 5개 (ArgoCD, CI/CD, Istio, Kubernetes, Monitoring)
 - **평균 해결 시간**: 1-4시간 (문제 복잡도에 따라 상이)
 - **재발 건수**: 0건 (모든 문제에 대한 예방책 적용)
+
+---
+
+**최종 업데이트**: 2025년 11월 15일

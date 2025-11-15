@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Grafana 대시보드 접속 불가 문제 해결
 
 ## 1. 문제 상황
@@ -140,3 +146,9 @@ grafana-service   LoadBalancer   10.100.200.30   52.123.45.67     80:30001/TCP  
 - **Service 타입 선택 기준 명확화**: 애플리케이션을 외부에 노출할지 여부에 따라 `ClusterIP`, `NodePort`, `LoadBalancer` 타입을 명확히 구분하여 사용해야 합니다. 디버깅 시에는 `NodePort`나 `LoadBalancer`로 임시 변경하여 테스트하는 것이 유용합니다.
 - **`kubectl port-forward`의 디버깅 활용**: `port-forward`는 Service나 Ingress를 거치지 않고 Pod의 상태를 직접 확인할 수 있는 강력한 디버깅 도구입니다. 네트워크 문제와 애플리케이션 문제를 분리하여 분석하는 데 효과적입니다.
 - **NetworkPolicy 설정 검증의 중요성**: Pod와 Service가 정상이라도 NetworkPolicy에 의해 트래픽이 차단될 수 있습니다. 특히 보안이 강화된 환경에서는 애플리케이션 배포 시 반드시 NetworkPolicy 설정을 검토하고 필요한 규칙을 추가해야 합니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - 모니터링 및 로깅](../../02-architecture/architecture.md#5-모니터링-및-로깅)
+- [운영 가이드 - 모니터링](../../04-operations/guides/operations-guide.md)
+- [Token 인증 설정 가이드](../../04-operations/guides/token-auth-setup.md)

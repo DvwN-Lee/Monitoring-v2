@@ -293,17 +293,17 @@ kubectl port-forward svc/<service-name> <local-port>:<service-port>
 ## 다음 단계
 
 ### 프로젝트 이해하기
-- [시스템 아키텍처](./02-architecture/architecture.md)
-- [서비스별 README](../) (각 서비스 디렉토리)
-- [모니터링 스택](../k8s-manifests/monitoring/README.md)
+- [시스템 아키텍처](../02-architecture/architecture.md)
+- [서비스별 README](../../) (각 서비스 디렉토리)
+- [모니터링 스택](../../k8s-manifests/monitoring/README.md)
 
 ### 개발 시작하기
-- [로컬 개발 가이드](./03-implementation/)
-- [CI/CD 파이프라인](./02-architecture/architecture.md#4-cicd-파이프라인)
+- [로컬 개발 가이드](../03-implementation/)
+- [CI/CD 파이프라인](../02-architecture/architecture.md#4-cicd-파이프라인)
 
 ### 문제 발생 시
-- [트러블슈팅 가이드](./04-troubleshooting/)
-- [자주 발생하는 문제 모음](./04-troubleshooting/README.md)
+- [트러블슈팅 가이드 인덱스](../05-troubleshooting/README.md)
+- [운영 가이드](../04-operations/guides/operations-guide.md)
 
 ---
 
@@ -312,4 +312,4 @@ kubectl port-forward svc/<service-name> <local-port>:<service-port>
 - [Kubernetes 공식 문서](https://kubernetes.io/docs/)
 - [Minikube 문서](https://minikube.sigs.k8s.io/docs/)
 - [Skaffold 문서](https://skaffold.dev/docs/)
-- [프로젝트 아키텍처 문서](./02-architecture/architecture.md)
+- [프로젝트 아키텍처 문서](../02-architecture/architecture.md)

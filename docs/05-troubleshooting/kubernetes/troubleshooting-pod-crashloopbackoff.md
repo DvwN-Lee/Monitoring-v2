@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Pod CrashLoopBackOff 문제 해결
 
 ## 1. 문제 상황
@@ -94,3 +100,8 @@ kubectl describe pod <pod-name>
 1.  **로그, 로그, 로그**: `CrashLoopBackOff`의 원인은 90% 이상 애플리케이션 로그에 있습니다. `kubectl logs`와 `kubectl logs --previous`를 가장 먼저 확인하는 습관이 중요합니다.
 2.  **`describe pod`는 종합 진단서**: 로그로 해결되지 않을 때, `describe pod`는 환경변수, 볼륨 마운트, 이벤트 등 Pod와 관련된 모든 컨텍스트를 제공하므로 종합적인 상황 파악에 필수적입니다.
 3.  **CrashLoopBackOff는 결과이지 원인이 아니다**: `CrashLoopBackOff`는 "컨테이너가 반복적으로 비정상 종료되고 있다"는 상태를 나타내는 Kubernetes의 표현일 뿐, 실제 원인은 애플리케이션 내부에 있음을 명심해야 합니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - Solid Cloud 구성](../../02-architecture/architecture.md#7-solid-cloud-구성)
+- [운영 가이드](../../04-operations/guides/operations-guide.md)

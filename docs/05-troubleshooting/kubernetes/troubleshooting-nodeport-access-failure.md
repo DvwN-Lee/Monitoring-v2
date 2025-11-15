@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] NodePort 외부 접근 불가 문제 해결
 
 ## 1. 문제 상황
@@ -90,3 +96,8 @@ sudo iptables -L -n | grep 30080
 1.  **NodePort의 통신 흐름을 이해하라**: NodePort 접근은 `외부 -> 클라우드 방화벽 -> 노드 -> kube-proxy(iptables/IPVS) -> Pod` 순서로 이루어집니다. 문제가 발생하면 이 흐름의 각 단계를 순서대로 점검하는 것이 효율적입니다.
 2.  **가장 흔한 범인은 방화벽**: 클라우드 환경에서 NodePort 접근 실패의 90%는 보안 그룹 설정 문제입니다. Kubernetes 오브젝트(`Service`, `Pod`)가 정상이라면 가장 먼저 클라우드 콘솔의 방화벽 설정을 확인해야 합니다.
 3.  **NodePort는 테스트/개발용**: NodePort는 모든 노드에 포트를 열어야 하고 포트 관리도 번거로워 프로덕션 환경에는 잘 사용되지 않습니다. 프로덕션 환경에서는 `LoadBalancer` 타입의 Service나 `Ingress`를 사용하여 외부 트래픽을 처리하는 것이 일반적이고 더 안전합니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - Solid Cloud 구성](../../02-architecture/architecture.md#7-solid-cloud-구성)
+- [운영 가이드](../../04-operations/guides/operations-guide.md)

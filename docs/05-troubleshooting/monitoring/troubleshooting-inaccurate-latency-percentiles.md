@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # Prometheus 히스토그램 부정확한 백분위수 문제 해결
 
 ## 문제 현상
@@ -410,9 +416,11 @@ groups:
 ```
 
 ## 관련 문서
-- troubleshooting-high-latency-on-auth-service.md
-- troubleshooting-prometheus-metric-collection-failure.md
-- docs/observability/metrics-standards.md (작성 예정)
+
+- [시스템 아키텍처 - 모니터링 및 로깅](../../02-architecture/architecture.md#5-모니터링-및-로깅)
+- [운영 가이드 - 모니터링](../../04-operations/guides/operations-guide.md)
+- [Prometheus 메트릭 수집 실패](troubleshooting-prometheus-metric-collection-failure.md)
+
 
 ## 참고 사항
 

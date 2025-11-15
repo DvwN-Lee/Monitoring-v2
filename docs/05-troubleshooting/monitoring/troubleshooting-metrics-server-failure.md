@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Kubernetes Metrics Server 동작 불가 문제 해결
 
 ## 1. 문제 상황
@@ -101,3 +107,9 @@ node-2     400m         20%    2200Mi          55%
 1.  **Kubelet 통신은 핵심**: Metrics Server, Prometheus 등 클러스터의 상태를 모니터링하는 여러 컴포넌트는 Kubelet API를 통해 정보를 수집합니다. 따라서 Kubelet의 인증서와 네트워크 접근성은 클러스터 모니터링의 핵심 전제 조건임을 이해해야 합니다.
 2.  **보안과 편의성의 트레이드오프**: `--kubelet-insecure-tls` 옵션은 문제를 빠르게 해결할 수 있지만, 중간자 공격(MITM)에 취약해질 수 있습니다. 프로덕션 환경에서는 반드시 클러스터의 PKI(Public Key Infrastructure)를 올바르게 구성하여 보안을 확보해야 합니다.
 3.  **클러스터 구성 요소의 상호작용 이해**: `kubectl top`이라는 간단한 명령어가 동작하기 위해 API Server, Metrics Server, Kubelet 등 여러 컴포넌트가 어떻게 상호작용하는지 이해하면 문제 해결에 큰 도움이 됩니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - 모니터링 및 로깅](../../02-architecture/architecture.md#5-모니터링-및-로깅)
+- [운영 가이드](../../04-operations/guides/operations-guide.md)
+- [HPA 메트릭 수집 실패](troubleshooting-hpa-metrics-failure.md)

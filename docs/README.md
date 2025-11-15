@@ -10,6 +10,7 @@ Cloud-Native 마이크로서비스 플랫폼 v2.0 프로젝트의 전체 문서 
 
 ```
 docs/
+├── 00-getting-started/     # 시작하기: 로컬 환경 설정
 ├── 01-planning/            # 1단계: 프로젝트 계획
 ├── 02-architecture/        # 2단계: 시스템 설계
 ├── 03-implementation/      # 3단계: 구현 요약
@@ -31,18 +32,21 @@ docs/
 1. **프로젝트 개요 파악**
    - [루트 README.md](../README.md) - 프로젝트 소개 및 핵심 기능
 
-2. **요구사항 및 계획 이해**
+2. **로컬 환경에서 실행하기**
+   - [00-getting-started/GETTING_STARTED.md](00-getting-started/GETTING_STARTED.md) - Minikube 로컬 환경 설정
+
+3. **요구사항 및 계획 이해**
    - [01-planning/requirements.md](01-planning/requirements.md) - 기능 요구사항
    - [01-planning/project-plan.md](01-planning/project-plan.md) - 5주 개발 계획
 
-3. **시스템 설계 확인**
+4. **시스템 설계 확인**
    - [02-architecture/architecture.md](02-architecture/architecture.md) - 시스템 아키텍처
    - [02-architecture/adr/](02-architecture/adr/) - 주요 기술 결정 기록
 
-4. **구현 과정 살펴보기**
+5. **구현 과정 살펴보기**
    - [03-implementation/implementation-summary.md](03-implementation/implementation-summary.md) - 전체 구현 요약
 
-5. **최종 성과 확인**
+6. **최종 성과 확인**
    - [04-operations/final-status-report.md](04-operations/final-status-report.md) - 프로젝트 최종 상태
    - [06-performance/week5-performance-analysis.md](06-performance/week5-performance-analysis.md) - 성능 측정 결과
    - [08-retrospective/project-retrospective.md](08-retrospective/project-retrospective.md) - 프로젝트 회고
@@ -50,13 +54,14 @@ docs/
 ### 특정 목적별 가이드
 
 #### 실행 및 배포 방법을 알고 싶다면
+- [00-getting-started/GETTING_STARTED.md](00-getting-started/GETTING_STARTED.md) - 로컬 환경 (Minikube) 설정 A-to-Z
 - [루트 README.md](../README.md) → "시작하기" 섹션
-- [04-operations/token-auth-setup.md](04-operations/token-auth-setup.md) - 인증 설정
+- [04-operations/guides/token-auth-setup.md](04-operations/guides/token-auth-setup.md) - 인증 설정
 - [terraform/README.md](../terraform/README.md) - 인프라 생성
 
 #### 문제 해결 방법을 찾는다면
-- [04-operations/operations-guide.md](04-operations/operations-guide.md) - 운영 가이드
-- [05-troubleshooting/README.md](05-troubleshooting/README.md) - 트러블슈팅 가이드 (모든 문제 해결 사례)
+- [04-operations/guides/operations-guide.md](04-operations/guides/operations-guide.md) - 운영 가이드
+- [05-troubleshooting/README.md](05-troubleshooting/README.md) - 트러블슈팅 가이드 인덱스 (모든 문제 해결 사례)
 
 #### 기술적 의사결정 배경이 궁금하다면
 - [02-architecture/adr/](02-architecture/adr/) - 모든 ADR 문서
@@ -110,14 +115,27 @@ docs/
 
 시스템 운영, 장애 대응, 보안 관리를 위한 실무 가이드입니다.
 
+#### 운영 가이드 (guides/)
 | 문서 | 설명 |
 |------|------|
-| [operations-guide.md](04-operations/operations-guide.md) | 일상 운영 작업 및 모니터링 |
-| [token-auth-setup.md](04-operations/token-auth-setup.md) | Kubernetes Token 기반 인증 설정 |
-| [SECRET_MANAGEMENT.md](04-operations/SECRET_MANAGEMENT.md) | Secret 관리 방법 및 보안 고려사항 |
-| [final-status-report.md](04-operations/final-status-report.md) | 프로젝트 최종 상태 보고서 |
-| [comprehensive-test-checklist.md](04-operations/comprehensive-test-checklist.md) | 시스템 검증 체크리스트 |
-| [comprehensive-test-report.md](04-operations/comprehensive-test-report.md) | 종합 테스트 결과 보고서 |
+| [operations-guide.md](04-operations/guides/operations-guide.md) | 일상 운영 작업 및 모니터링 |
+| [token-auth-setup.md](04-operations/guides/token-auth-setup.md) | Kubernetes Token 기반 인증 설정 |
+| [SECRET_MANAGEMENT.md](04-operations/guides/SECRET_MANAGEMENT.md) | Secret 관리 방법 및 보안 고려사항 |
+| [loki-log-volume-fix-guide.md](04-operations/guides/loki-log-volume-fix-guide.md) | Loki 로그 볼륨 문제 해결 가이드 |
+| [performance-improvement-plan.md](04-operations/guides/performance-improvement-plan.md) | 성능 개선 계획 |
+| [test-scenarios.md](04-operations/guides/test-scenarios.md) | 테스트 시나리오 |
+| [ui-ux-improvements-deployment-guide.md](04-operations/guides/ui-ux-improvements-deployment-guide.md) | UI/UX 개선사항 배포 가이드 |
+
+#### 보고서 (reports/)
+| 문서 | 설명 |
+|------|------|
+| [final-status-report.md](04-operations/reports/final-status-report.md) | 프로젝트 최종 상태 보고서 |
+| [comprehensive-test-report.md](04-operations/reports/comprehensive-test-report.md) | 종합 테스트 결과 보고서 |
+
+#### 체크리스트 (checklists/)
+| 문서 | 설명 |
+|------|------|
+| [comprehensive-test-checklist.md](04-operations/checklists/comprehensive-test-checklist.md) | 시스템 검증 체크리스트 |
 
 ### 5단계: 트러블슈팅 (05-troubleshooting/)
 

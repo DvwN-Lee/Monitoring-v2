@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # API Gateway 라우팅 오류 문제 해결
 
 ## 문제 현상
@@ -377,8 +383,13 @@ paths:
 ```
 
 ## 관련 문서
-- troubleshooting-istio-routing-with-go-reverseproxy.md
-- troubleshooting-service-endpoint-missing.md
+
+- [시스템 아키텍처 - 전체 시스템](../../02-architecture/architecture.md#2-전체-시스템-아키텍처)
+- [시스템 아키텍처 - 마이크로서비스 구조](../../02-architecture/architecture.md#3-마이크로서비스-구조)
+- [운영 가이드](../../04-operations/guides/operations-guide.md)
+- [Istio와 Go Reverse Proxy 라우팅 충돌](troubleshooting-istio-routing-with-go-reverseproxy.md)
+- [서비스 엔드포인트 누락](../kubernetes/troubleshooting-service-endpoint-missing.md)
+
 
 ## 참고 사항
 

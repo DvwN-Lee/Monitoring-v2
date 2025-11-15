@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # 사용자 인증 서비스 고지연 시간 문제 해결
 
 ## 문제 현상
@@ -337,8 +343,11 @@ groups:
 ```
 
 ## 관련 문서
-- troubleshooting-inaccurate-latency-percentiles.md
-- docs/architecture/security.md
+
+- [시스템 아키텍처 - 마이크로서비스 구조](../../02-architecture/architecture.md#3-마이크로서비스-구조)
+- [시스템 아키텍처 - 모니터링 및 로깅](../../02-architecture/architecture.md#5-모니터링-및-로깅)
+- [성능 개선 계획](../../04-operations/guides/performance-improvement-plan.md)
+
 
 ## 참고 사항
 

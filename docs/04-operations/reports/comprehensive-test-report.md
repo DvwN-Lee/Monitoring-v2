@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # 대시보드 테스트 최종 종합 보고서
 
 ## 테스트 개요
