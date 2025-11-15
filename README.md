@@ -1,7 +1,5 @@
 # Cloud-Native 마이크로서비스 플랫폼 v2.0
 
-![Kiali Service Mesh](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/kiali-service-graph-full.png)
-
 **문서 버전**: 3.1
 **최종 수정일**: 2025년 11월 14일
 
@@ -73,7 +71,7 @@ FastAPI 기반의 블로그 애플리케이션으로, 게시글 CRUD 기능과 �
 
 ### Grafana Golden Signals 대시보드
 
-![Grafana Golden Signals](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/grafana-golden-signals-full.png)
+![Grafana Golden Signals](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/grafana-golden-signals.png)
 
 **주요 지표**:
 - **Latency**: P95 9.62ms, P99 17.8ms
@@ -83,7 +81,7 @@ FastAPI 기반의 블로그 애플리케이션으로, 게시글 CRUD 기능과 �
 
 ### Prometheus 메트릭 수집
 
-![Prometheus](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/prometheus.png)
+![Prometheus](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/prometheus-metrics.png)
 
 Prometheus로 모든 서비스의 메트릭을 수집하고 쿼리할 수 있습니다.
 
@@ -92,6 +90,12 @@ Prometheus로 모든 서비스의 메트릭을 수집하고 쿼리할 수 있습
 ![Loki Logs](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/loki-logs.png)
 
 Loki를 통해 모든 서비스의 로그를 한곳에서 조회하고 검색할 수 있습니다.
+
+### Kiali Service Mesh 시각화
+
+![Kiali Service Graph](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/kiali-service-graph.png)
+
+Kiali를 통해 Istio 서비스 메시의 트래픽 흐름과 서비스 간 의존성을 시각화하고, mTLS 상태를 확인할 수 있습니다.
 
 ---
 
@@ -196,7 +200,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
   - 서비스 간 통신 흐름 (Sequence Diagram)
   - CI/CD 파이프라인 상세 설계
   - 네트워크 구조 및 보안 설계
-- **[운영 가이드](./docs/04-operations/operations-guide.md)**: 시스템 운영, 모니터링, 장애 대응 Runbook
+- **[운영 가이드](./docs/04-operations/guides/operations-guide.md)**: 시스템 운영, 모니터링, 장애 대응 Runbook
 - **[프로젝트 회고](./docs/08-retrospective/project-retrospective.md)**: 5주간의 프로젝트 성과 및 회고
 - **[기술 결정 기록 (ADR)](./docs/02-architecture/adr/)**: 주요 기술 선택의 배경과 근거
 
@@ -327,8 +331,8 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 -   **[시스템 설계서](./docs/02-architecture/architecture.md)**: 시스템 아키텍처와 구조
 -   **[프로젝트 계획서](./docs/01-planning/project-plan.md)**: 개발 일정과 마일스톤
 -   **[기술 결정 기록 (ADR)](./docs/02-architecture/adr/)**: 주요 기술 선택의 이유와 배경
--   **[Secret 관리 가이드](./docs/04-operations/SECRET_MANAGEMENT.md)**: 보안 비밀 정보 관리 방법
--   **[Week 5 최종 상태 보고서](./docs/04-operations/final-status-report.md)**: 프로젝트 완료 상태
+-   **[Secret 관리 가이드](./docs/04-operations/guides/SECRET_MANAGEMENT.md)**: 보안 비밀 정보 관리 방법
+-   **[Week 5 최종 상태 보고서](./docs/04-operations/reports/final-status-report.md)**: 프로젝트 완료 상태
 -   **[Week 5 성능 분석](./docs/06-performance/week5-performance-analysis.md)**: 부하 테스트 및 최적화 결과
 -   **[Week 4 Istio 구현 가이드](./docs/guides/week4/)**: Istio 서비스 메시 구축 과정
 
