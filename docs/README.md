@@ -65,11 +65,15 @@ docs/
 
 #### 기술적 의사결정 배경이 궁금하다면
 - [02-architecture/adr/](02-architecture/adr/) - 모든 ADR 문서
-  - [001-argocd-vs-flux.md](02-architecture/adr/001-argocd-vs-flux.md)
-  - [002-postgresql-vs-sqlite.md](02-architecture/adr/002-postgresql-vs-sqlite.md)
-  - [003-loki-vs-efk.md](02-architecture/adr/003-loki-vs-efk.md)
-  - [004-github-actions-vs-jenkins.md](02-architecture/adr/004-github-actions-vs-jenkins.md)
-  - [005-terraform-vs-pulumi.md](02-architecture/adr/005-terraform-vs-pulumi.md)
+  - [001-argocd-vs-flux.md](02-architecture/adr/001-argocd-vs-flux.md) - GitOps
+  - [002-postgresql-vs-sqlite.md](02-architecture/adr/002-postgresql-vs-sqlite.md) - 데이터베이스
+  - [003-loki-vs-efk.md](02-architecture/adr/003-loki-vs-efk.md) - 로깅
+  - [004-github-actions-vs-jenkins.md](02-architecture/adr/004-github-actions-vs-jenkins.md) - CI/CD
+  - [005-terraform-vs-pulumi.md](02-architecture/adr/005-terraform-vs-pulumi.md) - IaC
+  - [006-istio-vs-linkerd.md](02-architecture/adr/006-istio-vs-linkerd.md) - Service Mesh
+  - [007-prometheus-grafana-stack.md](02-architecture/adr/007-prometheus-grafana-stack.md) - 모니터링
+  - [008-redis-cache.md](02-architecture/adr/008-redis-cache.md) - 캐시
+  - [009-solid-cloud-platform.md](02-architecture/adr/009-solid-cloud-platform.md) - Kubernetes 플랫폼
 
 #### 데모 준비를 한다면
 - [07-demo/demo-scenario.md](07-demo/demo-scenario.md) - 20-25분 데모 시나리오
@@ -102,6 +106,10 @@ docs/
 - Loki vs EFK (로깅)
 - GitHub Actions vs Jenkins (CI/CD)
 - Terraform vs Pulumi (IaC)
+- Istio vs Linkerd (Service Mesh)
+- Prometheus + Grafana (모니터링)
+- Redis (캐시)
+- Solid Cloud (Kubernetes 플랫폼)
 
 ### 3단계: 구현 (03-implementation/)
 
