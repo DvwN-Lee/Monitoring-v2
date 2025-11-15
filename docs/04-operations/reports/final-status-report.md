@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # Week 4 모니터링 시스템 검증 및 성능 개선 최종 보고서
 
 **작성일**: 2025-11-13

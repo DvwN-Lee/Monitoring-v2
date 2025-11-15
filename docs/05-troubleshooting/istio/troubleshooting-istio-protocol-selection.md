@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # Istio 프로토콜 선택 문제 해결
 
 ## 문제 현상
@@ -445,9 +451,10 @@ ports:
 ```
 
 ## 관련 문서
-- troubleshooting-istio-routing-with-go-reverseproxy.md
-- troubleshooting-istio-mtls-communication.md
-- troubleshooting-service-endpoint-missing.md
+
+- [시스템 아키텍처 - 전체 시스템](../../02-architecture/architecture.md#2-전체-시스템-아키텍처)
+- [운영 가이드](../../04-operations/guides/operations-guide.md)
+
 
 ## 참고 사항
 

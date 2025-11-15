@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # Istio 서비스 메시 환경에서 Go ReverseProxy 라우팅 문제 해결
 
 ## 문제 현상
@@ -195,9 +201,11 @@ func TestReverseProxyWithHostHeader(t *testing.T) {
 ```
 
 ## 관련 문서
-- [Istio Traffic Management](https://istio.io/latest/docs/concepts/traffic-management/)
-- [Go httputil.ReverseProxy Documentation](https://pkg.go.dev/net/http/httputil#ReverseProxy)
-- troubleshooting-istio-mtls-communication.md
+
+- [시스템 아키텍처 - 마이크로서비스 구조](../../02-architecture/architecture.md#3-마이크로서비스-구조)
+- [운영 가이드](../../04-operations/guides/operations-guide.md)
+- [API Gateway 라우팅 오류](troubleshooting-api-gateway-routing-errors.md)
+
 
 ## 참고 사항
 
