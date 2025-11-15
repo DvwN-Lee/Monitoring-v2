@@ -13,9 +13,8 @@ docs/
 ├── 01-planning/            # 1단계: 프로젝트 계획
 ├── 02-architecture/        # 2단계: 시스템 설계
 ├── 03-implementation/      # 3단계: 구현 요약
-├── 04-operations/          # 4단계: 운영 가이드 및 스크린샷
-├── 04-troubleshooting/     # 4단계: 트러블슈팅 문서
-├── 05-operations/          # 5단계: 운영 및 시스템 관리
+├── 04-operations/          # 4단계: 운영 및 시스템 관리
+├── 05-troubleshooting/     # 5단계: 트러블슈팅 문서
 ├── 06-performance/         # 6단계: 성능 분석
 ├── 07-demo/                # 7단계: 데모 및 시연
 └── 08-retrospective/       # 8단계: 프로젝트 회고
@@ -44,7 +43,7 @@ docs/
    - [03-implementation/implementation-summary.md](03-implementation/implementation-summary.md) - 전체 구현 요약
 
 5. **최종 성과 확인**
-   - [05-operations/final-status-report.md](05-operations/final-status-report.md) - 프로젝트 최종 상태
+   - [04-operations/final-status-report.md](04-operations/final-status-report.md) - 프로젝트 최종 상태
    - [06-performance/week5-performance-analysis.md](06-performance/week5-performance-analysis.md) - 성능 측정 결과
    - [08-retrospective/project-retrospective.md](08-retrospective/project-retrospective.md) - 프로젝트 회고
 
@@ -52,12 +51,12 @@ docs/
 
 #### 실행 및 배포 방법을 알고 싶다면
 - [루트 README.md](../README.md) → "시작하기" 섹션
-- [05-operations/token-auth-setup.md](05-operations/token-auth-setup.md) - 인증 설정
+- [04-operations/token-auth-setup.md](04-operations/token-auth-setup.md) - 인증 설정
 - [terraform/README.md](../terraform/README.md) - 인프라 생성
 
 #### 문제 해결 방법을 찾는다면
-- [05-operations/operations-guide.md](05-operations/operations-guide.md) - 운영 가이드
-- [04-troubleshooting/README.md](04-troubleshooting/README.md) - 트러블슈팅 가이드 (모든 문제 해결 사례)
+- [04-operations/operations-guide.md](04-operations/operations-guide.md) - 운영 가이드
+- [05-troubleshooting/README.md](05-troubleshooting/README.md) - 트러블슈팅 가이드 (모든 문제 해결 사례)
 
 #### 기술적 의사결정 배경이 궁금하다면
 - [02-architecture/adr/](02-architecture/adr/) - 모든 ADR 문서
@@ -107,41 +106,31 @@ docs/
 |------|------|
 | [implementation-summary.md](03-implementation/implementation-summary.md) | 전체 구현 과정의 요약 및 핵심 내용 |
 
-### 4단계: 운영 및 트러블슈팅 (04-operations/, 04-troubleshooting/)
-
-시스템 운영을 위한 가이드와 트러블슈팅 문서입니다.
-
-#### 04-operations/
-프로젝트 검증 결과 및 스크린샷을 포함합니다.
-
-| 디렉토리/파일 | 설명 |
-|------|------|
-| [screenshots/](04-operations/screenshots/) | Grafana, Kiali, Prometheus 등 모니터링 대시보드 스크린샷 |
-
-#### 04-troubleshooting/
-실제 발생한 모든 문제와 해결 방법을 카테고리별로 정리했습니다.
-
-| 문서 | 설명 |
-|------|------|
-| [README.md](04-troubleshooting/README.md) | 트러블슈팅 가이드 메인 페이지 (모든 문제 해결 사례 인덱스) |
-| [argocd/](04-troubleshooting/argocd/) | Argo CD 관련 문제 해결 |
-| [ci-cd/](04-troubleshooting/ci-cd/) | CI/CD 파이프라인 관련 문제 해결 |
-| [istio/](04-troubleshooting/istio/) | Istio 서비스 메시 관련 문제 해결 |
-| [kubernetes/](04-troubleshooting/kubernetes/) | Kubernetes 관련 문제 해결 |
-| [monitoring/](04-troubleshooting/monitoring/) | Prometheus, Grafana, Loki 등 모니터링 관련 문제 해결 |
-
-### 5단계: 운영 (05-operations/)
+### 4단계: 운영 (04-operations/)
 
 시스템 운영, 장애 대응, 보안 관리를 위한 실무 가이드입니다.
 
 | 문서 | 설명 |
 |------|------|
-| [operations-guide.md](05-operations/operations-guide.md) | 일상 운영 작업 및 모니터링 |
-| [token-auth-setup.md](05-operations/token-auth-setup.md) | Kubernetes Token 기반 인증 설정 |
-| [SECRET_MANAGEMENT.md](05-operations/SECRET_MANAGEMENT.md) | Secret 관리 방법 및 보안 고려사항 |
-| [final-status-report.md](05-operations/final-status-report.md) | 프로젝트 최종 상태 보고서 |
-| [comprehensive-test-checklist.md](05-operations/comprehensive-test-checklist.md) | 시스템 검증 체크리스트 |
-| [comprehensive-test-report.md](05-operations/comprehensive-test-report.md) | 종합 테스트 결과 보고서 |
+| [operations-guide.md](04-operations/operations-guide.md) | 일상 운영 작업 및 모니터링 |
+| [token-auth-setup.md](04-operations/token-auth-setup.md) | Kubernetes Token 기반 인증 설정 |
+| [SECRET_MANAGEMENT.md](04-operations/SECRET_MANAGEMENT.md) | Secret 관리 방법 및 보안 고려사항 |
+| [final-status-report.md](04-operations/final-status-report.md) | 프로젝트 최종 상태 보고서 |
+| [comprehensive-test-checklist.md](04-operations/comprehensive-test-checklist.md) | 시스템 검증 체크리스트 |
+| [comprehensive-test-report.md](04-operations/comprehensive-test-report.md) | 종합 테스트 결과 보고서 |
+
+### 5단계: 트러블슈팅 (05-troubleshooting/)
+
+실제 발생한 모든 문제와 해결 방법을 카테고리별로 정리했습니다.
+
+| 문서 | 설명 |
+|------|------|
+| [README.md](05-troubleshooting/README.md) | 트러블슈팅 가이드 메인 페이지 (모든 문제 해결 사례 인덱스) |
+| [argocd/](05-troubleshooting/argocd/) | Argo CD 관련 문제 해결 |
+| [ci-cd/](05-troubleshooting/ci-cd/) | CI/CD 파이프라인 관련 문제 해결 |
+| [istio/](05-troubleshooting/istio/) | Istio 서비스 메시 관련 문제 해결 |
+| [kubernetes/](05-troubleshooting/kubernetes/) | Kubernetes 관련 문제 해결 |
+| [monitoring/](05-troubleshooting/monitoring/) | Prometheus, Grafana, Loki 등 모니터링 관련 문제 해결 |
 
 ### 6단계: 성능 (06-performance/)
 
@@ -200,10 +189,10 @@ k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 
 - **프로젝트 개요**: [../README.md](../README.md)
 - **시스템 아키텍처**: [02-architecture/architecture.md](02-architecture/architecture.md)
-- **운영 가이드**: [05-operations/operations-guide.md](05-operations/operations-guide.md)
-- **트러블슈팅**: [04-troubleshooting/README.md](04-troubleshooting/README.md)
+- **운영 가이드**: [04-operations/operations-guide.md](04-operations/operations-guide.md)
+- **트러블슈팅**: [05-troubleshooting/README.md](05-troubleshooting/README.md)
 - **성능 분석**: [06-performance/week5-performance-analysis.md](06-performance/week5-performance-analysis.md)
-- **최종 상태 보고서**: [05-operations/final-status-report.md](05-operations/final-status-report.md)
+- **최종 상태 보고서**: [04-operations/final-status-report.md](04-operations/final-status-report.md)
 
 ### 외부 리소스
 

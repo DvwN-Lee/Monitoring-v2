@@ -18,10 +18,6 @@ replicas:
   count: 1
 - name: auth-service-deployment
   count: 1
-- name: dashboard-ui-deployment
-  count: 1
-- name: load-balancer-deployment
-  count: 1
 - name: user-service-deployment
   count: 1
 - name: redis-deployment
@@ -42,25 +38,10 @@ configMapGenerator:
   - USER_SERVICE_URL=http://local-user-service:8001
   - AUTH_SERVICE_URL=http://local-auth-service:8002
   - BLOG_SERVICE_URL=http://local-blog-service:8005
-  # ANALYTICS_SERVICE_URL 항목 제거 (analytics-service 삭제)
-  - DASHBOARD_UI_URL=http://local-dashboard-ui-service:80
-  - LOAD_BALANCER_URL=http://local-load-balancer-service:7100
   - REDIS_HOST=local-redis-service
 
 # 5. 간단한 패치들
 patches:
-  # 외부 접근을 위해 Load Balancer를 NodePort로 변경
-  - target:
-      kind: Service
-      name: load-balancer-service
-    patch: |-
-      - op: replace
-        path: /spec/type
-        value: NodePort
-      - op: add
-        path: /spec/ports/0/nodePort
-        value: 30700
-
   # 로컬 개발: 이미지를 다시 다운로드하지 않음
   - target:
       kind: Deployment

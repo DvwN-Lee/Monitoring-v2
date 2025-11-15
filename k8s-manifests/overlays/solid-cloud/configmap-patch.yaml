@@ -16,8 +16,6 @@ data:
   USER_SERVICE_URL: "http://prod-user-service:8001"
   AUTH_SERVICE_URL: "http://prod-auth-service:8002"
   BLOG_SERVICE_URL: "http://prod-blog-service:8005"
-  DASHBOARD_UI_URL: "http://prod-dashboard-ui-service:80"
-  LOAD_BALANCER_URL: "http://prod-load-balancer-service:7100"
 
   # Redis Configuration
   REDIS_HOST: "prod-redis-service"
