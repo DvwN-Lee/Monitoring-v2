@@ -1,5 +1,7 @@
 # Cloud-Native 마이크로서비스 플랫폼 v2.0
 
+![Kiali Service Mesh](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/kiali-service-graph-full.png)
+
 **문서 버전**: 3.1
 **최종 수정일**: 2025년 11월 14일
 
@@ -47,71 +49,31 @@
 
 ---
 
-## 아키텍처 개요
+## 아키텍처
 
-### 전체 시스템 구조 (High-level)
+프로젝트의 전체 아키텍처, 서비스 간 통신 흐름, CI/CD 파이프라인, 마이크로서비스 구조 등 상세한 설계 내용은 다음 문서를 참고하세요:
 
-다음은 시스템의 고수준 아키텍처 개요입니다. 상세한 아키텍처 설계, 서비스 간 통신 흐름, CI/CD 파이프라인 등은 [시스템 아키텍처 문서](./docs/02-architecture/architecture.md)를 참고하세요.
+**[전체 시스템 아키텍처 문서 보기](./docs/02-architecture/architecture.md)**
 
-```mermaid
-graph TD
-    subgraph "CI/CD Pipeline"
-        A[Git Push] --> B{GitHub Actions};
-        B --> C[Build & Test & Scan];
-        C --> D[Push to Registry];
-        D --> E[Update GitOps Repo];
-    end
-
-    subgraph "Solid Cloud"
-        F[User] --> G[Load Balancer];
-        G --> H[Kubernetes Cluster];
-
-        subgraph H["K8s Cluster"]
-            I[Istio Gateway] --> J[API Gateway <br/> Go];
-            J --> K[Auth Service <br/> Python];
-            J --> L[User Service <br/> Python];
-            J --> M[Blog Service <br/> Python];
-
-            K --> N[PostgreSQL];
-            L --> N;
-            M --> N;
-            L --> O[Redis];
-        end
-
-        subgraph "Monitoring"
-            P[Prometheus] -.-> H;
-            Q[Grafana] --> P;
-            R[Loki] -.-> H;
-            Q --> R;
-        end
-    end
-
-    E -.-> S{Argo CD};
-    S -- Auto Sync --> H;
-
-    style B fill:#2088FF,stroke:#333,stroke-width:2px,color:#fff
-    style S fill:#F44336,stroke:#333,stroke-width:2px,color:#fff
-```
-
-### 마이크로서비스 소개
-
-각 서비스의 역할과 책임을 명확히 분리하여 독립적인 개발과 배포가 가능합니다.
-
-- **API Gateway (Go)**: 모든 클라이언트 요청의 단일 진입점(Entry Point)으로, 요청을 적절한 내부 서비스로 라우팅합니다. Go의 높은 성능과 동시성을 활용하여 빠른 프록시 역할을 수행합니다.
-
-- **Auth Service (Python/FastAPI)**: JWT 기반의 사용자 인증 및 토큰 검증을 전담합니다. `/login` 엔드포인트를 통해 토큰을 발급하고, `/validate` 엔드포인트로 다른 서비스의 인가 요청을 처리합니다.
-
-- **User Service (Python/FastAPI)**: 사용자 정보 관리 및 데이터베이스/캐시 처리를 담당합니다. PostgreSQL을 메인 데이터 저장소로, Redis를 캐시 레이어로 사용하여 Cache-Aside 패턴을 구현합니다.
-
-- **Blog Service (Python/FastAPI)**: 블로그 게시물의 CRUD 기능과 웹 UI를 제공합니다. 정적 파일 서빙과 RESTful API를 모두 지원하며, Auth Service를 통해 권한 검증을 수행합니다.
+주요 내용:
+- 전체 시스템 아키텍처 다이어그램 (CI/CD, Kubernetes 클러스터, 모니터링)
+- 마이크로서비스 구조 및 각 서비스 설명
+- 서비스 간 통신 흐름 (Sequence Diagram)
+- 네트워크 및 보안 구조
 
 ---
 
 ## 시스템 현황 및 대시보드
 
+### 블로그 서비스
+
+![Blog Service](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/blog-service.png)
+
+FastAPI 기반의 블로그 애플리케이션으로, 게시글 CRUD 기능과 웹 UI를 제공합니다.
+
 ### Grafana Golden Signals 대시보드
 
-![Grafana Golden Signals](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/grafana-golden-signals.png)
+![Grafana Golden Signals](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/grafana-golden-signals-full.png)
 
 **주요 지표**:
 - **Latency**: P95 9.62ms, P99 17.8ms
@@ -119,15 +81,33 @@ graph TD
 - **Errors**: 0%
 - **Saturation**: CPU 0.5% ~ 2.8%
 
-### Kiali 서비스 메시 대시보드
+### Prometheus 메트릭 수집
 
-![Kiali Service Graph](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/kiali-service-graph.png)
+![Prometheus](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/prometheus.png)
 
-Istio 서비스 메시를 통한 실시간 트래픽 흐름과 서비스 간 통신 상태를 시각화합니다.
+Prometheus로 모든 서비스의 메트릭을 수집하고 쿼리할 수 있습니다.
+
+### Loki 중앙 로깅
+
+![Loki Logs](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/loki-logs.png)
+
+Loki를 통해 모든 서비스의 로그를 한곳에서 조회하고 검색할 수 있습니다.
 
 ---
 
 ## 시작하기
+
+### 빠른 시작 가이드
+
+프로젝트를 처음 시작하는 경우, 아래 가이드 문서를 먼저 읽어보세요:
+
+**[Getting Started - 로컬 환경에서 시작하기](./docs/GETTING_STARTED.md)**
+
+이 가이드는 필수 도구 설치부터 로컬 환경에서 전체 시스템을 실행하는 과정까지 단계별로 안내합니다.
+
+---
+
+### 배포 옵션
 
 이 프로젝트는 **로컬 개발 환경**과 **Solid Cloud 프로덕션 환경** 두 가지 방식으로 실행할 수 있습니다.
 
@@ -145,7 +125,7 @@ minikube start
 skaffold dev
 
 # 3. 서비스 접속
-minikube service load-balancer-service --url
+kubectl port-forward svc/api-gateway 8000:8000
 ```
 
 ---
@@ -331,21 +311,10 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 - **보안**: mTLS STRICT, Trivy 자동 스캔, NetworkPolicy 적용
 - **CI/CD**: Git Push → 5분 이내 자동 배포
 
-#### Grafana Golden Signals 대시보드
-
-실시간 모니터링 시스템을 통해 시스템의 안정성과 성능을 지속적으로 확인할 수 있습니다.
-
-![Grafana Golden Signals](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/grafana-golden-signals.png)
-
-**주요 지표**:
-- **Latency (지연시간)**: P95 9.62ms, P99 17.8ms - 매우 빠른 응답 속도 유지
-- **Traffic (트래픽)**: 7.56 req/s - 안정적인 요청 처리량
-- **Errors (에러율)**: 0% - 모든 요청이 성공적으로 처리됨
-- **Saturation (포화도)**: CPU 사용률 0.5% ~ 2.8% - 효율적인 리소스 활용
-
 ### 접속 정보
 - **Grafana 대시보드**: http://10.0.11.168:30300
-- **Argo CD**: Solid Cloud 클러스터 내부 접속
+- **Kiali 서비스 메시**: http://10.0.11.168:30164
+- **Prometheus**: http://10.0.11.168:30090
 - **애플리케이션**: http://10.0.11.168:31304
 
 ---
@@ -358,8 +327,8 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 -   **[시스템 설계서](./docs/02-architecture/architecture.md)**: 시스템 아키텍처와 구조
 -   **[프로젝트 계획서](./docs/01-planning/project-plan.md)**: 개발 일정과 마일스톤
 -   **[기술 결정 기록 (ADR)](./docs/02-architecture/adr/)**: 주요 기술 선택의 이유와 배경
--   **[Secret 관리 가이드](./docs/05-operations/SECRET_MANAGEMENT.md)**: 보안 비밀 정보 관리 방법
--   **[Week 5 최종 상태 보고서](./docs/05-operations/final-status-report.md)**: 프로젝트 완료 상태
+-   **[Secret 관리 가이드](./docs/04-operations/SECRET_MANAGEMENT.md)**: 보안 비밀 정보 관리 방법
+-   **[Week 5 최종 상태 보고서](./docs/04-operations/final-status-report.md)**: 프로젝트 완료 상태
 -   **[Week 5 성능 분석](./docs/06-performance/week5-performance-analysis.md)**: 부하 테스트 및 최적화 결과
 -   **[Week 4 Istio 구현 가이드](./docs/guides/week4/)**: Istio 서비스 메시 구축 과정
 
