@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # 모니터링 대시보드 테스트 시나리오
 
 ## 테스트 환경 정보

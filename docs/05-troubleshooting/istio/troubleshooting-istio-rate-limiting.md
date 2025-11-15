@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Istio EnvoyFilter Rate Limiting 미작동 문제 해결
 
 ## 문제 상황
@@ -54,3 +60,8 @@ kubectl rollout restart deployment <deployment-name> -n <namespace>
 
 ## 교훈
 EnvoyFilter는 Istio의 강력한 확장 기능이지만, 세밀한 설정이 필요하며 디버깅이 까다로울 수 있습니다. Rate Limiting과 같은 기능을 EnvoyFilter로 구현할 때는 `workloadSelector`의 정확성, `configPatch`의 문법 및 Envoy API 스펙 준수, 그리고 적용 순서 등을 면밀히 검토해야 합니다. `istioctl proxy-config` 명령은 Envoy 프록시의 실제 설정을 확인하는 데 매우 유용하므로, 문제 해결 과정에서 적극적으로 활용해야 합니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - 전체 시스템](../../02-architecture/architecture.md#2-전체-시스템-아키텍처)
+- [운영 가이드](../../04-operations/guides/operations-guide.md)

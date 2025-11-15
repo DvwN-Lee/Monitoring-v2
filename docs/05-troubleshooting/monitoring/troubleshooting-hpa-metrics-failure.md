@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] HPA 메트릭 수집 실패 문제 해결
 
 ## 1. 문제 상황
@@ -122,3 +128,9 @@ user-service-hpa   Deployment/user-service     15%/80%   2         10        2  
 1.  **HPA의 전제 조건: 리소스 요청**: CPU/메모리 사용률 기반 HPA를 사용하려면 반드시 Pod Spec에 `resources.requests`를 명시해야 합니다. 이는 HPA의 가장 기본적인 요구사항이자 가장 흔한 실수 중 하나입니다.
 2.  **HPA는 의존성이 높은 오브젝트**: HPA는 단독으로 동작하지 않고 API Server, Metrics Server, 그리고 대상 워크로드(Deployment 등)와 긴밀하게 연동됩니다. 문제가 발생하면 HPA 자체뿐만 아니라 관련된 모든 구성 요소의 상태를 종합적으로 점검해야 합니다.
 3.  **`describe`는 최고의 디버깅 도구**: HPA 이벤트 로그는 문제의 원인을 매우 명확하게 알려주는 경우가 많습니다. `TARGETS`가 `unknown`일 때 가장 먼저 확인할 것은 `kubectl describe hpa`입니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - 모니터링 및 로깅](../../02-architecture/architecture.md#5-모니터링-및-로깅)
+- [운영 가이드](../../04-operations/guides/operations-guide.md)
+- [Metrics Server 실패](troubleshooting-metrics-server-failure.md)

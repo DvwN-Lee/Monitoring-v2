@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] ImagePullBackOff 문제 해결
 
 ## 1. 문제 상황
@@ -117,3 +123,9 @@ kubectl delete pod <pod-name>
 1.  **`describe pod`는 필수**: `ImagePullBackOff`는 현상일 뿐, 원인은 `describe pod`의 이벤트 메시지에 명확히 드러납니다. Pod 생성 실패 시 `describe`를 가장 먼저 확인하는 것이 기본입니다.
 2.  **이미지 태그는 명시적으로**: `latest` 태그는 개발 중에는 편리하지만, 운영 환경에서는 예측 불가능한 문제를 일으킬 수 있습니다. 항상 `v1.2.3`과 같이 변하지 않는(immutable) 태그를 사용하는 것이 안정적입니다.
 3.  **인증은 ServiceAccount에**: `imagePullSecrets`를 개별 Pod마다 설정하는 것은 번거롭고 실수를 유발하기 쉽습니다. 네임스페이스의 `default` ServiceAccount에 연결해두면 해당 네임스페이스에서는 인증 문제를 신경 쓸 필요가 없어집니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - Solid Cloud 구성](../../02-architecture/architecture.md#7-solid-cloud-구성)
+- [Secret 관리 가이드](../../04-operations/guides/SECRET_MANAGEMENT.md)
+- [DockerHub 로그인 실패](../ci-cd/troubleshooting-dockerhub-login-failure.md)

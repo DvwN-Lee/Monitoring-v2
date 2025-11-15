@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # Token 기반 Kubernetes 인증 설정 가이드
 
 이 문서는 Solid Cloud 환경에서 kubeconfig 파일 없이 Service Account Token을 사용하여 Kubernetes 클러스터에 접근하는 방법을 설명합니다.

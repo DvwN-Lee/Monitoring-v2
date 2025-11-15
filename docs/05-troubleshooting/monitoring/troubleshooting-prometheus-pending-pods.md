@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Prometheus/Grafana Pod Pending 상태 문제 해결
 
 ## 1. 문제 상황
@@ -179,3 +185,9 @@ prometheus-prometheus-node-exporter-8b2t5                   1/1     Running   0 
 1.  **리소스 요청/한도 설정의 중요성**: Pod 배포 시 리소스 `requests`와 `limits`는 클러스터의 가용 용량에 맞춰 신중하게 설정해야 합니다. 특히 개발 또는 테스트 환경에서는 프로덕션 수준의 높은 값 대신 환경에 맞는 최소한의 값으로 시작하는 것이 효율적입니다.
 2.  **PVC와 StorageClass 사전 검증**: 상태 저장 애플리케이션(Stateful Application) 배포 시, PVC가 요구하는 `storageClassName`이 대상 클러스터에 실제로 존재하는지, 그리고 정상적으로 동작하는지 사전에 `kubectl get sc` 명령 등으로 검증하는 절차가 필수적입니다.
 3.  **`describe` 명령어의 생활화**: `Pending`, `Error`, `CrashLoopBackOff` 등 비정상 상태의 쿠버네티스 오브젝트를 진단할 때 `kubectl describe` 명령어는 문제의 원인을 파악할 수 있는 가장 기본적인 단서를 제공하므로 습관적으로 사용하는 것이 좋습니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - 모니터링 및 로깅](../../02-architecture/architecture.md#5-모니터링-및-로깅)
+- [운영 가이드](../../04-operations/guides/operations-guide.md)
+- [ResourceQuota 초과](../kubernetes/troubleshooting-resourcequota-exceeded.md)

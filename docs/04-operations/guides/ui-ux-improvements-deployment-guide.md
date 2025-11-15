@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # UI/UX 개선사항 배포 가이드
 
 ## 1. 변경사항 요약

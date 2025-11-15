@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Prometheus Alertmanager 알림 전송 실패 문제 해결
 
 ## 1. 문제 상황
@@ -99,3 +105,9 @@ kubectl logs -n monitoring -l app.kubernetes.io/name=alertmanager
 - **Alertmanager 라우팅 규칙의 중요성**: Alertmanager의 핵심 기능은 라우팅입니다. `match`와 `match_re`를 활용하여 알림의 특성에 따라 적절한 담당자나 채널로 알림을 보내는 규칙 설계가 매우 중요합니다.
 - **Receiver 설정 사전 테스트**: 새로운 Receiver를 추가할 때는 Pod 내에서 `curl` 등을 이용해 외부 서비스와의 통신을 미리 테스트하여 설정 오류를 조기에 발견하는 것이 효율적입니다.
 - **Silence 규칙의 체계적 관리**: 임시로 추가한 Silence 규칙이 방치되지 않도록 만료 시간을 설정하고, 주기적으로 검토하여 불필요한 규칙을 정리해야 합니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - 모니터링 및 로깅](../../02-architecture/architecture.md#5-모니터링-및-로깅)
+- [운영 가이드 - 모니터링](../../04-operations/guides/operations-guide.md)
+- [Prometheus 메트릭 수집 실패](troubleshooting-prometheus-metric-collection-failure.md)

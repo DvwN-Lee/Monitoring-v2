@@ -1,3 +1,9 @@
+---
+version: 1.0
+last_updated: 2025-11-15
+author: Dongju Lee
+---
+
 # [Troubleshooting] Service Endpoint 미생성 문제 해결
 
 ## 1. 문제 상황
@@ -132,3 +138,9 @@ Endpoint가 생성된 것을 확인한 후, 클러스터 내 다른 Pod에서 `c
 1.  **레이블은 Kubernetes의 접착제**: Service와 Pod를 연결하는 `selector-label` 메커니즘은 Kubernetes 네트워킹의 가장 기본적이고 핵심적인 원리입니다. 오타 하나가 전체 서비스의 동작을 멈추게 할 수 있음을 항상 인지해야 합니다.
 2.  **Service는 건강한 Pod만 상대한다**: Service는 `Ready` 상태의 Pod에게만 트래픽을 보냄으로써 자체적인 장애 격리 기능을 수행합니다. Endpoint가 없다는 것은 "연결할만한 건강한 Pod가 없다"는 신호로 해석할 수 있습니다.
 3.  **`describe`로 관계를 파악하라**: `kubectl describe svc`와 `kubectl describe pod`를 함께 사용하면 Service, Endpoint, Pod 간의 관계(Selector, Label, Port, Status)를 한눈에 파악하고 불일치 지점을 쉽게 찾을 수 있습니다.
+
+## 관련 문서
+
+- [시스템 아키텍처 - 마이크로서비스 구조](../../02-architecture/architecture.md#3-마이크로서비스-구조)
+- [운영 가이드](../../04-operations/guides/operations-guide.md)
+- [API Gateway 라우팅 오류](../istio/troubleshooting-api-gateway-routing-errors.md)
