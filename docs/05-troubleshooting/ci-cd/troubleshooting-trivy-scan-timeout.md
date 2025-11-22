@@ -113,7 +113,7 @@ GitHub Actions 로그에서 Trivy 스캔이 타임아웃 없이 완료되는지 
 # Scan image with Trivy
 # ...
 # Total: X vulnerabilities (CRITICAL: Y, HIGH: Z)
-# ✅ Scan completed successfully
+# **SUCCESS**: Scan completed successfully
 
 # 예상 소요 시간: 2-5분 (캐시 사용 시)
 ```

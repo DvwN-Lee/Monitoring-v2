@@ -43,8 +43,8 @@ Argo CD가 Git 리포지토리의 변경 사항을 자동으로 감지하지 못
 2.  설정된 Webhook을 클릭하여 'Payload URL'이 `https://<your-argocd-domain>/api/webhook` 형식으로 올바르게 입력되었는지 확인합니다.
 3.  **Recent Deliveries** 탭을 확인합니다.
     *   최근 커밋에 해당하는 Webhook 요청이 목록에 있어야 합니다.
-    *   요청 옆에 녹색 체크(✅)와 `200` 응답 코드가 표시되면 Webhook은 성공적으로 Argo CD에 전달된 것입니다.
-    *   만약 빨간색 느낌표(❗)와 `4xx` 또는 `5xx` 오류 코드가 보인다면, GitHub가 Argo CD 서버에 접근하지 못하는 것이므로 Ingress, 방화벽, 네트워크 설정을 점검해야 합니다.
+    *   요청 옆에 녹색 체크 표시와 `200` 응답 코드가 표시되면 Webhook은 성공적으로 Argo CD에 전달된 것입니다.
+    *   만약 빨간색 느낌표 표시와 `4xx` 또는 `5xx` 오류 코드가 보인다면, GitHub가 Argo CD 서버에 접근하지 못하는 것이므로 Ingress, 방화벽, 네트워크 설정을 점검해야 합니다.
 
 #### 2단계: Argo CD의 Git Polling 주기 확인
 

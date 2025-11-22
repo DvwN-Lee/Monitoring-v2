@@ -1,7 +1,7 @@
 # Cloud-Native 마이크로서비스 플랫폼 v2.0
 
-**문서 버전**: 3.1 <br>
-**최종 수정일**: 2025년 11월 15일
+**문서 버전**: 3.2 <br>
+**최종 수정일**: 2025년 11월 22일
 
 로컬 환경(Minikube)에서 운영되던 마이크로서비스 블로그 플랫폼을 클라우드 네이티브 아키텍처로 재구축한 프로젝트입니다. Terraform을 이용한 인프라 자동화, GitOps 기반의 CI/CD 파이프라인, 그리고 Istio 서비스 메시를 통한 관측성과 보안 강화를 목표로 합니다.
 
@@ -15,6 +15,7 @@
 | **2.0** | 2025-10-13 | 단국대학교 자체 클라우드(Solid Cloud) 개발/테스트 후 AWS는 최종 배포하는 것으로 변경 |
 | **3.0** | 2025-11-03 | 프로젝트 완료, Week 5 최종 상태 반영 (CI/CD, 모니터링, Istio 서비스 메시 구축 완료) |
 | **3.1** | 2025-11-14 | README 개선 (대시보드 이미지를 상단으로 이동, Kiali 대시보드 추가, 모든 문서 링크 수정) |
+| **3.2** | 2025-11-22 | k6 부하 테스트 통합 및 성능 테스트 문서화 (스크립트 개선, threshold 최적화) |
 
 ---
 
@@ -44,6 +45,7 @@
 -   **관측성 (Observability)**: Prometheus, Grafana, Loki를 도입하여 시스템의 메트릭과 로그를 실시간으로 모니터링합니다.
 -   **서비스 메시**: Istio를 적용하여 서비스 간 통신을 자동으로 암호화하고 트래픽을 세밀하게 제어합니다.
 -   **데이터 영속성**: PostgreSQL과 Redis를 사용하여 안정적인 데이터 저장과 빠른 캐싱을 지원합니다.
+-   **성능 테스트**: k6를 활용한 자동화된 부하 테스트로 시스템 성능과 안정성을 검증합니다.
 
 ---
 
@@ -216,6 +218,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 | **Container**       | `Docker`, `Kustomize`                                                                             |
 | **Service Mesh**    | `Istio`                                                                                           |
 | **Monitoring**      | `Prometheus`, `Grafana`, `Loki`                                                                   |
+| **Performance**     | `k6`                                                                                              |
 | **Backend**         | `Go`, `Python`, `FastAPI`                                                                         |
 | **Database/Cache**  | `PostgreSQL`, `Redis`                                                                             |
 | **Local Dev**       | `Minikube`, `Skaffold`                                                                            |
@@ -334,6 +337,8 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 -   **[Secret 관리 가이드](./docs/04-operations/guides/SECRET_MANAGEMENT.md)**: 보안 비밀 정보 관리 방법
 -   **[Week 5 최종 상태 보고서](./docs/04-operations/reports/final-status-report.md)**: 프로젝트 완료 상태
 -   **[Week 5 성능 분석](./docs/06-performance/week5-performance-analysis.md)**: 부하 테스트 및 최적화 결과
+-   **[k6 부하 테스트 가이드](./tests/performance/README.md)**: k6 성능 테스트 실행 방법
+-   **[k6 테스트 결과 보고서](./docs/06-performance/k6-load-test-results.md)**: 부하 테스트 결과 및 성능 지표
 -   **[Week 4 Istio 구현 가이드](./docs/guides/week4/)**: Istio 서비스 메시 구축 과정
 
 ---
