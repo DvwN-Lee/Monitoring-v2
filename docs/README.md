@@ -37,7 +37,7 @@ docs/
 
 3. **요구사항 및 계획 이해**
    - [01-planning/requirements.md](01-planning/requirements.md) - 기능 요구사항
-   - [01-planning/project-plan.md](01-planning/project-plan.md) - 5주 개발 계획
+   - [01-planning/project-plan.md](01-planning/project-plan.md) - 개발 계획
 
 4. **시스템 설계 확인**
    - [02-architecture/architecture.md](02-architecture/architecture.md) - 시스템 아키텍처
@@ -89,7 +89,7 @@ docs/
 | 문서 | 설명 |
 |------|------|
 | [requirements.md](01-planning/requirements.md) | Must/Should/Could-Have 요구사항 목록 |
-| [project-plan.md](01-planning/project-plan.md) | 5주간의 주차별 개발 계획 및 마일스톤 |
+| [project-plan.md](01-planning/project-plan.md) | 주차별 개발 계획 및 마일스톤 |
 
 ### 2단계: 설계 (02-architecture/)
 
@@ -113,7 +113,7 @@ docs/
 
 ### 3단계: 구현 (03-implementation/)
 
-5주간의 개발 과정에 대한 전체적인 요약입니다.
+개발 과정에 대한 전체적인 요약입니다.
 
 | 문서 | 설명 |
 |------|------|

@@ -201,7 +201,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
   - CI/CD 파이프라인 상세 설계
   - 네트워크 구조 및 보안 설계
 - **[운영 가이드](./docs/04-operations/guides/operations-guide.md)**: 시스템 운영, 모니터링, 장애 대응 Runbook
-- **[프로젝트 회고](./docs/08-retrospective/project-retrospective.md)**: 5주간의 프로젝트 성과 및 회고
+- **[프로젝트 회고](./docs/08-retrospective/project-retrospective.md)**: 프로젝트 성과 및 회고
 - **[기술 결정 기록 (ADR)](./docs/02-architecture/adr/)**: 주요 기술 선택의 배경과 근거
 
 ---
@@ -227,7 +227,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 ## 개발 계획 및 목표
 
 ### 개발 기간
-- **프로젝트 기간**: 5주 (2025년 9월 30일 ~ 11월 3일)
+- **프로젝트 기간**: 2025년 9월 30일 ~ 11월 3일
 - **개발/테스트 환경**: Solid Cloud (단국대학교)
 - **프로젝트 상태**: 완료 (Must-Have 100%, Should-Have 100%)
 
