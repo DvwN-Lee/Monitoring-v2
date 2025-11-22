@@ -107,7 +107,7 @@ Kiali를 통해 Istio 서비스 메시의 트래픽 흐름과 서비스 간 의�
 
 프로젝트를 처음 시작하는 경우, 아래 가이드 문서를 먼저 읽어보세요:
 
-**[Getting Started - 로컬 환경에서 시작하기](./docs/GETTING_STARTED.md)**
+**[Getting Started - 로컬 환경에서 시작하기](./docs/00-getting-started/GETTING_STARTED.md)**
 
 이 가이드는 필수 도구 설치부터 로컬 환경에서 전체 시스템을 실행하는 과정까지 단계별로 안내합니다.
 
@@ -336,10 +336,10 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 -   **[기술 결정 기록 (ADR)](./docs/02-architecture/adr/)**: 주요 기술 선택의 이유와 배경
 -   **[Secret 관리 가이드](./docs/04-operations/guides/SECRET_MANAGEMENT.md)**: 보안 비밀 정보 관리 방법
 -   **[Week 5 최종 상태 보고서](./docs/04-operations/reports/final-status-report.md)**: 프로젝트 완료 상태
--   **[Week 5 성능 분석](./docs/06-performance/week5-performance-analysis.md)**: 부하 테스트 및 최적화 결과
+-   **[k6 부하 테스트 결과 분석](./docs/06-performance/k6-load-test-results.md)**: 부하 테스트 및 최적화 결과
 -   **[k6 부하 테스트 가이드](./tests/performance/README.md)**: k6 성능 테스트 실행 방법
 -   **[k6 테스트 결과 보고서](./docs/06-performance/k6-load-test-results.md)**: 부하 테스트 결과 및 성능 지표
--   **[Week 4 Istio 구현 가이드](./docs/guides/week4/)**: Istio 서비스 메시 구축 과정
+-   **[Istio 트러블슈팅 가이드](./docs/05-troubleshooting/istio/)**: Istio 서비스 메시 문제 해결
 
 ---
 
@@ -352,4 +352,4 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 - Secret(비밀번호, API 키 등)은 Git 저장소에 커밋하지 마세요
 - 프로덕션 환경에서는 External Secrets Operator 또는 클라우드 네이티브 Secret 관리 솔루션 사용을 권장합니다
-- 자세한 내용은 [Secret 관리 가이드](./docs/05-operations/SECRET_MANAGEMENT.md)를 참고하세요
+- 자세한 내용은 [Secret 관리 가이드](./docs/04-operations/guides/SECRET_MANAGEMENT.md)를 참고하세요
