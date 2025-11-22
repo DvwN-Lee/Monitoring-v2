@@ -143,9 +143,9 @@ Docker Hub Access Token의 권한이 적절하게 설정되어 있는지 확인�
 # Re-run all jobs 클릭
 
 # 예상 결과:
-# ✅ Login to Docker Hub
-# ✅ Build and push Docker image
-# ✅ 전체 워크플로우 성공
+# **PASS**: Login to Docker Hub
+# **PASS**: Build and push Docker image
+# **PASS**: 전체 워크플로우 성공
 ```
 
 ## 6. 교훈

@@ -126,7 +126,7 @@ cat .github/workflows/ci.yml | grep -A 5 "^on:"
 # Repository > Settings > Actions > General
 #
 # Actions permissions:
-# ✅ Allow all actions and reusable workflows
+# **SELECTED**: Allow all actions and reusable workflows
 ```
 
 ### 5. 워크플로우 실행 로그 확인
@@ -139,10 +139,10 @@ cat .github/workflows/ci.yml | grep -A 5 "^on:"
 # - 각 job 및 step의 실행 결과 확인
 
 # 예상 결과:
-# ✅ Build
-# ✅ Test
-# ✅ Security scan
-# ✅ Push
+# **PASS**: Build
+# **PASS**: Test
+# **PASS**: Security scan
+# **PASS**: Push
 ```
 
 ## 6. 교훈

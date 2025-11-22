@@ -393,7 +393,7 @@ def test_bucket_count():
       exit 1
     fi
 
-    echo "✓ Histogram buckets validated: $BUCKET_COUNT buckets"
+    echo "OK: Histogram buckets validated: $BUCKET_COUNT buckets"
 ```
 
 ### 4. 모니터링 알림

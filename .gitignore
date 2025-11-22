@@ -164,3 +164,8 @@ kubeconfig
 *.kubeconfig
 *-kubeconfig.yaml
 /.claude/
+
+# k6 performance test results
+tests/performance/*.json
+tests/performance/results.json
+tests/performance/quick-results.json

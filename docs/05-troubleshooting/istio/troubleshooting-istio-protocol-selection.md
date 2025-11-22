@@ -288,8 +288,8 @@ istioctl proxy-config listener <pod-name> -n titanium-prod -o json | \
 kubectl logs <pod> -n titanium-prod -c istio-proxy | grep -i protocol
 
 # 경고가 없어야 함:
-# ✓ (경고 없음)
-# ✗ "Protocol detection timeout"
+# OK: (경고 없음)
+# ERROR: "Protocol detection timeout"
 ```
 
 ### 4. L7 메트릭 확인
@@ -369,7 +369,7 @@ for file in $(git diff --cached --name-only | grep -E '.*-service\.yaml$'); do
   fi
 done
 
-echo "✓ All Service definitions are valid"
+echo "OK: All Service definitions are valid"
 ```
 
 ### 3. CI/CD 검증
@@ -393,12 +393,12 @@ jobs:
 
             # 포트 이름 확인
             if ! grep -q "name: http" "$file"; then
-              echo "❌ ERROR: $file missing port name"
+              echo "**ERROR**: $file missing port name"
               exit 1
             fi
           done
 
-          echo "✅ All Service definitions are valid"
+          echo "**OK**: All Service definitions are valid"
 ```
 
 ### 4. OPA (Open Policy Agent) 정책
