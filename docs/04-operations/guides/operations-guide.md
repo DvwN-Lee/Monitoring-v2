@@ -769,4 +769,4 @@ kubectl exec -it -n titanium-prod postgres-0 -c postgres -- \
 ---
 
 **문서 작성자**: 이동주
-**최종 수정일**: 2025년 11월 3일
+**최종 수정일**: 2025년 11월 15일
