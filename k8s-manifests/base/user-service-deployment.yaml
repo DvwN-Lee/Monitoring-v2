@@ -30,8 +30,6 @@ spec:
           value: "user-service"
         - name: SERVICE_PORT
           value: "8001"
-        - name: DATABASE_PATH
-          value: "/data/users.db"
         resources:
           requests:
             memory: "128Mi"
@@ -51,10 +49,3 @@ spec:
             port: http
           initialDelaySeconds: 10
           periodSeconds: 5
-        volumeMounts:
-        - name: user-data
-          mountPath: /data
-      volumes:
-      - name: user-data
-        persistentVolumeClaim:
-          claimName: user-service-data-pvc
