@@ -6,7 +6,7 @@
 
 **프로젝트 기간**: 2025년 9월 30일 ~ 2025년 11월 15일
 
-**개발 환경**: 단국대학교 Solid Cloud
+**개발 환경**: CloudStack 기반 Solid Cloud
 
 **Kubernetes 버전**: v1.29.7
 

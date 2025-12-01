@@ -21,7 +21,7 @@ author: Dongju Lee
 ## 시스템 개요
 
 ### 아키텍처
-- **환경**: Solid Cloud (단국대학교)
+- **환경**: Solid Cloud (CloudStack 기반)
 - **Kubernetes 버전**: v1.29.7
 - **주요 네임스페이스**:
   - `titanium-prod`: 애플리케이션 서비스
