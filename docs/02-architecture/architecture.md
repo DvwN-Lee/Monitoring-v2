@@ -34,7 +34,7 @@
 
 ### 1.2. 기술 스택
 
-- **Cloud Platform**: Solid Cloud (단국대학교)
+- **Cloud Platform**: Solid Cloud (CloudStack 기반)
 - **Container Orchestration**: Kubernetes
 - **IaC**: Terraform
 - **CI/CD**: GitHub Actions, Argo CD

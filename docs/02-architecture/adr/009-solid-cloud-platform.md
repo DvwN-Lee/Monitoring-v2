@@ -10,7 +10,7 @@ Cloud-Native 마이크로서비스 플랫폼을 구축하기 위한 Kubernetes �
 
 ## 결정 (Decision)
 
-- **Solid Cloud** (단국대학교 클라우드 플랫폼)를 Kubernetes 운영 환경으로 채택
+- **Solid Cloud** (CloudStack 기반 클라우드 플랫폼)를 Kubernetes 운영 환경으로 채택
 - **Minikube**를 로컬 개발 및 테스트 환경으로 병행 사용
 
 ## 이유 (Rationale)
@@ -32,7 +32,7 @@ Cloud-Native 마이크로서비스 플랫폼을 구축하기 위한 Kubernetes �
 ### Solid Cloud 선택 이유
 
 1. **비용 효율성**:
-   - 단국대학교에서 제공하는 무료 교육용 클라우드 플랫폼
+   - CloudStack 기반 무료 교육용 클라우드 플랫폼
    - AWS/GCP/Azure의 월 $100~$300 비용 부담 없음
    - 장기간 실습 환경 유지 가능
 

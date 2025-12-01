@@ -12,7 +12,7 @@
 | 문서 버전 | 날짜 | 주요 변경 내용 |
 |----------|------|---------------|
 | **1.0** | 2025-09-29 | 초안 작성 (AWS EKS 기반 아키텍처) |
-| **2.0** | 2025-10-13 | 단국대학교 자체 클라우드(Solid Cloud) 개발/테스트 후 AWS는 최종 배포하는 것으로 변경 |
+| **2.0** | 2025-10-13 | CloudStack 기반 단국대 클라우드(Solid Cloud) 개발/테스트 후 AWS는 최종 배포하는 것으로 변경 |
 | **3.0** | 2025-11-03 | 프로젝트 완료, Week 5 최종 상태 반영 (CI/CD, 모니터링, Istio 서비스 메시 구축 완료) |
 | **3.1** | 2025-11-14 | README 개선 (대시보드 이미지를 상단으로 이동, Kiali 대시보드 추가, 모든 문서 링크 수정) |
 | **3.2** | 2025-11-22 | k6 부하 테스트 통합 및 성능 테스트 문서화 (스크립트 개선, threshold 최적화) |
@@ -212,7 +212,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 | 구분                | 기술                                                                                              |
 | ------------------- | ------------------------------------------------------------------------------------------------- |
-| **Cloud**           | `Solid Cloud (단국대학교)`, `Kubernetes`                                                           |
+| **Cloud**           | `Solid Cloud (CloudStack 기반)`, `Kubernetes`                                                           |
 | **IaC**             | `Terraform`                                                                                       |
 | **CI/CD**           | `GitHub Actions`, `Argo CD`                                                                       |
 | **Container**       | `Docker`, `Kustomize`                                                                             |
@@ -231,7 +231,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 ### 개발 기간
 - **프로젝트 기간**: 2025년 9월 30일 ~ 11월 15일
-- **개발/테스트 환경**: Solid Cloud (단국대학교)
+- **개발/테스트 환경**: Solid Cloud (CloudStack 기반)
 - **프로젝트 상태**: 완료 (Must-Have 100%, Should-Have 100%)
 
 ### 성능 목표 및 달성 현황
@@ -344,7 +344,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 ---
 
 ## 참고 사항
-- 이 프로젝트는 단국대학교 Solid Cloud 환경에서 개발 및 운영되었습니다.
+- 이 프로젝트는 CloudStack 기반 Solid Cloud 환경에서 개발 및 운영되었습니다.
 - 모든 핵심 요구사항이 완료되어 실제 운영 가능한 상태입니다.
 - 추가 개선 사항은 프로젝트 문서를 참고하세요.
 
