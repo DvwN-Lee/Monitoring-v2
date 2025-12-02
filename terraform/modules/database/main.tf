@@ -77,18 +77,34 @@ resource "kubernetes_config_map" "postgresql_init" {
 
       CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 
+      -- Initialize categories table for blog-service
+      CREATE TABLE IF NOT EXISTS categories (
+          id SERIAL PRIMARY KEY,
+          name VARCHAR(50) NOT NULL UNIQUE,
+          slug VARCHAR(50) NOT NULL UNIQUE
+      );
+
+      -- Insert default categories
+      INSERT INTO categories (id, name, slug) VALUES
+          (1, '기술 스택', 'tech-stack'),
+          (2, 'Troubleshooting', 'troubleshooting'),
+          (3, 'Test', 'test')
+      ON CONFLICT (id) DO NOTHING;
+
       -- Initialize posts table for blog-service
       CREATE TABLE IF NOT EXISTS posts (
           id SERIAL PRIMARY KEY,
           title VARCHAR(200) NOT NULL,
           content TEXT NOT NULL,
           author VARCHAR(100) NOT NULL,
+          category_id INTEGER NOT NULL REFERENCES categories(id),
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
 
       CREATE INDEX IF NOT EXISTS idx_posts_author ON posts(author);
       CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_posts_category_id ON posts(category_id);
 
       -- Grant permissions
       GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO postgres;
