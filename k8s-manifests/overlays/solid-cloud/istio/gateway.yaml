@@ -23,7 +23,7 @@ spec:
   hosts:
   - "*"
   gateways:
-  - titanium-gateway
+  - prod-titanium-gateway
   http:
   # Blog routes
   - match:
