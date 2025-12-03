@@ -45,6 +45,17 @@ spec:
           number: 8001
     rewrite:
       uri: /users
+  # Login route
+  - match:
+    - uri:
+        exact: /api/login
+    route:
+    - destination:
+        host: prod-auth-service
+        port:
+          number: 8002
+    rewrite:
+      uri: /login
   # Auth service routes (direct routing)
   - match:
     - uri:
