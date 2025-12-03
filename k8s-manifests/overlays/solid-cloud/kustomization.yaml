@@ -11,11 +11,11 @@ namePrefix: prod-
 resources:
   - ../../base
   - namespace.yaml
-  # Istio resources disabled - Istio not installed on cluster
-  # - istio/peer-authentication.yaml
-  # - istio/peer-authentication-databases.yaml
-  # - istio/virtualservice.yaml
-  # - istio/destination-rules.yaml
+  # Istio resources enabled (gateway.yaml includes VirtualService)
+  - istio/gateway.yaml
+  - istio/peer-authentication.yaml
+  - istio/peer-authentication-databases.yaml
+  - istio/destination-rules.yaml
 
 # Patches for Solid Cloud environment
 patches:
