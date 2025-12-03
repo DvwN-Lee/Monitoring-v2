@@ -5,6 +5,8 @@ metadata:
   namespace: titanium-prod
 spec:
   host: "*.titanium-prod.svc.cluster.local"
+  exportTo:
+    - "."
   trafficPolicy:
     tls:
       mode: ISTIO_MUTUAL
