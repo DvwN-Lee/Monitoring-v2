@@ -1,13 +1,25 @@
 # Solid Cloud Environment - Main Configuration
-# Week 1: Infrastructure Foundation
+# CloudStack API + k3s Self-Managed Kubernetes Cluster
 
 terraform {
   required_version = ">= 1.5.0"
 
   required_providers {
+    cloudstack = {
+      source  = "cloudstack/cloudstack"
+      version = "~> 0.6"
+    }
     kubernetes = {
       source  = "hashicorp/kubernetes"
       version = "~> 2.23"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.12"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.5"
     }
   }
 
@@ -19,41 +31,64 @@ terraform {
   # }
 }
 
-# Provider Configuration
-# kubeconfig path can be supplied via TF_VAR_kubeconfig_path or defaults to ~/.kube/config
-locals {
-  resolved_kubeconfig_path = length(trimspace(var.kubeconfig_path)) > 0 ? pathexpand(var.kubeconfig_path) : pathexpand("~/.kube/config")
+# CloudStack Provider Configuration
+provider "cloudstack" {
+  api_url    = var.cloudstack_api_url
+  api_key    = var.cloudstack_api_key
+  secret_key = var.cloudstack_secret_key
 }
 
-provider "kubernetes" {
-  # Option 1: Use kubeconfig file
-  config_path = local.resolved_kubeconfig_path
-
-  # Option 2: Use explicit configuration
-  # host                   = var.kubernetes_host
-  # client_certificate     = var.kubernetes_client_certificate
-  # client_key             = var.kubernetes_client_key
-  # cluster_ca_certificate = var.kubernetes_cluster_ca_certificate
-}
-
-# Network Module
-# Note: Currently using placeholder, implement based on Solid Cloud provider
+# Network Module - CloudStack Isolated Network
 module "network" {
   source = "../../modules/network"
 
-  cluster_name         = var.cluster_name
-  vpc_cidr             = var.vpc_cidr
-  public_subnet_cidrs  = var.public_subnet_cidrs
-  private_subnet_cidrs = var.private_subnet_cidrs
+  network_name     = "${var.cluster_name}-network"
+  cidr             = var.network_cidr
+  zone             = var.zone
+  network_offering = var.network_offering
 }
 
-# Kubernetes Cluster Module
+# Instance Module - k3s Cluster (1 Master + 2 Workers)
+module "instance" {
+  source = "../../modules/instance"
+
+  cluster_name     = var.cluster_name
+  zone             = var.zone
+  service_offering = var.service_offering
+  template         = var.template
+  network_id       = module.network.network_id
+  ssh_keypair      = var.ssh_keypair
+  worker_count     = var.worker_count
+
+  depends_on = [module.network]
+}
+
+# Kubernetes Provider - Connect to k3s Cluster
+provider "kubernetes" {
+  config_path = "~/.kube/config-solid-cloud"
+}
+
+provider "helm" {
+  kubernetes {
+    config_path = "~/.kube/config-solid-cloud"
+  }
+}
+
+# Kubernetes Module - Namespaces and Resource Quotas
 module "kubernetes" {
   source = "../../modules/kubernetes"
 
-  cluster_name        = var.cluster_name
-  node_count          = var.node_count
-  node_instance_type  = var.node_instance_type
+  cluster_name       = var.cluster_name
+  node_count         = var.worker_count + 1  # master + workers
+  node_instance_type = var.service_offering
+
+  # Application Secrets
+  postgres_password   = var.postgres_password
+  jwt_secret_key      = var.jwt_secret_key
+  internal_api_secret = var.internal_api_secret
+  redis_password      = var.redis_password
+
+  depends_on = [module.instance]
 }
 
 # PostgreSQL Database Module
@@ -65,6 +100,5 @@ module "database" {
   storage_size      = var.postgres_storage_size
   postgres_password = var.postgres_password
 
-  # Ensure namespace is created first
   depends_on = [module.kubernetes]
 }
