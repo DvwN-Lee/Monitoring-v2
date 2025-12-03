@@ -77,6 +77,28 @@ resource "kubernetes_resource_quota" "titanium_prod" {
   }
 }
 
+# Application Secrets
+resource "kubernetes_secret" "app_secrets" {
+  metadata {
+    name      = "prod-app-secrets"
+    namespace = kubernetes_namespace.titanium_prod.metadata[0].name
+    labels = {
+      app        = "titanium"
+      managed_by = "terraform"
+    }
+  }
+
+  data = {
+    POSTGRES_USER       = "postgres"
+    POSTGRES_PASSWORD   = var.postgres_password
+    JWT_SECRET_KEY      = var.jwt_secret_key
+    INTERNAL_API_SECRET = var.internal_api_secret
+    REDIS_PASSWORD      = var.redis_password
+  }
+
+  type = "Opaque"
+}
+
 # Cluster outputs
 output "cluster_endpoint" {
   description = "Kubernetes cluster endpoint"
