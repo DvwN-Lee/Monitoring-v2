@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const errorEl = document.getElementById('signup-error');
 
         try {
-            const res = await fetch('/blog/api/register', {
+            const res = await fetch('/api/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, email, password })
