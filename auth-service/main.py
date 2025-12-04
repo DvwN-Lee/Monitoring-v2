@@ -1,7 +1,11 @@
 import logging
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 try:
     from prometheus_fastapi_instrumentator.metrics import request_latency
@@ -21,6 +25,20 @@ logger = logging.getLogger('AuthServiceApp')
 # FastAPI 앱 생성
 app = FastAPI()
 auth_service = AuthService()
+
+# Rate Limiting 설정
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# CORS 설정
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Production에서는 특정 도메인으로 제한
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Prometheus 메트릭 설정
 # 히스토그램 버킷을 세밀하게 설정하여 정확한 P95/P99 계산 가능
@@ -91,6 +109,7 @@ configure_metrics(app)
 
 # --- API 엔드포인트 ---
 @app.post("/login")
+@limiter.limit("5/minute")
 async def handle_login(request: Request):
     """로그인 요청을 처리하고 JWT 토큰을 반환합니다."""
     try:
@@ -129,6 +148,13 @@ async def handle_stats():
         }
     }
     return stats_data
+
+# --- 애플리케이션 시작/종료 이벤트 ---
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Close aiohttp ClientSession on shutdown."""
+    await AuthService.close_session()
+    logger.info("Auth service shutdown: ClientSession closed")
 
 # --- Uvicorn으로 앱 실행 ---
 if __name__ == "__main__":

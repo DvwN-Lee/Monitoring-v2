@@ -1,5 +1,5 @@
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 @dataclass
 class ServerConfig:
@@ -11,7 +11,14 @@ class ServerConfig:
 class AuthConfig:
     """인증 관련 설정"""
     session_timeout: int = 86400  # 세션 유효 시간 (24시간)
-    internal_api_secret: str = os.getenv('INTERNAL_API_SECRET', 'default-secret-key')
+    internal_api_secret: str = field(default_factory=lambda: os.getenv('INTERNAL_API_SECRET', ''))
+
+    def __post_init__(self):
+        if not self.internal_api_secret:
+            raise ValueError(
+                "INTERNAL_API_SECRET environment variable is required. "
+                "Please set it in Kubernetes Secret or environment variables."
+            )
 
 @dataclass
 class ServiceUrls:

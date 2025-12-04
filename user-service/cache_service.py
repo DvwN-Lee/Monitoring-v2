@@ -16,6 +16,15 @@ class CacheService:
             logger.error(f"Failed to connect to Redis: {e}")
             self.redis_client = None
 
+    async def initialize(self):
+        """Verify Redis connection on startup."""
+        if self.redis_client:
+            is_connected = await self.ping()
+            if is_connected:
+                logger.info("Redis connection verified successfully")
+            else:
+                logger.warning("Redis connection verification failed")
+
     async def get_user(self, user_id):
         if not self.redis_client:
             return None
@@ -60,3 +69,9 @@ class CacheService:
         except Exception as e:
             logger.error(f"Redis PING error: {e}")
             return False
+
+    async def close(self):
+        """Close Redis connection."""
+        if self.redis_client:
+            await self.redis_client.close()
+            logger.info("Redis connection closed")

@@ -7,7 +7,6 @@ from fastapi import FastAPI, Request, HTTPException, Form, Depends, Query, Respo
 from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel, Field
 from prometheus_fastapi_instrumentator import Instrumentator
 
 try:
@@ -18,33 +17,32 @@ except ImportError:
     def request_latency(*args, **kwargs):
         return _metrics.latency(*args, **kwargs)
 
+# Import from app modules
+from app.config import USE_POSTGRES, DB_CONFIG, DATABASE_PATH, REQUEST_LATENCY_BUCKETS
+from app.auth import require_user, AuthClient
+from app.models.schemas import PostCreate, PostUpdate
+from app.database import db
+from app.cache import cache
+
 # --- 기본 로깅 ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('BlogServiceApp')
 
 app = FastAPI()
 
+# CORS 설정
+from fastapi.middleware.cors import CORSMiddleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Prometheus 메트릭 설정
-# 히스토그램 버킷을 세밀하게 설정하여 정확한 P95/P99 계산 가능
 from prometheus_client import Counter
 from prometheus_fastapi_instrumentator.metrics import Info
-
-REQUEST_LATENCY_BUCKETS = (
-    0.001,
-    0.005,
-    0.01,
-    0.025,
-    0.05,
-    0.075,
-    0.1,
-    0.25,
-    0.5,
-    0.75,
-    1.0,
-    2.5,
-    5.0,
-    10.0,
-)
 
 # 커스텀 메트릭: http_requests_total_custom
 # api-gateway와 동일한 형식의 status 레이블(2xx, 4xx, 5xx)을 사용
@@ -65,7 +63,7 @@ def http_requests_total_custom_metric(info: Info) -> None:
         status_group = "4xx"
     elif 500 <= status_code < 600:
         status_group = "5xx"
-    
+
     http_requests_total_custom.labels(info.method, status_group).inc()
 
 def configure_metrics(application: FastAPI) -> None:
@@ -91,32 +89,16 @@ configure_metrics(app)
 templates = Jinja2Templates(directory="templates")
 app.mount("/blog/static", StaticFiles(directory="static"), name="static")
 
-# --- 설정 ---
-AUTH_SERVICE_URL = os.getenv('AUTH_SERVICE_URL', 'http://auth-service:8002')
-
-# Determine which DB to use
-USE_POSTGRES = os.getenv('USE_POSTGRES', 'false').lower() == 'true'
-
+# Import DB drivers for legacy code (will be refactored)
 if USE_POSTGRES:
     import psycopg2
     from psycopg2.extras import RealDictCursor
-    logger.info("🐘 Using PostgreSQL database for blog posts")
-
-    DB_CONFIG = {
-        'host': os.getenv('POSTGRES_HOST', 'postgresql-service'),
-        'port': int(os.getenv('POSTGRES_PORT', '5432')),
-        'database': os.getenv('POSTGRES_DB', 'titanium'),
-        'user': os.getenv('POSTGRES_USER', 'postgres'),
-        'password': os.getenv('POSTGRES_PASSWORD', ''),
-    }
 else:
     import sqlite3
-    logger.info("💾 Using SQLite database for blog posts")
-    DATABASE_PATH = os.getenv('BLOG_DATABASE_PATH', '/app/blog.db')
 
-# --- Database Helper Functions ---
+# --- Legacy Database Helper Functions (to be refactored) ---
 def get_db_connection():
-    """Get database connection."""
+    """Get database connection - LEGACY, use app.database.db instead."""
     if USE_POSTGRES:
         try:
             conn = psycopg2.connect(**DB_CONFIG)
@@ -127,161 +109,11 @@ def get_db_connection():
     else:
         return sqlite3.connect(DATABASE_PATH)
 
-def init_db():
-    """Initialize database schema."""
-    try:
-        if USE_POSTGRES:
-            conn = get_db_connection()
-            with conn.cursor() as cursor:
-                # Create categories table
-                cursor.execute('''
-                    CREATE TABLE IF NOT EXISTS categories (
-                        id SERIAL PRIMARY KEY,
-                        name VARCHAR(50) NOT NULL UNIQUE,
-                        slug VARCHAR(50) NOT NULL UNIQUE
-                    )
-                ''')
-                # Insert default categories if not exist
-                cursor.execute("SELECT COUNT(*) FROM categories")
-                if cursor.fetchone()[0] == 0:
-                    cursor.execute('''
-                        INSERT INTO categories (id, name, slug) VALUES
-                        (1, '기술 스택', 'tech-stack'),
-                        (2, 'Troubleshooting', 'troubleshooting'),
-                        (3, 'Test', 'test')
-                    ''')
+# PostCreate, PostUpdate models imported from app.models.schemas
+# require_user function imported from app.auth
 
-                # Create posts table
-                cursor.execute('''
-                    CREATE TABLE IF NOT EXISTS posts (
-                        id SERIAL PRIMARY KEY,
-                        title VARCHAR(200) NOT NULL,
-                        content TEXT NOT NULL,
-                        author VARCHAR(100) NOT NULL,
-                        category_id INTEGER NOT NULL REFERENCES categories(id),
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                    )
-                ''')
-                cursor.execute('''
-                    CREATE INDEX IF NOT EXISTS idx_posts_author ON posts(author)
-                ''')
-                cursor.execute('''
-                    CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC)
-                ''')
-                cursor.execute('''
-                    CREATE INDEX IF NOT EXISTS idx_posts_category_id ON posts(category_id)
-                ''')
-                conn.commit()
-            conn.close()
-            logger.info("PostgreSQL blog database initialized successfully")
-        else:
-            os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
-            with sqlite3.connect(DATABASE_PATH) as conn:
-                cursor = conn.cursor()
-                # Create categories table
-                cursor.execute('''
-                    CREATE TABLE IF NOT EXISTS categories (
-                        id INTEGER PRIMARY KEY,
-                        name TEXT NOT NULL UNIQUE,
-                        slug TEXT NOT NULL UNIQUE
-                    )
-                ''')
-                # Insert default categories if not exist
-                cursor.execute("SELECT COUNT(*) FROM categories")
-                if cursor.fetchone()[0] == 0:
-                    cursor.execute('''
-                        INSERT INTO categories (id, name, slug) VALUES
-                        (1, '기술 스택', 'tech-stack'),
-                        (2, 'Troubleshooting', 'troubleshooting'),
-                        (3, 'Test', 'test')
-                    ''')
-
-                # Create posts table
-                cursor.execute('''
-                    CREATE TABLE IF NOT EXISTS posts (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        title TEXT NOT NULL,
-                        content TEXT NOT NULL,
-                        author TEXT NOT NULL,
-                        category_id INTEGER NOT NULL,
-                        created_at TEXT NOT NULL,
-                        updated_at TEXT NOT NULL,
-                        FOREIGN KEY (category_id) REFERENCES categories(id)
-                    )
-                ''')
-                cursor.execute('''
-                    CREATE INDEX IF NOT EXISTS idx_posts_category_id ON posts(category_id)
-                ''')
-                conn.commit()
-            logger.info("SQLite blog database initialized successfully")
-    except Exception as e:
-        logger.error(f"Database initialization failed: {e}", exc_info=True)
-        raise
-
-def row_to_post(row: Dict) -> Dict:
-    """Convert database row to post dictionary."""
-    if USE_POSTGRES:
-        return {
-            "id": row["id"],
-            "title": row["title"],
-            "content": row["content"],
-            "author": row["author"],
-            "created_at": row["created_at"].isoformat() if hasattr(row["created_at"], 'isoformat') else str(row["created_at"]),
-            "updated_at": row["updated_at"].isoformat() if hasattr(row["updated_at"], 'isoformat') else str(row["updated_at"]),
-        }
-    else:
-        # SQLite row
-        return {
-            "id": row[0],
-            "title": row[1],
-            "content": row[2],
-            "author": row[3],
-            "created_at": row[4],
-            "updated_at": row[5],
-        }
-
-init_db()
-
-# --- Pydantic 모델 ---
-class PostCreate(BaseModel):
-    title: str = Field(..., min_length=1, max_length=120)
-    content: str = Field(..., min_length=1, max_length=20000)
-    category_id: int = Field(..., gt=0)
-
-class PostUpdate(BaseModel):
-    title: Optional[str] = Field(None, min_length=1, max_length=120)
-    content: Optional[str] = Field(None, min_length=1, max_length=20000)
-    category_id: Optional[int] = Field(None, gt=0)
-
-# --- 인증 유틸 ---
-SKIP_AUTH = os.getenv('SKIP_AUTH', 'false').lower() == 'true'
-
-async def require_user(request: Request) -> str:
-    auth_header = request.headers.get('Authorization', '')
-    if not auth_header.startswith('Bearer '):
-        raise HTTPException(status_code=401, detail='Authorization header missing or invalid')
-    token = auth_header.split(' ')[1]
-
-    # 로컬 테스트 모드: 간단한 토큰으로 사용자 이름 추출
-    if SKIP_AUTH or not USE_POSTGRES:
-        if token.startswith('session-token-for-'):
-            username = token.replace('session-token-for-', '')
-            return username
-
-    verify_url = f"{AUTH_SERVICE_URL}/verify"
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(verify_url, headers={'Authorization': f'Bearer {token}'}) as resp:
-                data = await resp.json()
-                if resp.status != 200 or data.get('status') != 'success':
-                    raise HTTPException(status_code=401, detail='Invalid or expired token')
-                username = data.get('data', {}).get('username')
-                if not username:
-                    raise HTTPException(status_code=401, detail='Invalid token payload')
-                return username
-    except aiohttp.ClientError:
-        raise HTTPException(status_code=502, detail='Auth service not reachable')
+# Legacy helper functions - still used by write endpoints (POST, PATCH, DELETE)
+# TODO: Convert write endpoints to async in Step 2
 
 def validate_category_id(category_id: int) -> bool:
     """Validate that category_id exists in the database."""
@@ -307,117 +139,81 @@ async def handle_get_posts(
     category: Optional[str] = Query(None)
 ):
     """모든 블로그 게시물 목록을 반환합니다(최신순, 페이지네이션, 카테고리 필터링)."""
-    conn = get_db_connection()
+    # Calculate page number for caching
+    page = offset // limit if limit > 0 else 0
+
+    # 1. Check cache
+    cached = await cache.get_posts(page, limit, category)
+    if cached:
+        return JSONResponse(content=cached)
+
+    # 2. Query database
     try:
-        # Build query based on category filter
-        base_query = """
-            SELECT p.id, p.title, p.content, p.author, p.created_at, p.updated_at, p.category_id,
-                   c.name as category_name, c.slug as category_slug
-            FROM posts p
-            LEFT JOIN categories c ON p.category_id = c.id
-        """
-        where_clause = ""
-        params = []
+        items = await db.get_posts(offset, limit, category)
+    except Exception as e:
+        logger.error(f"Database error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Database error")
 
-        if category:
-            where_clause = " WHERE c.slug = "
-            if USE_POSTGRES:
-                where_clause += "%s"
-                params.append(category)
-            else:
-                where_clause += "?"
-                params.append(category)
+    # 3. Format response - 목록 응답은 요약 정보 위주로 반환 + 발췌(excerpt) + 카테고리 정보
+    summaries = []
+    for p in items:
+        content = (p.get("content") or "").replace("\r", " ").replace("\n", " ")
+        excerpt = content[:120] + ("..." if len(content) > 120 else "")
+        summaries.append({
+            "id": p["id"],
+            "title": p["title"],
+            "author": p["author"],
+            "created_at": p["created_at"].isoformat() if hasattr(p["created_at"], 'isoformat') else str(p["created_at"]),
+            "excerpt": excerpt,
+            "category": {
+                "id": p["category_id"],
+                "name": p["category_name"],
+                "slug": p["category_slug"]
+            }
+        })
 
-        order_limit = " ORDER BY p.id DESC LIMIT "
-        if USE_POSTGRES:
-            order_limit += "%s OFFSET %s"
-            params.extend([limit, offset])
-        else:
-            order_limit += "? OFFSET ?"
-            params.extend([limit, offset])
+    # 4. Store in cache
+    await cache.set_posts(page, limit, summaries, category, ttl=60)
 
-        full_query = base_query + where_clause + order_limit
-
-        if USE_POSTGRES:
-            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                cursor.execute(full_query, tuple(params))
-                rows = cursor.fetchall()
-                items = [dict(r) for r in rows]
-        else:
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
-            cursor.execute(full_query, tuple(params))
-            rows = cursor.fetchall()
-            items = [dict(r) for r in rows]
-
-        # 목록 응답은 요약 정보 위주로 반환 + 발췌(excerpt) + 카테고리 정보
-        summaries = []
-        for p in items:
-            content = (p.get("content") or "").replace("\r", " ").replace("\n", " ")
-            excerpt = content[:120] + ("..." if len(content) > 120 else "")
-            summaries.append({
-                "id": p["id"],
-                "title": p["title"],
-                "author": p["author"],
-                "created_at": p["created_at"].isoformat() if hasattr(p["created_at"], 'isoformat') else str(p["created_at"]),
-                "excerpt": excerpt,
-                "category": {
-                    "id": p["category_id"],
-                    "name": p["category_name"],
-                    "slug": p["category_slug"]
-                }
-            })
-        return JSONResponse(content=summaries)
-    finally:
-        conn.close()
+    return JSONResponse(content=summaries)
 
 @app.get("/blog/api/posts/{post_id}")
 async def handle_get_post_by_id(post_id: int):
     """ID로 특정 게시물을 찾아 반환합니다."""
-    conn = get_db_connection()
+    # 1. Check cache
+    cached = await cache.get_post(post_id)
+    if cached:
+        return JSONResponse(content=cached)
+
+    # 2. Query database
     try:
-        query = """
-            SELECT p.id, p.title, p.content, p.author, p.created_at, p.updated_at, p.category_id,
-                   c.name as category_name, c.slug as category_slug
-            FROM posts p
-            LEFT JOIN categories c ON p.category_id = c.id
-            WHERE p.id = """
+        post_dict = await db.get_post_by_id(post_id)
+    except Exception as e:
+        logger.error(f"Database error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Database error")
 
-        if USE_POSTGRES:
-            query += "%s"
-            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                cursor.execute(query, (post_id,))
-                row = cursor.fetchone()
-                if not row:
-                    raise HTTPException(status_code=404, detail={'error': 'Post not found'})
-                post_dict = dict(row)
-        else:
-            query += "?"
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
-            cursor.execute(query, (post_id,))
-            row = cursor.fetchone()
-            if not row:
-                raise HTTPException(status_code=404, detail={'error': 'Post not found'})
-            post_dict = dict(row)
+    if not post_dict:
+        raise HTTPException(status_code=404, detail={'error': 'Post not found'})
 
-        # Format response with category info
-        response = {
-            "id": post_dict["id"],
-            "title": post_dict["title"],
-            "content": post_dict["content"],
-            "author": post_dict["author"],
-            "created_at": post_dict["created_at"].isoformat() if hasattr(post_dict["created_at"], 'isoformat') else str(post_dict["created_at"]),
-            "updated_at": post_dict["updated_at"].isoformat() if hasattr(post_dict["updated_at"], 'isoformat') else str(post_dict["updated_at"]),
-            "category": {
-                "id": post_dict["category_id"],
-                "name": post_dict["category_name"],
-                "slug": post_dict["category_slug"]
-            }
+    # 3. Format response with category info
+    response = {
+        "id": post_dict["id"],
+        "title": post_dict["title"],
+        "content": post_dict["content"],
+        "author": post_dict["author"],
+        "created_at": post_dict["created_at"].isoformat() if hasattr(post_dict["created_at"], 'isoformat') else str(post_dict["created_at"]),
+        "updated_at": post_dict["updated_at"].isoformat() if hasattr(post_dict["updated_at"], 'isoformat') else str(post_dict["updated_at"]),
+        "category": {
+            "id": post_dict["category_id"],
+            "name": post_dict["category_name"],
+            "slug": post_dict["category_slug"]
         }
-        return JSONResponse(content=response)
-    finally:
-        conn.close()
+    }
+
+    # 4. Store in cache
+    await cache.set_post(post_id, response, ttl=300)
+
+    return JSONResponse(content=response)
 
 @app.post("/blog/api/posts", status_code=201)
 async def create_post(request: Request, payload: PostCreate, username: str = Depends(require_user)):
@@ -591,35 +387,22 @@ async def update_post_partial(post_id: int, request: Request, payload: PostUpdat
 @app.get("/blog/api/categories")
 async def handle_get_categories():
     """모든 카테고리 목록과 각 카테고리별 게시물 수를 반환합니다."""
-    conn = get_db_connection()
-    try:
-        if USE_POSTGRES:
-            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                cursor.execute("""
-                    SELECT c.id, c.name, c.slug, COUNT(p.id) as post_count
-                    FROM categories c
-                    LEFT JOIN posts p ON c.id = p.category_id
-                    GROUP BY c.id, c.name, c.slug
-                    ORDER BY c.id
-                """)
-                rows = cursor.fetchall()
-                categories = [dict(r) for r in rows]
-        else:
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT c.id, c.name, c.slug, COUNT(p.id) as post_count
-                FROM categories c
-                LEFT JOIN posts p ON c.id = p.category_id
-                GROUP BY c.id, c.name, c.slug
-                ORDER BY c.id
-            """)
-            rows = cursor.fetchall()
-            categories = [dict(r) for r in rows]
+    # 1. Check cache
+    cached = await cache.get_categories()
+    if cached:
+        return JSONResponse(content=cached)
 
-        return JSONResponse(content=categories)
-    finally:
-        conn.close()
+    # 2. Query database
+    try:
+        categories = await db.get_categories_with_counts()
+    except Exception as e:
+        logger.error(f"Database error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Database error")
+
+    # 3. Store in cache
+    await cache.set_categories(categories, ttl=600)
+
+    return JSONResponse(content=categories)
 
 @app.delete("/blog/api/posts/{post_id}", status_code=204)
 async def delete_post(post_id: int, request: Request, username: str = Depends(require_user)):
@@ -683,18 +466,21 @@ async def serve_spa(request: Request, path: str):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-# --- 애플리케이션 시작 시 샘플 데이터 설정 ---
+# --- 애플리케이션 시작/종료 이벤트 ---
 @app.on_event("startup")
-def setup_sample_data():
-    """서비스 시작 시 샘플 데이터를 생성합니다."""
-    global posts_db
-    posts_db = {
-        1: {"id": 1, "title": "첫 번째 블로그 글", "author": "admin",
-            "content": "마이크로서비스 아키텍처에 오신 것을 환영합니다! 이 블로그는 FastAPI로 리팩터링되었습니다."},
-        2: {"id": 2, "title": "Kustomize와 Skaffold 활용하기", "author": "dev",
-            "content": "인프라 관리가 이렇게 쉬울 수 있습니다. CI/CD 파이프라인을 통해 자동으로 배포됩니다."},
-    }
-    logger.info(f"{len(posts_db)}개의 샘플 게시물로 초기화되었습니다.")
+async def startup_event():
+    """Initialize database and cache on startup."""
+    await db.initialize()
+    await cache.initialize()
+    logger.info("✅ Blog service initialized: database and cache ready")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Close database, cache, and auth client connections on shutdown."""
+    await db.close()
+    await cache.close()
+    await AuthClient.close()
+    logger.info("Blog service shutdown: database, cache, and AuthClient closed")
 
 if __name__ == "__main__":
     import uvicorn
