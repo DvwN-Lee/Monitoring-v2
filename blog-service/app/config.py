@@ -24,6 +24,7 @@ if USE_POSTGRES:
         'user': os.getenv('POSTGRES_USER', 'postgres'),
         'password': os.getenv('POSTGRES_PASSWORD', ''),
     }
+    DATABASE_PATH = None
 else:
     logger.info("💾 Using SQLite database for blog posts")
     DATABASE_PATH = os.getenv('BLOG_DATABASE_PATH', '/app/blog.db')

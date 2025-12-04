@@ -33,6 +33,12 @@ patches:
       kind: Deployment
       name: blog-service-deployment
 
+  # Inject secrets into auth-service
+  - path: patches/auth-service-deployment-patch.yaml
+    target:
+      kind: Deployment
+      name: auth-service-deployment
+
   # Add Istio sidecar resource limits to all Deployments
   - patch: |-
       apiVersion: apps/v1
@@ -96,7 +102,6 @@ images:
     newTag: main-9820acf
   - name: dongju101/api-gateway
     newTag: main-3d2cb55
-
 
 # Resource modifications
 replicas:
