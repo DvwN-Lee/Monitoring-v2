@@ -21,6 +21,9 @@
 - **[ADR-006: Service Mesh로 Istio 채택](./006-istio-vs-linkerd.md)** (2025-10-01)
 - **[ADR-009: Kubernetes 플랫폼으로 Solid Cloud 채택](./009-solid-cloud-platform.md)** (2025-10-01)
 
+### 보안 및 성능
+- **[ADR-010: Phase 1+2 보안 및 성능 개선](./010-phase1-phase2-improvements.md)** (2025-12-04)
+
 ---
 
 모든 ADR은 [ADR 템플릿](./template.md)을 기반으로 작성되었습니다.
