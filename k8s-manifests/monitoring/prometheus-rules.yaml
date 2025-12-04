@@ -50,6 +50,19 @@ spec:
         summary: "Service {{ $labels.job }} is down"
         description: "{{ $labels.job }} has been down for more than 2 minutes"
 
+    # High Rate Limit Hits Alert
+    - alert: HighRateLimitHits
+      expr: |
+        sum(rate(http_requests_total{namespace="titanium-prod", status="429"}[5m])) by (job)
+        > 0.1
+      for: 5m
+      labels:
+        severity: warning
+        namespace: titanium-prod
+      annotations:
+        summary: "Rate limiting이 자주 발생하고 있습니다 on {{ $labels.job }}"
+        description: "{{ $labels.job }}에서 5분 동안 429 응답이 {{ $value | humanize }} req/s로 지속 발생 중"
+
   - name: titanium.infrastructure.rules
     interval: 30s
     rules:
