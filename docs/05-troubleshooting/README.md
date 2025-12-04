@@ -2,6 +2,14 @@
 
 이 문서는 시스템 운영 중 발생할 수 있는 다양한 문제 상황에 대한 트러블슈팅 가이드를 체계적으로 정리한 인덱스입니다. 문제 증상, 관련 컴포넌트, 심각도를 기준으로 필요한 문서를 빠르게 찾을 수 있습니다.
 
+## Application
+
+| 문제 | 증상 | 관련 컴포넌트 | 심각도 | 문서 |
+|------|------|--------------|--------|------|
+| DATABASE_PATH 환경변수 누락 | blog-service Pod CrashLoopBackOff | blog-service, ConfigMap | High | [문서](application/troubleshooting-blog-service-database-path.md) |
+| INTERNAL_API_SECRET 누락 | 서비스 간 401 인증 실패 | auth-service, Secret | High | [문서](application/troubleshooting-auth-service-internal-api-secret.md) |
+| 외부 접속 불가 | Connection Timeout | SSH Tunnel, Bastion | Medium | [문서](application/troubleshooting-ssh-tunnel-external-access.md) |
+
 ## ArgoCD
 
 | 문제 | 증상 | 관련 컴포넌트 | 심각도 | 문서 |
@@ -78,11 +86,11 @@
 
 ### 통계
 
-- **전체 문제 해결 건수**: 29건
-- **카테고리**: 5개 (ArgoCD, CI/CD, Istio, Kubernetes, Monitoring)
+- **전체 문제 해결 건수**: 32건
+- **카테고리**: 6개 (Application, ArgoCD, CI/CD, Istio, Kubernetes, Monitoring)
 - **평균 해결 시간**: 1-4시간 (문제 복잡도에 따라 상이)
 - **재발 건수**: 0건 (모든 문제에 대한 예방책 적용)
 
 ---
 
-**최종 업데이트**: 2025년 11월 15일
+**최종 업데이트**: 2025년 12월 04일
