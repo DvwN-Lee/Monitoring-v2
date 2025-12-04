@@ -1,5 +1,4 @@
-# user-service/database_service.py (Hybrid: SQLite + PostgreSQL)
-import asyncio
+# user-service/database_service.py (Hybrid: SQLite + PostgreSQL with asyncpg)
 import os
 import logging
 from typing import Optional, Dict
@@ -12,178 +11,174 @@ logger = logging.getLogger(__name__)
 USE_POSTGRES = os.getenv('USE_POSTGRES', 'false').lower() == 'true'
 
 if USE_POSTGRES:
-    import psycopg2
-    from psycopg2.extras import RealDictCursor
-    logger.info("🐘 Using PostgreSQL database")
+    import asyncpg
+    logger.info("🐘 Using PostgreSQL database with asyncpg")
 else:
     import sqlite3
+    import aiosqlite
     logger.info("💾 Using SQLite database")
 
 
 class UserServiceDatabase:
     def __init__(self):
-        self.lock = asyncio.Lock()
         self.use_postgres = USE_POSTGRES
+        self.pool: Optional[asyncpg.Pool] = None
+        self._initialized = False
 
         if self.use_postgres:
             # PostgreSQL connection parameters
+            postgres_password = os.getenv('POSTGRES_PASSWORD')
+            if not postgres_password:
+                raise ValueError(
+                    "POSTGRES_PASSWORD environment variable is required for PostgreSQL. "
+                    "Please set it in Kubernetes Secret or environment variables."
+                )
+
             self.db_config = {
                 'host': os.getenv('POSTGRES_HOST', 'postgresql-service'),
                 'port': int(os.getenv('POSTGRES_PORT', '5432')),
                 'database': os.getenv('POSTGRES_DB', 'titanium'),
                 'user': os.getenv('POSTGRES_USER', 'postgres'),
-                'password': os.getenv('POSTGRES_PASSWORD', ''),
+                'password': postgres_password,
             }
-            self._connection = None
         else:
             # SQLite configuration
             self.db_file = os.getenv('DATABASE_PATH', '/data/users.db')
 
-        self._initialize_db()
+    async def initialize(self):
+        """Initialize database connection pool and schema."""
+        if self._initialized:
+            return
 
-    def _get_connection(self):
-        """Get or create database connection."""
         if self.use_postgres:
             try:
-                if self._connection is None or self._connection.closed:
-                    self._connection = psycopg2.connect(**self.db_config)
-                    logger.info(f"Connected to PostgreSQL at {self.db_config['host']}:{self.db_config['port']}")
-                return self._connection
-            except psycopg2.Error as e:
-                logger.error(f"PostgreSQL connection failed: {e}", exc_info=True)
+                self.pool = await asyncpg.create_pool(
+                    min_size=5,
+                    max_size=20,
+                    **self.db_config
+                )
+                logger.info(f"PostgreSQL connection pool created: {self.db_config['host']}:{self.db_config['port']}")
+                await self._initialize_postgres_schema()
+            except Exception as e:
+                logger.error(f"PostgreSQL pool creation failed: {e}", exc_info=True)
                 raise
         else:
-            # SQLite - return new connection each time
-            return sqlite3.connect(self.db_file)
+            await self._initialize_sqlite_schema()
 
-    def _initialize_db(self):
-        """Initialize database schema."""
-        try:
-            if self.use_postgres:
-                conn = self._get_connection()
-                with conn.cursor() as cursor:
-                    cursor.execute('''
-                        CREATE TABLE IF NOT EXISTS users (
-                            id SERIAL PRIMARY KEY,
-                            username VARCHAR(100) UNIQUE NOT NULL,
-                            email VARCHAR(255) NOT NULL,
-                            password_hash VARCHAR(255) NOT NULL,
-                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                        )
-                    ''')
-                    cursor.execute('''
-                        CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)
-                    ''')
-                    conn.commit()
-                logger.info("PostgreSQL user database initialized successfully")
-            else:
-                os.makedirs(os.path.dirname(self.db_file), exist_ok=True)
-                with sqlite3.connect(self.db_file) as conn:
-                    cursor = conn.cursor()
-                    cursor.execute('''
-                        CREATE TABLE IF NOT EXISTS users (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            username TEXT UNIQUE NOT NULL,
-                            email TEXT NOT NULL,
-                            password_hash TEXT NOT NULL
-                        )
-                    ''')
-                    conn.commit()
-                logger.info("SQLite user database initialized successfully")
-        except Exception as e:
-            logger.error(f"User DB initialization failed: {e}", exc_info=True)
-            raise
+        self._initialized = True
+
+    async def _initialize_postgres_schema(self):
+        """Initialize PostgreSQL database schema."""
+        async with self.pool.acquire() as conn:
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS users (
+                    id SERIAL PRIMARY KEY,
+                    username VARCHAR(100) UNIQUE NOT NULL,
+                    email VARCHAR(255) NOT NULL,
+                    password_hash VARCHAR(255) NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            await conn.execute('''
+                CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)
+            ''')
+        logger.info("PostgreSQL user database schema initialized")
+
+    async def _initialize_sqlite_schema(self):
+        """Initialize SQLite database schema."""
+        os.makedirs(os.path.dirname(self.db_file), exist_ok=True)
+        async with aiosqlite.connect(self.db_file) as conn:
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT UNIQUE NOT NULL,
+                    email TEXT NOT NULL,
+                    password_hash TEXT NOT NULL
+                )
+            ''')
+            await conn.commit()
+        logger.info("SQLite user database schema initialized")
 
     async def add_user(self, username: str, email: str, password: str) -> Optional[int]:
         """Add a new user with hashed password."""
         # Optimized PBKDF2 iterations: 100000 -> 60000 for better performance
         # Still secure (NIST minimum: 10000, this is 6x higher)
         password_hash = generate_password_hash(password, method='pbkdf2:sha256:60000')
-        async with self.lock:
-            try:
-                if self.use_postgres:
-                    conn = self._get_connection()
-                    with conn.cursor() as cursor:
-                        cursor.execute(
-                            "INSERT INTO users (username, email, password_hash) VALUES (%s, %s, %s) RETURNING id",
-                            (username, email, password_hash)
+
+        try:
+            if self.use_postgres:
+                async with self.pool.acquire() as conn:
+                    try:
+                        user_id = await conn.fetchval(
+                            "INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3) RETURNING id",
+                            username, email, password_hash
                         )
-                        user_id = cursor.fetchone()[0]
-                        conn.commit()
                         logger.info(f"User '{username}' added with ID {user_id}")
                         return user_id
-                else:
-                    with sqlite3.connect(self.db_file) as conn:
-                        cursor = conn.cursor()
-                        cursor.execute(
+                    except asyncpg.UniqueViolationError:
+                        logger.warning(f"User '{username}' already exists")
+                        return None
+            else:
+                async with aiosqlite.connect(self.db_file) as conn:
+                    try:
+                        cursor = await conn.execute(
                             "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)",
                             (username, email, password_hash)
                         )
+                        await conn.commit()
                         return cursor.lastrowid
-            except (psycopg2.IntegrityError if self.use_postgres else sqlite3.IntegrityError):
-                if self.use_postgres:
-                    conn.rollback()
-                logger.warning(f"User '{username}' already exists")
-                return None
-            except Exception as e:
-                if self.use_postgres:
-                    conn.rollback()
-                logger.error(f"Error adding user: {e}", exc_info=True)
-                return None
+                    except aiosqlite.IntegrityError:
+                        logger.warning(f"User '{username}' already exists")
+                        return None
+        except Exception as e:
+            logger.error(f"Error adding user: {e}", exc_info=True)
+            return None
 
     async def get_user_by_username(self, username: str) -> Optional[Dict]:
         """Get user information by username."""
-        async with self.lock:
-            try:
-                if self.use_postgres:
-                    conn = self._get_connection()
-                    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                        cursor.execute(
-                            "SELECT id, username, email, password_hash, created_at FROM users WHERE username = %s",
-                            (username,)
-                        )
-                        user = cursor.fetchone()
-                        return dict(user) if user else None
-                else:
-                    with sqlite3.connect(self.db_file) as conn:
-                        conn.row_factory = sqlite3.Row
-                        cursor = conn.cursor()
-                        cursor.execute(
-                            "SELECT * FROM users WHERE username = ?",
-                            (username,)
-                        )
-                        user = cursor.fetchone()
-                        return dict(user) if user else None
-            except Exception as e:
-                logger.error(f"Error getting user by username: {e}", exc_info=True)
-                return None
+        try:
+            if self.use_postgres:
+                async with self.pool.acquire() as conn:
+                    row = await conn.fetchrow(
+                        "SELECT id, username, email, password_hash, created_at FROM users WHERE username = $1",
+                        username
+                    )
+                    return dict(row) if row else None
+            else:
+                async with aiosqlite.connect(self.db_file) as conn:
+                    conn.row_factory = aiosqlite.Row
+                    cursor = await conn.execute(
+                        "SELECT * FROM users WHERE username = ?",
+                        (username,)
+                    )
+                    row = await cursor.fetchone()
+                    return dict(row) if row else None
+        except Exception as e:
+            logger.error(f"Error getting user by username: {e}", exc_info=True)
+            return None
 
     async def get_user_by_id(self, user_id: int) -> Optional[Dict]:
         """Get user information by ID."""
-        async with self.lock:
-            try:
-                if self.use_postgres:
-                    conn = self._get_connection()
-                    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                        cursor.execute(
-                            "SELECT id, username, email, password_hash, created_at FROM users WHERE id = %s",
-                            (user_id,)
-                        )
-                        user = cursor.fetchone()
-                        return dict(user) if user else None
-                else:
-                    with sqlite3.connect(self.db_file) as conn:
-                        conn.row_factory = sqlite3.Row
-                        cursor = conn.cursor()
-                        cursor.execute(
-                            "SELECT * FROM users WHERE id = ?",
-                            (user_id,)
-                        )
-                        user = cursor.fetchone()
-                        return dict(user) if user else None
-            except Exception as e:
-                logger.error(f"Error getting user by ID: {e}", exc_info=True)
-                return None
+        try:
+            if self.use_postgres:
+                async with self.pool.acquire() as conn:
+                    row = await conn.fetchrow(
+                        "SELECT id, username, email, password_hash, created_at FROM users WHERE id = $1",
+                        user_id
+                    )
+                    return dict(row) if row else None
+            else:
+                async with aiosqlite.connect(self.db_file) as conn:
+                    conn.row_factory = aiosqlite.Row
+                    cursor = await conn.execute(
+                        "SELECT * FROM users WHERE id = ?",
+                        (user_id,)
+                    )
+                    row = await cursor.fetchone()
+                    return dict(row) if row else None
+        except Exception as e:
+            logger.error(f"Error getting user by ID: {e}", exc_info=True)
+            return None
 
     async def verify_user_credentials(self, username: str, password: str) -> Optional[Dict]:
         """Verify user credentials."""
@@ -199,23 +194,20 @@ class UserServiceDatabase:
 
     async def health_check(self) -> bool:
         """Check database connection health."""
-        async with self.lock:
-            try:
-                if self.use_postgres:
-                    conn = self._get_connection()
-                    with conn.cursor() as cursor:
-                        cursor.execute("SELECT 1")
-                        cursor.fetchone()
-                else:
-                    with sqlite3.connect(self.db_file) as conn:
-                        conn.execute("SELECT 1")
-                return True
-            except Exception as e:
-                logger.error(f"Database health check failed: {e}")
-                return False
+        try:
+            if self.use_postgres:
+                async with self.pool.acquire() as conn:
+                    await conn.fetchval("SELECT 1")
+            else:
+                async with aiosqlite.connect(self.db_file) as conn:
+                    await conn.execute("SELECT 1")
+            return True
+        except Exception as e:
+            logger.error(f"Database health check failed: {e}")
+            return False
 
-    def close(self):
-        """Close database connection."""
-        if self.use_postgres and self._connection and not self._connection.closed:
-            self._connection.close()
-            logger.info("PostgreSQL connection closed")
+    async def close(self):
+        """Close database connection pool."""
+        if self.use_postgres and self.pool:
+            await self.pool.close()
+            logger.info("PostgreSQL connection pool closed")

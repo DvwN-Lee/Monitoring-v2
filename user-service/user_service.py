@@ -36,6 +36,18 @@ app = FastAPI()
 db = UserServiceDatabase()
 cache = CacheService()
 
+@app.on_event("startup")
+async def startup_event():
+    """Initialize database connection pool on startup."""
+    await db.initialize()
+    await cache.initialize()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Close database and cache connections on shutdown."""
+    await db.close()
+    await cache.close()
+
 # Prometheus 메트릭 설정
 # 히스토그램 버킷을 세밀하게 설정하여 정확한 P95/P99 계산 가능
 from prometheus_client import Counter

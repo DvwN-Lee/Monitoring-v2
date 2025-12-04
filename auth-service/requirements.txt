@@ -4,3 +4,4 @@ pyjwt
 aiohttp
 prometheus-client
 prometheus-fastapi-instrumentator
+slowapi

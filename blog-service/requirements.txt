@@ -3,7 +3,9 @@ uvicorn[standard]
 jinja2
 python-multipart
 aiohttp
-psycopg2-binary==2.9.9
+asyncpg
+aiosqlite
+redis[hiredis]
 prometheus-client
 prometheus-fastapi-instrumentator
 alembic
