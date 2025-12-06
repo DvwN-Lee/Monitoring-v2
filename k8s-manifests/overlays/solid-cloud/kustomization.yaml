@@ -97,9 +97,9 @@ images:
   - name: dongju101/user-service
     newTag: main-9820acf
   - name: dongju101/blog-service
-    newTag: main-2aef17c
+    newTag: main-12744b6
   - name: dongju101/auth-service
-    newTag: main-9820acf
+    newTag: main-12744b6
   - name: dongju101/api-gateway
     newTag: main-3d2cb55
 
