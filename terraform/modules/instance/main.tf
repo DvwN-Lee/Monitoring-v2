@@ -74,7 +74,7 @@ resource "cloudstack_ipaddress" "master_public_ip" {
   network_id = var.network_id
 }
 
-# Port forwarding for SSH and k3s API
+# Port forwarding for SSH, k3s API, and Dashboards
 resource "cloudstack_port_forward" "master" {
   ip_address_id = cloudstack_ipaddress.master_public_ip.id
 
@@ -98,16 +98,32 @@ resource "cloudstack_port_forward" "master" {
     public_port        = 80
     virtual_machine_id = cloudstack_instance.k3s_master.id
   }
+
+  # Grafana Dashboard
+  forward {
+    protocol           = "tcp"
+    private_port       = 31300
+    public_port        = 31300
+    virtual_machine_id = cloudstack_instance.k3s_master.id
+  }
+
+  # Kiali Dashboard
+  forward {
+    protocol           = "tcp"
+    private_port       = 31200
+    public_port        = 31200
+    virtual_machine_id = cloudstack_instance.k3s_master.id
+  }
 }
 
-# Firewall rules for SSH and k3s API
+# Firewall rules for SSH, k3s API, and Dashboards
 resource "cloudstack_firewall" "master" {
   ip_address_id = cloudstack_ipaddress.master_public_ip.id
 
   rule {
     protocol  = "tcp"
     cidr_list = ["0.0.0.0/0"]
-    ports     = ["22", "6443", "80"]
+    ports     = ["22", "6443", "80", "31300", "31200"]
   }
 }
 
