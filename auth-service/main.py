@@ -1,7 +1,10 @@
 import logging
+import os
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 from prometheus_fastapi_instrumentator import Instrumentator
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -22,8 +25,23 @@ from auth_service import AuthService
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('AuthServiceApp')
 
+# Pydantic 모델
+class LoginRequest(BaseModel):
+    username: str = Field(..., min_length=1, max_length=100, description="Username for authentication")
+    password: str = Field(..., min_length=1, max_length=200, description="Password for authentication")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Initialize and cleanup resources."""
+    # Startup
+    logger.info(f"Auth Service starting on http://{config.server.host}:{config.server.port}")
+    yield
+    # Shutdown
+    await AuthService.close_session()
+    logger.info("Auth service shutdown: ClientSession closed")
+
 # FastAPI 앱 생성
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 auth_service = AuthService()
 
 # Rate Limiting 설정
@@ -32,12 +50,14 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # CORS 설정
+# Environment-based CORS configuration
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Production에서는 특정 도메인으로 제한
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
 )
 
 # Prometheus 메트릭 설정
@@ -110,24 +130,26 @@ configure_metrics(app)
 # --- API 엔드포인트 ---
 @app.post("/login")
 @limiter.limit("5/minute")
-async def handle_login(request: Request):
+async def handle_login(request: Request, credentials: LoginRequest):
     """로그인 요청을 처리하고 JWT 토큰을 반환합니다."""
-    try:
-        data = await request.json()
-        result = await auth_service.login(data.get('username'), data.get('password'))
-        status_code = 200 if result.get('status') == 'success' else 401
-        return JSONResponse(content=result, status_code=status_code)
-    except Exception:
-        raise HTTPException(status_code=400, detail={"status": "failed", "message": "Invalid request body"})
+    result = await auth_service.login(credentials.username, credentials.password)
+    status_code = 200 if result.get('status') == 'success' else 401
+    return JSONResponse(content=result, status_code=status_code)
 
 @app.get("/verify")
+@limiter.limit("30/minute")
 async def validate_token(request: Request):
     """토큰 유효성을 검증합니다."""
     auth_header = request.headers.get('Authorization', '')
     if not auth_header.startswith('Bearer '):
         raise HTTPException(status_code=400, detail={'valid': False, 'error': 'Authorization header missing or invalid'})
 
-    token = auth_header.split(' ')[1]
+    # Bearer Token 안전하게 파싱
+    parts = auth_header.split(' ')
+    if len(parts) != 2:
+        raise HTTPException(status_code=400, detail={'valid': False, 'error': 'Invalid Authorization header format'})
+
+    token = parts[1]
     result = auth_service.verify_token(token)
     is_valid = result.get('status') == 'success'
     status_code = 200 if is_valid else 401
@@ -149,15 +171,8 @@ async def handle_stats():
     }
     return stats_data
 
-# --- 애플리케이션 시작/종료 이벤트 ---
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Close aiohttp ClientSession on shutdown."""
-    await AuthService.close_session()
-    logger.info("Auth service shutdown: ClientSession closed")
-
 # --- Uvicorn으로 앱 실행 ---
 if __name__ == "__main__":
     import uvicorn
-    logger.info(f"✅ Auth Service starting on http://{config.server.host}:{config.server.port}")
+    logger.info(f"Auth Service starting on http://{config.server.host}:{config.server.port}")
     uvicorn.run(app, host=config.server.host, port=config.server.port)
