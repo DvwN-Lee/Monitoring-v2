@@ -225,8 +225,8 @@ class BlogDatabase:
                         title, content, author, category_id
                     )
                     post_id = row["id"]
-                    created_at = row["created_at"]
-                    updated_at = row["updated_at"]
+                    created_at = row["created_at"].isoformat() if row["created_at"] else None
+                    updated_at = row["updated_at"].isoformat() if row["updated_at"] else None
 
                     # Get category info
                     cat = await conn.fetchrow("SELECT name, slug FROM categories WHERE id = $1", category_id)
