@@ -199,7 +199,7 @@ async def create_post(request: Request, payload: PostCreate, username: str = Dep
         # Invalidate cache
         await cache.invalidate_posts()
 
-        return JSONResponse(content=new_post)
+        return JSONResponse(content=new_post, status_code=201)
     except Exception as e:
         logger.error(f"Database error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Database error")
