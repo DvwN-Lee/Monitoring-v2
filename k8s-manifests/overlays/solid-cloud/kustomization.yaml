@@ -101,7 +101,7 @@ images:
   - name: dongju101/auth-service
     newTag: main-12744b6
   - name: dongju101/api-gateway
-    newTag: main-3d2cb55
+    newTag: main-3b3150e
 
 # Resource modifications
 replicas:
