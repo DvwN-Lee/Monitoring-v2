@@ -44,7 +44,7 @@
 - **Application**: Go, Python (FastAPI)
 - **Database**: PostgreSQL, Redis
 
-> **참고**: 각 기술을 선택한 이유는 `docs/adr/` 디렉토리의 기술 결정 기록(ADR)을 참고하세요.
+> **참고**: 각 기술을 선택한 이유는 `docs/02-architecture/adr/` 디렉토리의 기술 결정 기록(ADR)을 참고하세요.
 
 ### 1.3. 문서 구조
 

@@ -760,11 +760,10 @@ kubectl exec -it -n titanium-prod postgres-0 -c postgres -- \
 
 ## 참고 문서
 
-- [프로젝트 README](../README.md)
-- [시스템 아키텍처](./architecture.md)
-- [Week 5 최종 상태 보고서](./guides/week5/week5-final-status-report.md)
-- [Istio 구현 가이드](./guides/week4/istio-implementation.md)
-- [트러블슈팅 가이드](./guides/week4/istio-troubleshooting.md)
+- [프로젝트 README](../../README.md)
+- [시스템 아키텍처](../../02-architecture/architecture.md)
+- [최종 상태 보고서](../reports/final-status-report.md)
+- [트러블슈팅 가이드](../../05-troubleshooting/README.md)
 
 ---
 

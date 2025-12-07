@@ -1,6 +1,7 @@
 # ADR-007: Monitoring Stack으로 Prometheus + Grafana 채택
 
 **날짜**: 2025-10-01
+**상태**: 승인됨
 
 ---
 
