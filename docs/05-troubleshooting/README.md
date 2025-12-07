@@ -8,6 +8,7 @@
 |------|------|--------------|--------|------|
 | DATABASE_PATH 환경변수 누락 | blog-service Pod CrashLoopBackOff | blog-service, ConfigMap | High | [문서](application/troubleshooting-blog-service-database-path.md) |
 | INTERNAL_API_SECRET 누락 | 서비스 간 401 인증 실패 | auth-service, Secret | High | [문서](application/troubleshooting-auth-service-internal-api-secret.md) |
+| CRUD 500 Error | 게시물 작성/수정/삭제 실패 (500) | blog-service, Database | Critical | [문서](application/troubleshooting-blog-service-crud-errors.md) |
 | 외부 접속 불가 | Connection Timeout | SSH Tunnel, Bastion | Medium | [문서](application/troubleshooting-ssh-tunnel-external-access.md) |
 
 ## ArgoCD

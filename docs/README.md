@@ -47,8 +47,9 @@ docs/
    - [03-implementation/implementation-summary.md](03-implementation/implementation-summary.md) - 전체 구현 요약
 
 6. **최종 성과 확인**
-   - [04-operations/final-status-report.md](04-operations/final-status-report.md) - 프로젝트 최종 상태
-   - [06-performance/week5-performance-analysis.md](06-performance/week5-performance-analysis.md) - 성능 측정 결과
+   - [04-operations/reports/final-status-report.md](04-operations/reports/final-status-report.md) - 프로젝트 최종 상태
+   - [06-performance/k6-load-test-results.md](06-performance/k6-load-test-results.md) - 부하 테스트 결과
+   - [06-performance/e2e-test-results.md](06-performance/e2e-test-results.md) - E2E 테스트 결과 (New)
    - [08-retrospective/project-retrospective.md](08-retrospective/project-retrospective.md) - 프로젝트 회고
 
 ### 특정 목적별 가이드
@@ -61,6 +62,7 @@ docs/
 
 #### 문제 해결 방법을 찾는다면
 - [04-operations/guides/operations-guide.md](04-operations/guides/operations-guide.md) - 운영 가이드
+- [04-operations/guides/security-configuration.md](04-operations/guides/security-configuration.md) - 보안 설정 가이드 (New)
 - [05-troubleshooting/README.md](05-troubleshooting/README.md) - 트러블슈팅 가이드 인덱스 (모든 문제 해결 사례)
 
 #### 기술적 의사결정 배경이 궁금하다면
@@ -164,7 +166,9 @@ k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 
 | 문서 | 설명 |
 |------|------|
-| [week5-performance-analysis.md](06-performance/week5-performance-analysis.md) | 부하 테스트 결과, 병목 분석, 최적화 과정 |
+| [k6-load-test-results.md](06-performance/k6-load-test-results.md) | 부하 테스트 결과 및 분석 |
+| [e2e-test-results.md](06-performance/e2e-test-results.md) | E2E 테스트 시나리오 및 결과 |
+| [errors-threshold-analysis.md](06-performance/errors-threshold-analysis.md) | 에러 임계값 분석 보고서 |
 
 **주요 성과**:
 - **P99 Latency**: **3.71초 → 20.4ms** (**99.5% 개선**)
@@ -182,7 +186,7 @@ k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 
 더 상세한 성능 측정 과정과 분석 내용은 아래 보고서에서 확인하실 수 있습니다.
 
-- [상세 성능 분석 보고서 (Week 5 Performance Analysis)](06-performance/week5-performance-analysis.md)
+- [상세 성능 분석 보고서 (Load Test Results)](06-performance/k6-load-test-results.md)
 
 ### 7단계: 데모 (07-demo/)
 
@@ -229,8 +233,8 @@ k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 - **시스템 아키텍처**: [02-architecture/architecture.md](02-architecture/architecture.md)
 - **운영 가이드**: [04-operations/operations-guide.md](04-operations/operations-guide.md)
 - **트러블슈팅**: [05-troubleshooting/README.md](05-troubleshooting/README.md)
-- **성능 분석**: [06-performance/week5-performance-analysis.md](06-performance/week5-performance-analysis.md)
-- **최종 상태 보고서**: [04-operations/final-status-report.md](04-operations/final-status-report.md)
+- **성능 분석**: [06-performance/k6-load-test-results.md](06-performance/k6-load-test-results.md)
+- **최종 상태 보고서**: [04-operations/reports/final-status-report.md](04-operations/reports/final-status-report.md)
 
 ### 외부 리소스
 

@@ -214,4 +214,4 @@ INFO:     127.0.0.1:42356 - "POST /internal/verify-user HTTP/1.1" 200 OK
 
 - [ADR-010: Phase 1+2 보안 및 성능 개선](../../02-architecture/adr/010-phase1-phase2-improvements.md)
 - [Phase 1 보안 강화 개선사항](../../03-implementation/improvements/phase1-security-improvements.md)
-- [Kubernetes Secret 관리 가이드](../../04-operations/guides/operations-guide.md#secret-관리)
+- [Kubernetes Secret 관리 가이드](../../04-operations/guides/operations-guide.md#2-secrets-관리)
