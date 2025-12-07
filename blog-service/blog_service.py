@@ -124,7 +124,7 @@ async def handle_get_posts(
         items = await db.get_posts(offset, limit, category)
     except Exception as e:
         logger.error(f"Database error: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Database error")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
     # 3. Format response - 목록 응답은 요약 정보 위주로 반환 + 발췌(excerpt) + 카테고리 정보
     summaries = []
@@ -202,7 +202,7 @@ async def create_post(request: Request, payload: PostCreate, username: str = Dep
         return JSONResponse(content=new_post, status_code=201)
     except Exception as e:
         logger.error(f"Database error: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Database error")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 @app.patch("/blog/api/posts/{post_id}")
 async def update_post_partial(post_id: int, request: Request, payload: PostUpdate, username: str = Depends(require_user)):
@@ -225,7 +225,6 @@ async def update_post_partial(post_id: int, request: Request, payload: PostUpdat
 
         # Invalidate cache
         await cache.invalidate_posts()
-        await cache.invalidate_post(post_id)
 
         # Format response (already formatted by db.update_post but needs JSON serialization for datetime)
         response = {
@@ -247,7 +246,7 @@ async def update_post_partial(post_id: int, request: Request, payload: PostUpdat
         raise
     except Exception as e:
         logger.error(f"Database error: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Database error")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 @app.get("/blog/api/categories")
 async def handle_get_categories():
@@ -280,20 +279,20 @@ async def delete_post(post_id: int, request: Request, username: str = Depends(re
             raise HTTPException(status_code=403, detail='Forbidden: not the author')
 
         # Get category slug before deletion
-        category_slug = post['category']['slug']
+        category_slug = post['category_slug']
 
         # Delete post
         await db.delete_post(post_id)
 
         # Invalidate cache for this category
-        await cache.invalidate_posts(category_slug)
+        await cache.invalidate_posts()
 
         return Response(status_code=204)
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Database error: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Database error")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 @app.get("/health")
 async def handle_health():
