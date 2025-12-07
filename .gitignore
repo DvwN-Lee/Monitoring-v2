@@ -169,3 +169,10 @@ kubeconfig
 tests/performance/*.json
 tests/performance/results.json
 tests/performance/quick-results.json
+
+# Debug scripts and temporary data
+debug_*.sh
+register.json
+
+# Test results (regenerated)
+tests/test-results.json
