@@ -65,8 +65,8 @@ k8s-manifests/overlays/
 ```
 
 **데이터베이스 마이그레이션**:
-- user-service: SQLite → PostgreSQL (psycopg2)
-- blog-service: SQLite → PostgreSQL (psycopg2)
+- user-service: SQLite → PostgreSQL (asyncpg)
+- blog-service: SQLite → PostgreSQL (asyncpg)
 - 스키마: users, posts 테이블 + 인덱스
 
 ### 검증 결과

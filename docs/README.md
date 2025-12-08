@@ -230,7 +230,7 @@ k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 
 - **프로젝트 개요**: [../README.md](../README.md)
 - **시스템 아키텍처**: [02-architecture/architecture.md](02-architecture/architecture.md)
-- **운영 가이드**: [04-operations/operations-guide.md](04-operations/operations-guide.md)
+- **운영 가이드**: [04-operations/guides/operations-guide.md](04-operations/guides/operations-guide.md)
 - **트러블슈팅**: [05-troubleshooting/README.md](05-troubleshooting/README.md)
 - **성능 분석**: [06-performance/k6-load-test-results.md](06-performance/k6-load-test-results.md)
 - **최종 상태 보고서**: [04-operations/reports/final-status-report.md](04-operations/reports/final-status-report.md)

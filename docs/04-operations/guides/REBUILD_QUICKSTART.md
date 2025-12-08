@@ -75,7 +75,9 @@ df -h ~
 ```bash
 # Solid Cloud 클러스터로 연결
 cd ~/Desktop/Git/Monitoring-v2
-./scripts/switch-to-cloud.sh
+
+# kubectl context 전환
+kubectl config use-context solid-cloud
 
 # 연결 확인
 kubectl get nodes
@@ -226,8 +228,8 @@ K8S_CLUSTER_NAME="solid-cloud"
 K8S_SKIP_TLS_VERIFY="false"
 EOF
 
-# 클러스터 연결
-./scripts/switch-to-cloud.sh
+# kubectl context 전환
+kubectl config use-context solid-cloud
 
 # 연결 확인
 kubectl cluster-info

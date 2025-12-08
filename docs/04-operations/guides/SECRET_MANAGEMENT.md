@@ -68,7 +68,7 @@ stringData:
 2. Solid Cloud 클러스터 컨텍스트로 전환:
 
 ```bash
-./scripts/switch-to-cloud.sh
+kubectl config use-context solid-cloud
 ```
 
 3. Secret 적용:
