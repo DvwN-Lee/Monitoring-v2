@@ -309,6 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 동적 색상 적용
             if (cat.color) {
                 tab.style.setProperty('--category-color', cat.color);
+                tab.style.setProperty('--category-color-rgb', hexToRgb(cat.color));
             }
 
             categoryFilter.appendChild(tab);
@@ -489,7 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // highlight.js 통합 설정
                 if (window.hljs) {
                     marked.setOptions({
-                        highlight: function(code, lang) {
+                        highlight: function (code, lang) {
                             const language = hljs.getLanguage(lang) ? lang : 'plaintext';
                             return hljs.highlight(code, { language }).value;
                         },
