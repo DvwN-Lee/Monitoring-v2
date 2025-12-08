@@ -59,6 +59,7 @@ async def login(request: Request, credentials: LoginRequest):
 | Endpoint | Rate Limit | 이유 |
 |----------|------------|------|
 | `/api/login` | 100/분 | Brute Force 공격 방지 |
+| `/verify` | 30/분 | Token 검증 API 남용 방지 |
 | `/api/users` (POST) | 100/분 | 대량 계정 생성 방지 |
 | `/blog/api/posts` (POST) | 100/분 | 스팸 게시물 방지 |
 | 기타 GET 요청 | 제한 없음 | 읽기 요청은 상대적으로 안전 |
@@ -109,8 +110,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allow_headers=["Content-Type", "Authorization"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
 )
 ```
 
