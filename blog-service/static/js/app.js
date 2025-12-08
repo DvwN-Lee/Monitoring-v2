@@ -91,7 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // 전역 상태
     let currentPage = 1;
     let currentCategory = '';
-    let categoryCounts = { all: 0, 'infrastructure': 0, 'cicd': 0, 'service-mesh': 0, 'monitoring': 0, 'troubleshooting': 0, 'test': 0 };
+    let categoryCounts = {};
+    let categoriesData = [];
     const postsPerPage = 5;
 
     // JWT helpers
@@ -263,37 +264,57 @@ document.addEventListener('DOMContentLoaded', () => {
         Toast.info('로그아웃되었습니다.');
     };
 
-    // 카테고리 카운트 가져오기
+    // 카테고리 카운트 가져오기 및 동적 렌더링
     const loadCategoryCounts = async () => {
         try {
             const res = await fetch('/blog/api/categories');
             const cats = await res.json();
+            categoriesData = cats;
             categoryCounts.all = cats.reduce((sum, c) => sum + c.post_count, 0);
             cats.forEach(c => {
                 categoryCounts[c.slug] = c.post_count;
             });
-            updateCategoryCountsUI();
+            renderCategoryTabs();
         } catch (err) {
             console.error('카테고리 카운트 로드 실패:', err);
         }
     };
 
-    const updateCategoryCountsUI = () => {
-        const countAll = document.getElementById('count-all');
-        const countInfrastructure = document.getElementById('count-infrastructure');
-        const countCICD = document.getElementById('count-cicd');
-        const countServiceMesh = document.getElementById('count-service-mesh');
-        const countMonitoring = document.getElementById('count-monitoring');
-        const countTroubleshooting = document.getElementById('count-troubleshooting');
-        const countTest = document.getElementById('count-test');
+    const renderCategoryTabs = () => {
+        const categoryFilter = document.querySelector('.category-filter');
+        if (!categoryFilter) return;
 
-        if (countAll) countAll.innerText = `(${categoryCounts.all})`;
-        if (countInfrastructure) countInfrastructure.innerText = `(${categoryCounts['infrastructure']})`;
-        if (countCICD) countCICD.innerText = `(${categoryCounts['cicd']})`;
-        if (countServiceMesh) countServiceMesh.innerText = `(${categoryCounts['service-mesh']})`;
-        if (countMonitoring) countMonitoring.innerText = `(${categoryCounts['monitoring']})`;
-        if (countTroubleshooting) countTroubleshooting.innerText = `(${categoryCounts['troubleshooting']})`;
-        if (countTest) countTest.innerText = `(${categoryCounts['test']})`;
+        categoryFilter.innerHTML = '';
+
+        // 전체 탭
+        const allTab = document.createElement('button');
+        allTab.className = 'category-tab' + (currentCategory === '' ? ' active' : '');
+        allTab.setAttribute('data-category', '');
+        allTab.setAttribute('role', 'tab');
+        allTab.setAttribute('aria-selected', currentCategory === '' ? 'true' : 'false');
+        allTab.setAttribute('aria-controls', 'posts-container');
+        allTab.innerHTML = `전체 <span class="post-count">(${categoryCounts.all || 0})</span>`;
+        categoryFilter.appendChild(allTab);
+
+        // 동적 카테고리 탭
+        categoriesData.forEach(cat => {
+            const tab = document.createElement('button');
+            tab.className = 'category-tab' + (currentCategory === cat.slug ? ' active' : '');
+            tab.setAttribute('data-category', cat.slug);
+            tab.setAttribute('role', 'tab');
+            tab.setAttribute('aria-selected', currentCategory === cat.slug ? 'true' : 'false');
+            tab.setAttribute('aria-controls', 'posts-container');
+            tab.innerHTML = `${cat.name} <span class="post-count">(${cat.post_count || 0})</span>`;
+
+            // 동적 색상 적용
+            if (cat.color) {
+                tab.style.setProperty('--category-color', cat.color);
+            }
+
+            categoryFilter.appendChild(tab);
+        });
+
+        setupCategoryTabs();
     };
 
     // 게시물 목록 로드
@@ -304,7 +325,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         await loadCategoryCounts();
         await loadPosts();
-        setupCategoryTabs();
     }
 
     const setupCategoryTabs = () => {
@@ -377,6 +397,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // 카테고리 색상 헬퍼 함수
+    const getCategoryColor = (slug) => {
+        const category = categoriesData.find(c => c.slug === slug);
+        return category?.color || '#6B7280';
+    };
+
+    const hexToRgb = (hex) => {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '107, 114, 128';
+    };
+
     const renderPosts = (allPosts) => {
         const container = document.getElementById('posts-container');
         const start = (currentPage - 1) * postsPerPage;
@@ -394,11 +425,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const li = document.createElement('li');
             li.className = 'post-list-item';
             li.onclick = () => { window.location.hash = `/posts/${post.id}`; };
+
+            const categoryColor = getCategoryColor(post.category.slug);
+            const categoryColorRgb = hexToRgb(categoryColor);
+
             li.innerHTML = `
                 <div class="post-list-header">
                     <div class="post-title">
                         ${post.title}
-                        <span class="category-badge ${post.category.slug}">${post.category.name}</span>
+                        <span class="category-badge" style="--category-color: ${categoryColor}; --category-color-rgb: ${categoryColorRgb};">${post.category.name}</span>
                     </div>
                     <span class="post-author">by ${post.author}</span>
                 </div>
@@ -442,7 +477,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch(`/blog/api/posts/${id}`);
             const post = await res.json();
 
-            document.getElementById('detail-title').innerHTML = `${post.title} <span class="category-badge ${post.category.slug}">${post.category.name}</span>`;
+            const categoryColor = getCategoryColor(post.category.slug);
+            const categoryColorRgb = hexToRgb(categoryColor);
+
+            document.getElementById('detail-title').innerHTML = `${post.title} <span class="category-badge" style="--category-color: ${categoryColor}; --category-color-rgb: ${categoryColorRgb};">${post.category.name}</span>`;
             document.getElementById('detail-category').innerHTML = '';
             document.getElementById('detail-author').textContent = `작성자: ${post.author}`;
 
@@ -506,6 +544,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const contentInput = document.getElementById('post-content');
         const errorEl = document.getElementById('post-error');
 
+        // 동적 카테고리 폼 생성
+        await renderCategoryForm();
+
         if (mode === 'edit') {
             formTitle.textContent = '글 수정';
             try {
@@ -518,7 +559,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 titleInput.value = post.title;
                 contentInput.value = post.content;
-                document.querySelector(`input[name="category"][value="${post.category.id}"]`).checked = true;
+
+                // 기존 카테고리 선택
+                const categorySelect = document.getElementById('category-select');
+                if (categorySelect) {
+                    categorySelect.value = post.category.name;
+                }
             } catch (err) {
                 errorEl.textContent = '게시물을 불러오지 못했습니다.';
             }
@@ -532,13 +578,18 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             errorEl.textContent = '';
 
-            const category = document.querySelector('input[name="category"]:checked');
-            if (!category) { errorEl.textContent = '카테고리를 선택하세요.'; return; }
+            const categoryInput = document.getElementById('category-select');
+            const categoryName = categoryInput.value.trim();
+
+            if (!categoryName) {
+                errorEl.textContent = '카테고리를 입력하세요.';
+                return;
+            }
 
             const payload = {
                 title: titleInput.value.trim(),
                 content: contentInput.value.trim(),
-                category_id: parseInt(category.value)
+                category_name: categoryName
             };
 
             if (!payload.title || !payload.content) {
@@ -566,6 +617,35 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
     }
+
+    // 카테고리 폼 동적 렌더링
+    const renderCategoryForm = async () => {
+        if (categoriesData.length === 0) {
+            try {
+                const res = await fetch('/blog/api/categories');
+                categoriesData = await res.json();
+            } catch (err) {
+                console.error('카테고리 로드 실패:', err);
+            }
+        }
+
+        const radioGroup = document.querySelector('.radio-group');
+        if (!radioGroup) return;
+
+        // 카테고리 입력 필드로 교체
+        radioGroup.innerHTML = `
+            <input type="text"
+                   id="category-select"
+                   list="categories-datalist"
+                   placeholder="카테고리를 선택하거나 입력하세요"
+                   required
+                   maxlength="50"
+                   autocomplete="off">
+            <datalist id="categories-datalist">
+                ${categoriesData.map(cat => `<option value="${cat.name}">`).join('')}
+            </datalist>
+        `;
+    };
 
     // 블로그 제목 클릭 시 전체 게시글로 돌아가기
     const blogTitleLink = document.getElementById('blog-title');

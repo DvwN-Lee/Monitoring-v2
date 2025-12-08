@@ -189,12 +189,13 @@ async def handle_get_post_by_id(post_id: int):
 
 @app.post("/blog/api/posts", status_code=201)
 async def create_post(request: Request, payload: PostCreate, username: str = Depends(require_user)):
-    # Validate category_id exists
-    if not await db.validate_category_id(payload.category_id):
-        raise HTTPException(status_code=422, detail=f'Category with id {payload.category_id} does not exist')
-
     try:
-        new_post = await db.create_post(payload.title, payload.content, username, payload.category_id)
+        # Get or create category
+        category = await db.get_or_create_category(payload.category_name)
+        category_id = category['id']
+
+        # Create post
+        new_post = await db.create_post(payload.title, payload.content, username, category_id)
 
         # Invalidate cache
         await cache.invalidate_posts()
@@ -206,10 +207,6 @@ async def create_post(request: Request, payload: PostCreate, username: str = Dep
 
 @app.patch("/blog/api/posts/{post_id}")
 async def update_post_partial(post_id: int, request: Request, payload: PostUpdate, username: str = Depends(require_user)):
-    # Validate category_id if provided
-    if payload.category_id is not None and not await db.validate_category_id(payload.category_id):
-        raise HTTPException(status_code=422, detail=f'Category with id {payload.category_id} does not exist')
-
     try:
         # Check author
         author = await db.get_post_author(post_id)
@@ -218,15 +215,21 @@ async def update_post_partial(post_id: int, request: Request, payload: PostUpdat
         if author != username:
             raise HTTPException(status_code=403, detail='Forbidden: not the author')
 
+        # Get or create category if provided
+        category_id = None
+        if payload.category_name is not None:
+            category = await db.get_or_create_category(payload.category_name)
+            category_id = category['id']
+
         # Update post
-        updated_post = await db.update_post(post_id, payload.title, payload.content, payload.category_id)
+        updated_post = await db.update_post(post_id, payload.title, payload.content, category_id)
         if not updated_post:
              return JSONResponse(content={"message": "No changes"})
 
         # Invalidate cache
         await cache.invalidate_posts()
 
-        # Format response (already formatted by db.update_post but needs JSON serialization for datetime)
+        # Format response
         response = {
             "id": updated_post["id"],
             "title": updated_post["title"],
@@ -271,20 +274,22 @@ async def handle_get_categories():
 @app.delete("/blog/api/posts/{post_id}", status_code=204)
 async def delete_post(post_id: int, request: Request, username: str = Depends(require_user)):
     try:
-        # Fetch post to check author and get category for cache invalidation
+        # Fetch post to check author
         post = await db.get_post_by_id(post_id)
         if not post:
             raise HTTPException(status_code=404, detail={'error': 'Post not found'})
         if post['author'] != username:
             raise HTTPException(status_code=403, detail='Forbidden: not the author')
 
-        # Get category slug before deletion
-        category_slug = post['category_slug']
-
         # Delete post
         await db.delete_post(post_id)
 
-        # Invalidate cache for this category
+        # Cleanup empty categories
+        deleted_count = await db.cleanup_empty_categories()
+        if deleted_count > 0:
+            logger.info(f"Deleted {deleted_count} empty categories")
+
+        # Invalidate cache
         await cache.invalidate_posts()
 
         return Response(status_code=204)

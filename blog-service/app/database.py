@@ -1,11 +1,43 @@
 # blog-service/app/database.py
 import os
 import logging
+import random
+import re
 from typing import Optional, Dict, List
 from datetime import datetime
 from app.config import USE_POSTGRES, DB_CONFIG, DATABASE_PATH
 
 logger = logging.getLogger(__name__)
+
+
+def generate_random_color() -> str:
+    """Generate random color for new categories."""
+    colors = [
+        '#EF4444',  # Red
+        '#F97316',  # Orange
+        '#EAB308',  # Yellow
+        '#22C55E',  # Green
+        '#14B8A6',  # Teal
+        '#3B82F6',  # Blue
+        '#8B5CF6',  # Purple
+        '#EC4899',  # Pink
+        '#6366F1',  # Indigo
+        '#06B6D4',  # Cyan
+    ]
+    return random.choice(colors)
+
+
+def generate_slug(name: str) -> str:
+    """Convert category name to URL-safe slug."""
+    # Convert to lowercase and replace spaces with hyphens
+    slug = name.lower().strip()
+    # Remove special characters except hyphens
+    slug = re.sub(r'[^\w\s-]', '', slug)
+    # Replace whitespace with hyphens
+    slug = re.sub(r'[\s_]+', '-', slug)
+    # Remove leading/trailing hyphens
+    slug = slug.strip('-')
+    return slug
 
 if USE_POSTGRES:
     import asyncpg
@@ -51,7 +83,8 @@ class BlogDatabase:
                 CREATE TABLE IF NOT EXISTS categories (
                     id SERIAL PRIMARY KEY,
                     name VARCHAR(50) NOT NULL UNIQUE,
-                    slug VARCHAR(50) NOT NULL UNIQUE
+                    slug VARCHAR(50) NOT NULL UNIQUE,
+                    color VARCHAR(7) DEFAULT '#6B7280'
                 )
             ''')
 
@@ -59,10 +92,10 @@ class BlogDatabase:
             count = await conn.fetchval("SELECT COUNT(*) FROM categories")
             if count == 0:
                 await conn.execute('''
-                    INSERT INTO categories (id, name, slug) VALUES
-                    (1, '기술 스택', 'tech-stack'),
-                    (2, 'Troubleshooting', 'troubleshooting'),
-                    (3, 'Test', 'test')
+                    INSERT INTO categories (id, name, slug, color) VALUES
+                    (1, '기술 스택', 'tech-stack', '#3B82F6'),
+                    (2, 'Troubleshooting', 'troubleshooting', '#E9754A'),
+                    (3, 'Test', 'test', '#757575')
                 ''')
 
             # Create posts table
@@ -94,7 +127,8 @@ class BlogDatabase:
                 CREATE TABLE IF NOT EXISTS categories (
                     id INTEGER PRIMARY KEY,
                     name TEXT NOT NULL UNIQUE,
-                    slug TEXT NOT NULL UNIQUE
+                    slug TEXT NOT NULL UNIQUE,
+                    color TEXT DEFAULT '#6B7280'
                 )
             ''')
 
@@ -103,10 +137,10 @@ class BlogDatabase:
             count = await cursor.fetchone()
             if count[0] == 0:
                 await conn.execute('''
-                    INSERT INTO categories (id, name, slug) VALUES
-                    (1, '기술 스택', 'tech-stack'),
-                    (2, 'Troubleshooting', 'troubleshooting'),
-                    (3, 'Test', 'test')
+                    INSERT INTO categories (id, name, slug, color) VALUES
+                    (1, '기술 스택', 'tech-stack', '#3B82F6'),
+                    (2, 'Troubleshooting', 'troubleshooting', '#E9754A'),
+                    (3, 'Test', 'test', '#757575')
                 ''')
 
             # Create posts table
@@ -138,6 +172,80 @@ class BlogDatabase:
                 cursor = await conn.execute("SELECT id FROM categories WHERE id = ?", (category_id,))
                 result = await cursor.fetchone()
                 return result is not None
+
+    async def get_or_create_category(self, category_name: str) -> Dict:
+        """Get existing category or create new one with random color."""
+        if self.use_postgres:
+            async with self.pool.acquire() as conn:
+                # Try to find existing category by name
+                row = await conn.fetchrow(
+                    "SELECT id, name, slug, color FROM categories WHERE name = $1",
+                    category_name
+                )
+
+                if row:
+                    return dict(row)
+
+                # Create new category
+                slug = generate_slug(category_name)
+                color = generate_random_color()
+
+                row = await conn.fetchrow(
+                    "INSERT INTO categories (name, slug, color) VALUES ($1, $2, $3) RETURNING id, name, slug, color",
+                    category_name, slug, color
+                )
+                return dict(row)
+        else:
+            async with aiosqlite.connect(DATABASE_PATH) as conn:
+                conn.row_factory = aiosqlite.Row
+
+                # Try to find existing category by name
+                cursor = await conn.execute(
+                    "SELECT id, name, slug, color FROM categories WHERE name = ?",
+                    (category_name,)
+                )
+                row = await cursor.fetchone()
+
+                if row:
+                    return dict(row)
+
+                # Create new category
+                slug = generate_slug(category_name)
+                color = generate_random_color()
+
+                cursor = await conn.execute(
+                    "INSERT INTO categories (name, slug, color) VALUES (?, ?, ?)",
+                    (category_name, slug, color)
+                )
+                category_id = cursor.lastrowid
+                await conn.commit()
+
+                return {
+                    "id": category_id,
+                    "name": category_name,
+                    "slug": slug,
+                    "color": color
+                }
+
+    async def cleanup_empty_categories(self) -> int:
+        """Delete categories with no posts. Returns number of deleted categories."""
+        if self.use_postgres:
+            async with self.pool.acquire() as conn:
+                result = await conn.execute('''
+                    DELETE FROM categories
+                    WHERE id NOT IN (SELECT DISTINCT category_id FROM posts)
+                ''')
+                # Parse "DELETE N" result
+                deleted_count = int(result.split()[-1]) if result and result.startswith('DELETE') else 0
+                return deleted_count
+        else:
+            async with aiosqlite.connect(DATABASE_PATH) as conn:
+                cursor = await conn.execute('''
+                    DELETE FROM categories
+                    WHERE id NOT IN (SELECT DISTINCT category_id FROM posts)
+                ''')
+                await conn.commit()
+                return cursor.rowcount
 
     async def get_posts(self, offset: int, limit: int, category_slug: Optional[str] = None) -> List[Dict]:
         """Fetch paginated posts with category info, ordered by id DESC."""
@@ -196,10 +304,10 @@ class BlogDatabase:
     async def get_categories_with_counts(self) -> List[Dict]:
         """Fetch all categories with post counts."""
         query = """
-            SELECT c.id, c.name, c.slug, COUNT(p.id) as post_count
+            SELECT c.id, c.name, c.slug, c.color, COUNT(p.id) as post_count
             FROM categories c
             LEFT JOIN posts p ON c.id = p.category_id
-            GROUP BY c.id, c.name, c.slug
+            GROUP BY c.id, c.name, c.slug, c.color
             ORDER BY c.id
         """
 

@@ -202,42 +202,8 @@ header h1 a {
     vertical-align: middle;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-}
-
-/* 인프라 - 파란색 (안정성, 기반) */
-.category-badge.infrastructure {
-    background-color: #E3F2FD;
-    color: #2088FF;
-}
-
-/* CI/CD - 초록색 (자동화, 흐름) */
-.category-badge.cicd {
-    background-color: #E8F5E9;
-    color: #4CAF50;
-}
-
-/* Service Mesh - 보라색 (네트워크, 연결) */
-.category-badge.service-mesh {
-    background-color: #F3E5F5;
-    color: #9C27B0;
-}
-
-/* 모니터링 - 주황색 (경고, 관찰) */
-.category-badge.monitoring {
-    background-color: #FFF3E0;
-    color: #FF9800;
-}
-
-/* Troubleshooting - 빨간색 (문제 해결) */
-.category-badge.troubleshooting {
-    background-color: #FFEBE6;
-    color: #E9754A;
-}
-
-/* Test - 회색 (테스트, 검증) */
-.category-badge.test {
-    background-color: #EEEEEE;
-    color: #757575;
+    background-color: rgba(var(--category-color-rgb, 107, 114, 128), 0.1);
+    color: var(--category-color, #6B7280);
 }
 
 /* --- 페이지네이션 --- */
