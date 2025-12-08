@@ -171,16 +171,15 @@ k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 | [errors-threshold-analysis.md](06-performance/errors-threshold-analysis.md) | 에러 임계값 분석 보고서 |
 
 **주요 성과**:
-- **P99 Latency**: **3.71초 → 20.4ms** (**99.5% 개선**)
-- **P95 Latency**: **1.39초 → 9.81ms** (**99.3% 개선**)
-- **5xx 에러율**: **0.460% → 0.00366%** (**99.2% 감소**)
-- **4xx 에러율**: **26.4% → 0%** (**100% 제거**)
+- **P95 Latency**: **E2E 테스트 기준 200.5ms** (최신 측정값)
+- **5xx 에러율**: **0%** (목표 달성)
+- **4xx 에러율**: **0%** (목표 달성)
 - HTTP 실패율 0% 유지
 - HPA 최적화를 통한 성능 개선
 
 **성능 개선 증명 자료:**
 
-아래는 Grafana 대시보드에서 측정한 골든 시그널(Latency, Error Rate) 지표입니다. P99 Latency가 20.4ms, P95 Latency가 9.81ms로 안정적으로 유지되고, 에러율이 0%를 달성한 것을 확인할 수 있습니다.
+아래는 Grafana 대시보드에서 측정한 골든 시그널(Latency, Error Rate) 지표입니다. E2E 테스트에서 P95 Latency 200.5ms를 달성하고, 에러율이 0%를 유지하는 것을 확인할 수 있습니다.
 
 ![Grafana Golden Signals Dashboard](04-operations/screenshots/grafana-golden-signals.png)
 
@@ -244,4 +243,4 @@ k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 
 ---
 
-**최종 업데이트**: 2025년 11월 14일
+**최종 업데이트**: 2025년 12월 8일

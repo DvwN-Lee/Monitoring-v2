@@ -1,7 +1,7 @@
 # Cloud-Native 마이크로서비스 플랫폼 v2.0
 
-**문서 버전**: 3.2 <br>
-**최종 수정일**: 2025년 11월 22일
+**문서 버전**: 3.3 <br>
+**최종 수정일**: 2025년 12월 8일
 
 로컬 환경(Minikube)에서 운영되던 마이크로서비스 블로그 플랫폼을 클라우드 네이티브 아키텍처로 재구축한 프로젝트입니다. Terraform을 이용한 인프라 자동화, GitOps 기반의 CI/CD 파이프라인, 그리고 Istio 서비스 메시를 통한 관측성과 보안 강화를 목표로 합니다.
 
@@ -221,6 +221,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 | **Performance**     | `k6`                                                                                              |
 | **Backend**         | `Go`, `Python`, `FastAPI`                                                                         |
 | **Database/Cache**  | `PostgreSQL`, `Redis`                                                                             |
+| **Libraries**       | `asyncpg`, `slowapi`, `alembic`, `sqlalchemy`, `aiohttp`                                          |
 | **Local Dev**       | `Minikube`, `Skaffold`                                                                            |
 
 **각 기술을 선택한 이유는 [ADR 문서](./docs/02-architecture/adr/)를 참고하세요.**
@@ -235,7 +236,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 - **프로젝트 상태**: 완료 (Must-Have 100%, Should-Have 100%)
 
 ### 성능 목표 및 달성 현황
-- **응답 시간**: 실시간 P95 19.2ms (목표 달성)
+- **응답 시간**: 실시간 P95 200.5ms (목표 달성)
 - **HTTP 실패율**: 0% (목표 달성)
 - **보안**: Trivy 스캔 자동화, mTLS STRICT 모드 적용 (목표 달성)
 - **배포 시간**: Git Push 후 5분 이내 자동 배포 (목표 달성)
@@ -314,7 +315,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 ### 시스템 현황
 - **실행 중인 서비스**: 14개 Pod (모든 주요 서비스 2+ replicas)
-- **실시간 성능**: P95 19.2ms, P99 23.8ms, 에러율 0%
+- **실시간 성능**: P95 200.5ms, 에러율 0%
 - **보안**: mTLS STRICT, Trivy 자동 스캔, NetworkPolicy 적용
 - **CI/CD**: Git Push → 5분 이내 자동 배포
 
