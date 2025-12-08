@@ -96,7 +96,7 @@ kubectl get nodes
 예상 출력:
 ```
 NAME       STATUS   ROLES           AGE   VERSION
-minikube   Ready    control-plane   1m    v1.28.3
+minikube   Ready    control-plane   1m    v1.29.7
 ```
 
 노드 상태가 `Ready`이면 클러스터가 정상적으로 시작된 것입니다.

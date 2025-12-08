@@ -293,5 +293,5 @@ Prometheus, Grafana, Loki를 설치하여 시스템 모니터링 환경 구축
 
 ## 참고 문서
 - **[요구사항 명세서](./requirements.md)**
-- **[시스템 설계서](./architecture.md)**
-- **[기술 결정 기록 (ADR)](./adr/)**
+- **[시스템 설계서](../02-architecture/architecture.md)**
+- **[기술 결정 기록 (ADR)](../02-architecture/adr/)**

@@ -134,13 +134,35 @@ K8S_CA_CERT=LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0t...
 K8S_SKIP_TLS_VERIFY=false
 ```
 
-### 4단계: 환경 전환 스크립트 실행
+### 4단계: kubectl config 설정
 
 ```bash
-./scripts/switch-to-cloud.sh
+# .env.k8s 파일에서 환경 변수 로드
+source .env.k8s
+
+# Cluster 설정
+kubectl config set-cluster $K8S_CLUSTER_NAME \
+  --server=$K8S_API_SERVER \
+  --certificate-authority=<(echo $K8S_CA_CERT | base64 -d)
+
+# User 설정
+kubectl config set-credentials ${K8S_CLUSTER_NAME}-user \
+  --token=$K8S_TOKEN
+
+# Context 설정
+kubectl config set-context $K8S_CLUSTER_NAME \
+  --cluster=$K8S_CLUSTER_NAME \
+  --user=${K8S_CLUSTER_NAME}-user
+
+# Context 전환
+kubectl config use-context $K8S_CLUSTER_NAME
+
+# 연결 테스트
+kubectl cluster-info
+kubectl get nodes
 ```
 
-스크립트가 자동으로:
+위 명령어가 자동으로:
 1. `.env.k8s` 파일을 읽어 환경 변수 로드
 2. kubectl config에 cluster, user, context 생성
 3. 생성한 context로 전환
@@ -166,11 +188,18 @@ K8S_CA_CERT=LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0t...
 K8S_SKIP_TLS_VERIFY=false
 EOF
 
-# 3. 환경 전환 (자동으로 kubectl 설정)
-./scripts/switch-to-cloud.sh
+# 3. kubectl 환경 설정
+source .env.k8s
+kubectl config set-cluster solid-cloud \
+  --server=$K8S_API_SERVER \
+  --certificate-authority=<(echo $K8S_CA_CERT | base64 -d)
+kubectl config set-credentials solid-cloud-user --token=$K8S_TOKEN
+kubectl config set-context solid-cloud \
+  --cluster=solid-cloud \
+  --user=solid-cloud-user
+kubectl config use-context solid-cloud
 
-# 4. 배포 실행
-./scripts/deploy-cloud.sh
+# 4. 배포 확인 (Argo CD가 자동으로 배포)
 
 # 5. 테스트 실행
 ./scripts/test-week1-infrastructure.sh
@@ -286,7 +315,7 @@ kubectl create rolebinding monitoring-binding \
 
 ### Q1: kubeconfig 파일과 Token 기반 인증을 함께 사용할 수 있나요?
 
-A: 네, 가능합니다. `switch-to-cloud.sh` 스크립트는 kubectl config에 새로운 context를 추가하므로, 기존 kubeconfig 설정과 공존할 수 있습니다.
+A: 네, 가능합니다. kubectl config 명령어로 새로운 context를 추가하므로, 기존 kubeconfig 설정과 공존할 수 있습니다.
 
 ### Q2: Token은 얼마나 자주 갱신해야 하나요?
 
@@ -294,11 +323,11 @@ A: `kubectl create token`으로 발급한 Token은 `--duration` 옵션으로 유
 
 ### Q3: 여러 클러스터를 관리하려면 어떻게 하나요?
 
-A: 각 클러스터별로 다른 `.env.k8s` 파일을 만들고 (예: `.env.k8s.dev`, `.env.k8s.prod`), `switch-to-cloud.sh` 스크립트를 실행할 때 파일을 지정할 수 있도록 수정하면 됩니다.
+A: 각 클러스터별로 다른 `.env.k8s` 파일을 만들고 (예: `.env.k8s.dev`, `.env.k8s.prod`), 각각의 환경 변수를 로드하여 kubectl config 명령어를 실행하면 됩니다.
 
 ### Q4: CI/CD 파이프라인에서 어떻게 사용하나요?
 
-A: GitHub Actions, GitLab CI 등에서 환경 변수로 `K8S_API_SERVER`, `K8S_TOKEN`, `K8S_CA_CERT`를 설정하고, `switch-to-cloud.sh` 스크립트를 실행하면 됩니다.
+A: GitHub Actions, GitLab CI 등에서 환경 변수로 `K8S_API_SERVER`, `K8S_TOKEN`, `K8S_CA_CERT`를 설정하고, kubectl config 명령어를 실행하면 됩니다.
 
 ```yaml
 # GitHub Actions 예시
@@ -309,7 +338,15 @@ env:
 
 steps:
   - name: Setup Kubernetes
-    run: ./scripts/switch-to-cloud.sh
+    run: |
+      kubectl config set-cluster solid-cloud \
+        --server=$K8S_API_SERVER \
+        --certificate-authority=<(echo $K8S_CA_CERT | base64 -d)
+      kubectl config set-credentials solid-cloud-user --token=$K8S_TOKEN
+      kubectl config set-context solid-cloud \
+        --cluster=solid-cloud \
+        --user=solid-cloud-user
+      kubectl config use-context solid-cloud
 ```
 
 ---
