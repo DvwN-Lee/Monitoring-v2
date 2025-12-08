@@ -31,27 +31,7 @@
     <template id="post-list-template">
         <div class="view-container">
             <div class="category-filter" role="tablist" aria-label="카테고리 필터">
-                <button class="category-tab active" data-category="" role="tab" aria-selected="true" aria-controls="posts-container">
-                    전체 <span class="post-count" id="count-all">(0)</span>
-                </button>
-                <button class="category-tab" data-category="infrastructure" role="tab" aria-selected="false" aria-controls="posts-container">
-                    인프라 <span class="post-count" id="count-infrastructure">(0)</span>
-                </button>
-                <button class="category-tab" data-category="cicd" role="tab" aria-selected="false" aria-controls="posts-container">
-                    CI/CD <span class="post-count" id="count-cicd">(0)</span>
-                </button>
-                <button class="category-tab" data-category="service-mesh" role="tab" aria-selected="false" aria-controls="posts-container">
-                    Service Mesh <span class="post-count" id="count-service-mesh">(0)</span>
-                </button>
-                <button class="category-tab" data-category="monitoring" role="tab" aria-selected="false" aria-controls="posts-container">
-                    모니터링 <span class="post-count" id="count-monitoring">(0)</span>
-                </button>
-                <button class="category-tab" data-category="troubleshooting" role="tab" aria-selected="false" aria-controls="posts-container">
-                    Troubleshooting <span class="post-count" id="count-troubleshooting">(0)</span>
-                </button>
-                <button class="category-tab" data-category="test" role="tab" aria-selected="false" aria-controls="posts-container">
-                    Test <span class="post-count" id="count-test">(0)</span>
-                </button>
+                <!-- 동적 카테고리 탭이 여기에 생성됩니다 -->
             </div>
 
             <h2>최신 글</h2>
@@ -95,32 +75,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label>카테고리<span class="required-star">*</span></label>
+                    <label for="category-select">카테고리<span class="required-star">*</span></label>
                     <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="category" value="4" required>
-                            <span>인프라</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="category" value="5">
-                            <span>CI/CD</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="category" value="6">
-                            <span>Service Mesh</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="category" value="7">
-                            <span>모니터링</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="category" value="2">
-                            <span>Troubleshooting</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="category" value="3">
-                            <span>Test</span>
-                        </label>
+                        <!-- 동적 카테고리 입력 필드가 여기에 생성됩니다 -->
                     </div>
                 </div>
 
