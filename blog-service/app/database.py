@@ -145,7 +145,7 @@ class BlogDatabase:
             SELECT p.id, p.title, p.content, p.author, p.created_at, p.updated_at, p.category_id,
                    c.name as category_name, c.slug as category_slug
             FROM posts p
-            LEFT JOIN categories c ON p.category_id = c.id
+            INNER JOIN categories c ON p.category_id = c.id
         """
 
         if self.use_postgres:
@@ -177,7 +177,7 @@ class BlogDatabase:
             SELECT p.id, p.title, p.content, p.author, p.created_at, p.updated_at, p.category_id,
                    c.name as category_name, c.slug as category_slug
             FROM posts p
-            LEFT JOIN categories c ON p.category_id = c.id
+            INNER JOIN categories c ON p.category_id = c.id
             WHERE p.id = """
 
         if self.use_postgres:
