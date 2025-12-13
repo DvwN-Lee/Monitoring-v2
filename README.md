@@ -1,7 +1,7 @@
 # Cloud-Native 마이크로서비스 플랫폼 v2.0
 
-**문서 버전**: 3.3 <br>
-**최종 수정일**: 2025년 12월 8일
+**문서 버전**: 3.4 <br>
+**최종 수정일**: 2025년 12월 14일
 
 로컬 환경(Minikube)에서 운영되던 마이크로서비스 블로그 플랫폼을 클라우드 네이티브 아키텍처로 재구축한 프로젝트입니다. Terraform을 이용한 인프라 자동화, GitOps 기반의 CI/CD 파이프라인, 그리고 Istio 서비스 메시를 통한 관측성과 보안 강화를 목표로 합니다.
 
@@ -16,6 +16,8 @@
 | **3.0** | 2025-11-03 | 프로젝트 완료, Week 5 최종 상태 반영 (CI/CD, 모니터링, Istio 서비스 메시 구축 완료) |
 | **3.1** | 2025-11-14 | README 개선 (대시보드 이미지를 상단으로 이동, Kiali 대시보드 추가, 모든 문서 링크 수정) |
 | **3.2** | 2025-11-22 | k6 부하 테스트 통합 및 성능 테스트 문서화 (스크립트 개선, threshold 최적화) |
+| **3.3** | 2025-12-08 | Phase 1+2 보안/성능 개선 적용 |
+| **3.4** | 2025-12-14 | 카테고리 동적 관리 기능, 최신 성능 지표 반영, 문서 업데이트 |
 
 ---
 
@@ -46,6 +48,8 @@
 -   **서비스 메시**: Istio를 적용하여 서비스 간 통신을 자동으로 암호화하고 트래픽을 세밀하게 제어합니다.
 -   **데이터 영속성**: PostgreSQL과 Redis를 사용하여 안정적인 데이터 저장과 빠른 캐싱을 지원합니다.
 -   **성능 테스트**: k6를 활용한 자동화된 부하 테스트로 시스템 성능과 안정성을 검증합니다.
+-   **Rate Limiting**: slowapi를 활용한 API 요청 제한으로 서비스 안정성을 보장합니다.
+-   **카테고리 동적 관리**: CSS 변수 기반 동적 색상 시스템으로 카테고리별 고유 색상을 자동 할당합니다.
 
 ---
 
@@ -236,9 +240,16 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 - **프로젝트 상태**: 완료 (Must-Have 100%, Should-Have 100%)
 
 ### 성능 목표 및 달성 현황
-- **응답 시간**: 실시간 P95 200.5ms (목표 달성)
+
+**K6 부하 테스트 기준 (100 VU, 10분)**:
+- **P95 Latency**: 74.76ms (목표 500ms 대비 85% 개선)
+- **P90 Latency**: 55.67ms
+- **Error Rate**: 0.01%
+- **Check Success Rate**: 99.95%
+
+**시스템 안정성**:
 - **HTTP 실패율**: 0% (목표 달성)
-- **보안**: Trivy 스캔 자동화, mTLS STRICT 모드 적용 (목표 달성)
+- **보안**: Trivy 스캔 자동화, mTLS STRICT 모드, Rate Limiting 적용 (목표 달성)
 - **배포 시간**: Git Push 후 5분 이내 자동 배포 (목표 달성)
 - **고가용성**: 주요 서비스 2+ replicas 유지 (목표 달성)
 
@@ -293,6 +304,15 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 - [x] 장애 복구 시나리오 테스트
 - [x] 데모 준비
 
+### Phase 1+2 완료 (2025-12): 보안 및 성능 최적화
+- [x] Rate Limiting 적용 (slowapi) - API 분당 100 요청 제한
+- [x] CORS Middleware 추가
+- [x] ClientSession Singleton Pattern 적용 - Connection Pool 재사용
+- [x] Redis Cache TTL 최적화 (사용자: 5분, 블로그: 1분, 카테고리: 1시간)
+- [x] Database Secret Kubernetes Secret 전환
+- [x] 카테고리 동적 관리 기능 구현 - 랜덤 색상 자동 할당
+- [x] LEFT JOIN -> INNER JOIN DB 최적화 - 데이터 무결성 강화
+
 ---
 
 ## 주요 성과
@@ -315,8 +335,10 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 ### 시스템 현황
 - **실행 중인 서비스**: 14개 Pod (모든 주요 서비스 2+ replicas)
-- **실시간 성능**: P95 200.5ms, 에러율 0%
-- **보안**: mTLS STRICT, Trivy 자동 스캔, NetworkPolicy 적용
+- **부하 테스트 성능 (K6 100 VU, 10분)**:
+  - P95: 74.76ms, P90: 55.67ms
+  - Error Rate: 0.01%, Check Success: 99.95%
+- **보안**: mTLS STRICT, Trivy 자동 스캔, Rate Limiting, NetworkPolicy 적용
 - **CI/CD**: Git Push → 5분 이내 자동 배포
 
 ### 접속 정보
