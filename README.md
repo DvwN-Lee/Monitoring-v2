@@ -347,6 +347,32 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 - **Prometheus**: http://10.0.11.168:30090
 - **애플리케이션**: http://10.0.11.168:31304
 
+### 시스템 스크린샷
+
+**Blog Service - 카테고리 동적 색상 관리**
+
+![Blog Service UI](./docs/04-operations/screenshots/blog-service-category.png)
+
+동적으로 할당된 카테고리 색상을 확인할 수 있습니다. 각 카테고리는 랜덤 색상이 자동으로 할당되며, CSS 변수를 통해 일관된 스타일이 적용됩니다.
+
+**Prometheus - Monitoring Targets**
+
+![Prometheus Targets](./docs/04-operations/screenshots/prometheus-targets.png)
+
+모든 서비스의 메트릭 수집 상태를 확인할 수 있습니다. user-service, blog-service, redis-service 등 모든 타겟이 UP 상태로 정상 동작 중입니다.
+
+**Grafana - Golden Signals Dashboard**
+
+![Grafana Golden Signals](./docs/04-operations/screenshots/grafana-golden-signals.png)
+
+Istio Service Mesh를 통해 수집된 Golden Signals(Latency, Traffic, Errors, Saturation) 메트릭을 확인할 수 있습니다. P95 Latency 91.5ms, Error Rate 0%를 달성했습니다.
+
+**Kiali - Service Mesh Visualization**
+
+![Kiali Service Mesh](./docs/04-operations/screenshots/kiali-service-mesh.png)
+
+titanium-prod namespace의 서비스 메시 구조를 시각화한 화면입니다. 6개 애플리케이션과 7개 서비스 간의 통신 흐름 및 mTLS 암호화 상태를 확인할 수 있습니다.
+
 ---
 
 ## 프로젝트 문서
