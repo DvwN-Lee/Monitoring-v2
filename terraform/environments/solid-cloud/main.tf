@@ -102,3 +102,14 @@ module "database" {
 
   depends_on = [module.kubernetes]
 }
+
+# Monitoring Stack Module (Loki, Promtail)
+module "monitoring" {
+  source = "../../modules/monitoring"
+
+  namespace          = "monitoring"
+  loki_version       = "2.10.2"
+  loki_storage_size  = "10Gi"
+
+  depends_on_resources = [module.kubernetes]
+}
