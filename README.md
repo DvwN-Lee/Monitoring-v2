@@ -1,7 +1,7 @@
 # Cloud-Native 마이크로서비스 플랫폼 v2.0
 
-**문서 버전**: 3.4 <br>
-**최종 수정일**: 2025년 12월 14일
+**문서 버전**: 3.5 <br>
+**최종 수정일**: 2025년 12월 15일
 
 로컬 환경(Minikube)에서 운영되던 마이크로서비스 블로그 플랫폼을 클라우드 네이티브 아키텍처로 재구축한 프로젝트입니다. Terraform을 이용한 인프라 자동화, GitOps 기반의 CI/CD 파이프라인, 그리고 Istio 서비스 메시를 통한 관측성과 보안 강화를 목표로 합니다.
 
@@ -18,6 +18,7 @@
 | **3.2** | 2025-11-22 | k6 부하 테스트 통합 및 성능 테스트 문서화 (스크립트 개선, threshold 최적화) |
 | **3.3** | 2025-12-08 | Phase 1+2 보안/성능 개선 적용 |
 | **3.4** | 2025-12-14 | 카테고리 동적 관리 기능, 최신 성능 지표 반영, 문서 업데이트 |
+| **3.5** | 2025-12-15 | README 스크린샷 섹션 통합, 대시보드 이미지 품질 개선 |
 
 ---
 
@@ -67,41 +68,59 @@
 
 ---
 
-## 시스템 현황 및 대시보드
+## 시스템 대시보드
 
-### 블로그 서비스
+### 블로그 애플리케이션
+
+**메인 화면**
 
 ![Blog Service](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/blog-service.png)
 
 FastAPI 기반의 블로그 애플리케이션으로, 게시글 CRUD 기능과 웹 UI를 제공합니다.
 
-### Grafana Golden Signals 대시보드
+**카테고리 동적 색상 관리**
+
+![Blog Service Category](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/blog-service-category.png)
+
+각 카테고리는 랜덤 색상이 자동으로 할당되며, CSS 변수를 통해 일관된 스타일이 적용됩니다.
+
+### 모니터링 스택
+
+**Grafana Golden Signals**
 
 ![Grafana Golden Signals](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/grafana-golden-signals.png)
 
-**주요 지표**:
+Istio Service Mesh를 통해 수집된 Golden Signals를 확인할 수 있습니다.
 - **Latency**: P95/P99 응답 시간 추적
 - **Traffic**: 초당 요청 수 (req/s) 모니터링
 - **Errors**: 에러율 추적
 - **Saturation**: CPU 리소스 사용률 모니터링
 
-### Prometheus 메트릭 수집
+**Prometheus Targets**
 
-![Prometheus](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/prometheus-metrics.png)
+![Prometheus Targets](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/prometheus-targets.png)
 
-Prometheus로 모든 서비스의 메트릭을 수집하고 쿼리할 수 있습니다.
+모든 서비스의 메트릭 수집 상태를 확인할 수 있습니다. user-service, blog-service, redis-service 등 모든 타겟이 UP 상태로 정상 동작 중입니다.
 
-### Loki 중앙 로깅
+**Prometheus 메트릭 쿼리**
+
+![Prometheus Metrics](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/prometheus-metrics.png)
+
+PromQL을 통해 Istio 메트릭을 쿼리하고 시각화할 수 있습니다.
+
+**Loki 중앙 로깅**
 
 ![Loki Logs](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/loki-logs.png)
 
 Loki를 통해 모든 서비스의 로그를 한곳에서 조회하고 검색할 수 있습니다.
 
-### Kiali Service Mesh 시각화
+### 서비스 메시
+
+**Kiali Traffic Graph**
 
 ![Kiali Service Graph](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/kiali-service-graph.png)
 
-Kiali를 통해 Istio 서비스 메시의 트래픽 흐름과 서비스 간 의존성을 시각화하고, mTLS 상태를 확인할 수 있습니다.
+titanium-prod namespace의 서비스 메시 구조를 시각화한 화면입니다. 6개 애플리케이션과 7개 서비스 간의 통신 흐름 및 mTLS 암호화 상태를 확인할 수 있습니다.
 
 ---
 
@@ -346,32 +365,6 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 - **Kiali 서비스 메시**: http://10.0.11.168:30164
 - **Prometheus**: http://10.0.11.168:30090
 - **애플리케이션**: http://10.0.11.168:31304
-
-### 시스템 스크린샷
-
-**Blog Service - 카테고리 동적 색상 관리**
-
-![Blog Service UI](./docs/04-operations/screenshots/blog-service-category.png)
-
-동적으로 할당된 카테고리 색상을 확인할 수 있습니다. 각 카테고리는 랜덤 색상이 자동으로 할당되며, CSS 변수를 통해 일관된 스타일이 적용됩니다.
-
-**Prometheus - Monitoring Targets**
-
-![Prometheus Targets](./docs/04-operations/screenshots/prometheus-targets.png)
-
-모든 서비스의 메트릭 수집 상태를 확인할 수 있습니다. user-service, blog-service, redis-service 등 모든 타겟이 UP 상태로 정상 동작 중입니다.
-
-**Grafana - Golden Signals Dashboard**
-
-![Grafana Golden Signals](./docs/04-operations/screenshots/grafana-golden-signals.png)
-
-Istio Service Mesh를 통해 수집된 Golden Signals(Latency, Traffic, Errors, Saturation) 메트릭을 확인할 수 있습니다. P95 Latency 91.5ms, Error Rate 0%를 달성했습니다.
-
-**Kiali - Service Mesh Visualization**
-
-![Kiali Service Mesh](./docs/04-operations/screenshots/kiali-service-mesh.png)
-
-titanium-prod namespace의 서비스 메시 구조를 시각화한 화면입니다. 6개 애플리케이션과 7개 서비스 간의 통신 흐름 및 mTLS 암호화 상태를 확인할 수 있습니다.
 
 ---
 
