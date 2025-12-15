@@ -115,7 +115,7 @@ resource "kubernetes_config_map" "postgresql_init" {
 
 # PostgreSQL PersistentVolumeClaim
 resource "kubernetes_persistent_volume_claim" "postgresql" {
-  wait_until_bound = false
+  wait_until_bound = true
 
   metadata {
     name      = "postgresql-pvc"
