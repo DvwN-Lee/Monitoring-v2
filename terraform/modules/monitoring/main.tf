@@ -177,7 +177,7 @@ resource "kubernetes_manifest" "loki_stack_application" {
 resource "kubernetes_config_map" "loki_datasource" {
   metadata {
     name      = "loki-datasource"
-    namespace = "istio-system"
+    namespace = var.namespace
     labels = {
       grafana_datasource = "1"
     }
