@@ -72,17 +72,9 @@
 
 ### 블로그 애플리케이션
 
-**메인 화면**
+![Blog Service](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/blog-service-category.png)
 
-![Blog Service](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/blog-service.png)
-
-FastAPI 기반의 블로그 애플리케이션으로, 게시글 CRUD 기능과 웹 UI를 제공합니다.
-
-**카테고리 동적 색상 관리**
-
-![Blog Service Category](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/blog-service-category.png)
-
-각 카테고리는 랜덤 색상이 자동으로 할당되며, CSS 변수를 통해 일관된 스타일이 적용됩니다.
+FastAPI 기반의 블로그 애플리케이션으로, 게시글 CRUD 기능과 웹 UI를 제공합니다. 각 카테고리는 랜덤 색상이 자동으로 할당되며, CSS 변수를 통해 일관된 스타일이 적용됩니다.
 
 ### 모니터링 스택
 
