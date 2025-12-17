@@ -365,6 +365,9 @@ spec:
             limits:
               cpu: 200m
               memory: 256Mi
+          sidecar:
+            datasources:
+              enabled: false
           datasources:
             datasources.yaml:
               apiVersion: 1
