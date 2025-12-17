@@ -37,6 +37,7 @@ resource "cloudstack_instance" "k3s_master" {
 
   user_data = base64encode(templatefile("${path.module}/scripts/k3s-server.sh", {
     k3s_token = random_password.k3s_token.result
+    postgres_password = var.postgres_password
   }))
 }
 
@@ -127,14 +128,44 @@ resource "cloudstack_firewall" "master" {
   }
 }
 
-# Fetch kubeconfig from master node
-resource "null_resource" "fetch_kubeconfig" {
-  depends_on = [null_resource.wait_for_k3s]
+# Create kubeconfig locally pointing to public IP
+# ArgoCD bootstrap script will set up the cluster internally
+resource "null_resource" "create_kubeconfig" {
+  depends_on = [
+    cloudstack_instance.k3s_master,
+    cloudstack_port_forward.master
+  ]
 
   provisioner "local-exec" {
     command = <<-EOT
-      echo "Waiting for kubeconfig to be ready..."
-      sleep 30
+      mkdir -p ~/.kube
+      cat > ~/.kube/config-solid-cloud <<'KUBE'
+apiVersion: v1
+kind: Config
+clusters:
+- cluster:
+    insecure-skip-tls-verify: true
+    server: https://${cloudstack_ipaddress.master_public_ip.ip_address}:6443
+  name: solid-cloud
+contexts:
+- context:
+    cluster: solid-cloud
+    user: solid-cloud-admin
+  name: solid-cloud
+current-context: solid-cloud
+users:
+- name: solid-cloud-admin
+  user:
+    username: admin
+    password: placeholder
+KUBE
+      echo "Kubeconfig template created at ~/.kube/config-solid-cloud"
+      echo "Note: This is a placeholder. Access cluster after k3s bootstrap completes (~5-10 min)"
+      echo "To get actual kubeconfig, SSH into master and run: sudo cat /etc/rancher/k3s/k3s.yaml"
     EOT
+  }
+
+  triggers = {
+    master_ip = cloudstack_ipaddress.master_public_ip.ip_address
   }
 }

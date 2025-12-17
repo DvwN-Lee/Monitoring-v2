@@ -19,12 +19,16 @@ resource "cloudstack_network" "main" {
   endip            = cidrhost(var.cidr, 250)
 }
 
-# Egress Firewall Rules - Allow outbound internet access
-resource "cloudstack_egress_firewall" "allow_all" {
-  network_id = cloudstack_network.main.id
-
-  rule {
-    protocol   = "all"
-    cidr_list  = ["0.0.0.0/0"]
-  }
-}
+# Egress Firewall Rules
+# NOTE: CloudStack provider v0.6.0 has a bug with egress_firewall resource
+# causing plugin crashes. Egress firewall must be configured manually in
+# CloudStack UI or via CloudStack CLI.
+#
+# Required egress rules for k3s installation:
+# - TCP to 0.0.0.0/0 (for k3s download, Docker registry, etc.)
+# - UDP to 0.0.0.0/0 (for DNS)
+#
+# Manual configuration via CloudStack UI:
+# Network → Egress Rules → Add Rule:
+#   Protocol: TCP, CIDR: 0.0.0.0/0
+#   Protocol: UDP, CIDR: 0.0.0.0/0

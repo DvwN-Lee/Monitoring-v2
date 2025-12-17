@@ -124,3 +124,10 @@ variable "managed_by" {
   type        = string
   default     = "terraform"
 }
+
+# Kubernetes Configuration
+variable "kubeconfig_path" {
+  description = "Path to kubeconfig file for k3s cluster"
+  type        = string
+  default     = "~/.kube/config-solid-cloud"
+}
