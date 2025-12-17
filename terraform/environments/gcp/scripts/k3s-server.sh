@@ -107,8 +107,8 @@ spec:
   project: default
   source:
     repoURL: https://github.com/DvwN-Lee/Monitoring-v2.git
-    targetRevision: main
-    path: k8s-manifests/overlays/solid-cloud
+    targetRevision: feat/gcp-deployment
+    path: k8s-manifests/overlays/gcp
   destination:
     server: https://kubernetes.default.svc
     namespace: titanium-prod
