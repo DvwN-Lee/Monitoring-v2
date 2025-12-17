@@ -38,13 +38,31 @@ variable "master_machine_type" {
 variable "worker_machine_type" {
   description = "Machine type for worker nodes"
   type        = string
-  default     = "e2-medium"
+  default     = "e2-standard-2"
 }
 
 variable "worker_count" {
   description = "Number of worker nodes"
   type        = number
-  default     = 2
+  default     = 1
+}
+
+variable "use_spot_for_workers" {
+  description = "Use Spot (Preemptible) VMs for worker nodes"
+  type        = bool
+  default     = true
+}
+
+variable "master_disk_size" {
+  description = "Disk size for master node in GB"
+  type        = number
+  default     = 30
+}
+
+variable "worker_disk_size" {
+  description = "Disk size for worker nodes in GB"
+  type        = number
+  default     = 40
 }
 
 variable "os_image" {
