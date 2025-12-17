@@ -11,6 +11,7 @@ namePrefix: prod-
 resources:
   - ../../base
   - namespace.yaml
+  - postgresql-statefulset.yaml
 
 # Patches for GCP environment
 patches:
