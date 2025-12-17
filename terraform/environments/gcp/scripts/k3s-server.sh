@@ -161,6 +161,9 @@ spec:
               - url: http://loki:3100/loki/api/v1/push
         grafana:
           enabled: false
+          sidecar:
+            datasources:
+              enabled: false
         prometheus:
           enabled: false
   destination:
@@ -373,6 +376,7 @@ spec:
               - name: Loki
                 type: loki
                 url: http://loki.monitoring:3100
+                isDefault: false
         alertmanager:
           enabled: true
           alertmanagerSpec:
