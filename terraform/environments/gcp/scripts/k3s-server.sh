@@ -272,6 +272,8 @@ spec:
     helm:
       releaseName: istio-ingressgateway
       values: |
+        labels:
+          istio: ingressgateway
         service:
           type: NodePort
           ports:
@@ -323,7 +325,7 @@ spec:
   source:
     chart: kube-prometheus-stack
     repoURL: https://prometheus-community.github.io/helm-charts
-    targetRevision: 67.6.1
+    targetRevision: 79.5.0
     helm:
       releaseName: prometheus
       values: |
