@@ -174,8 +174,298 @@ spec:
       - CreateNamespace=true
 EOFAPP
 
+# Create ArgoCD Application for Istio Base (CRDs)
+log "Creating ArgoCD Application for istio-base..."
+cat <<'EOFAPP' | kubectl apply -f -
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istio-base
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    chart: base
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    targetRevision: 1.24.2
+    helm:
+      releaseName: istio-base
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+EOFAPP
+
+# Wait for Istio CRDs to be established
+log "Waiting for Istio CRDs..."
+sleep 10
+
+# Create ArgoCD Application for Istiod (Control Plane)
+log "Creating ArgoCD Application for istiod..."
+cat <<'EOFAPP' | kubectl apply -f -
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istiod
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    chart: istiod
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    targetRevision: 1.24.2
+    helm:
+      releaseName: istiod
+      values: |
+        pilot:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+EOFAPP
+
+# Create ArgoCD Application for Istio Ingress Gateway
+log "Creating ArgoCD Application for istio-ingressgateway..."
+cat <<'EOFAPP' | kubectl apply -f -
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istio-ingressgateway
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    chart: gateway
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    targetRevision: 1.24.2
+    helm:
+      releaseName: istio-ingressgateway
+      values: |
+        service:
+          type: NodePort
+          ports:
+          - name: http2
+            port: 80
+            targetPort: 80
+            nodePort: 31080
+          - name: https
+            port: 443
+            targetPort: 443
+            nodePort: 31443
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+EOFAPP
+
+# Create ArgoCD Application for kube-prometheus-stack
+log "Creating ArgoCD Application for kube-prometheus-stack..."
+cat <<'EOFAPP' | kubectl apply -f -
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    chart: kube-prometheus-stack
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 67.6.1
+    helm:
+      releaseName: prometheus
+      values: |
+        prometheus:
+          prometheusSpec:
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                cpu: 500m
+                memory: 1Gi
+            retention: 7d
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 10Gi
+          service:
+            type: NodePort
+            nodePort: 31090
+        grafana:
+          enabled: true
+          adminPassword: admin
+          service:
+            type: NodePort
+            nodePort: 31300
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          datasources:
+            datasources.yaml:
+              apiVersion: 1
+              datasources:
+              - name: Prometheus
+                type: prometheus
+                url: http://prometheus-kube-prometheus-prometheus:9090
+                isDefault: true
+              - name: Loki
+                type: loki
+                url: http://loki.monitoring:3100
+        alertmanager:
+          enabled: true
+          alertmanagerSpec:
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                cpu: 200m
+                memory: 256Mi
+        nodeExporter:
+          enabled: true
+        kubeStateMetrics:
+          enabled: true
+        defaultRules:
+          create: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+EOFAPP
+
+# Create ArgoCD Application for Kiali
+log "Creating ArgoCD Application for kiali..."
+cat <<'EOFAPP' | kubectl apply -f -
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kiali
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    chart: kiali-server
+    repoURL: https://kiali.org/helm-charts
+    targetRevision: 2.4.0
+    helm:
+      releaseName: kiali
+      values: |
+        deployment:
+          namespace: istio-system
+        external_services:
+          prometheus:
+            url: http://prometheus-kube-prometheus-prometheus.monitoring:9090
+          grafana:
+            enabled: true
+            url: http://prometheus-grafana.monitoring:80
+            in_cluster_url: http://prometheus-grafana.monitoring:80
+          tracing:
+            enabled: false
+        server:
+          web_root: /kiali
+        service:
+          type: NodePort
+          node_port: 31200
+        auth:
+          strategy: anonymous
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+EOFAPP
+
 log "Bootstrap complete!"
 log "ArgoCD UI: http://$PUBLIC_IP:30080"
+log "Grafana UI: http://$PUBLIC_IP:31300 (admin/admin)"
+log "Prometheus UI: http://$PUBLIC_IP:31090"
+log "Kiali UI: http://$PUBLIC_IP:31200"
+log "Istio Ingress Gateway: http://$PUBLIC_IP:31080"
 log "Get ArgoCD admin password: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d"
 log "ArgoCD will now automatically sync applications from Git"
 

@@ -12,6 +12,11 @@ resources:
   - ../../base
   - namespace.yaml
   - postgresql-statefulset.yaml
+  # Istio resources enabled (gateway.yaml includes VirtualService)
+  - istio/gateway.yaml
+  - istio/peer-authentication.yaml
+  - istio/peer-authentication-databases.yaml
+  - istio/destination-rules.yaml
 
 # Patches for GCP environment
 patches:
@@ -38,6 +43,23 @@ patches:
     target:
       kind: Service
       name: api-gateway-service
+
+  # Add Istio sidecar resource limits to all Deployments
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: not-used
+      spec:
+        template:
+          metadata:
+            annotations:
+              sidecar.istio.io/proxyCPU: "50m"
+              sidecar.istio.io/proxyCPULimit: "200m"
+              sidecar.istio.io/proxyMemory: "64Mi"
+              sidecar.istio.io/proxyMemoryLimit: "256Mi"
+    target:
+      kind: Deployment
 
 # ConfigMap generator for production-specific config
 configMapGenerator:
