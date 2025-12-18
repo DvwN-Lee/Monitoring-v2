@@ -17,7 +17,7 @@ upstream connect error or disconnect/reset before headers. reset reason: connect
 ### 발생 상황
 - Istio Service Mesh 환경에서 Go로 구현된 API Gateway를 통해 다른 Microservice 호출 시 503 에러 발생
 - 특히 `/blog/api/login`, `/blog/api/register` 등의 엔드포인트 호출 실패
-- 직접 서비스 엔드포인트를 호출하면 정상 작동
+- 직접 Service Endpoint를 호출하면 정상 작동
 
 ### 영향 범위
 - 모든 API Gateway를 통한 Backend Service 호출 실패

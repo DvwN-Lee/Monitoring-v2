@@ -45,7 +45,7 @@ graph TD
 ```
 
 ### 1. 시스템 개요 확인 (3분)
-- Kiali 서비스 그래프를 통해 현재 배포된 Microservice 토폴로지 확인
+- Kiali Service Graph를 통해 현재 배포된 Microservice 토폴로지 확인
 - 프로젝트 배경 및 v1.0 대비 개선사항 설명
 - 기술 스택 소개 (Terraform, GitOps, Istio, Prometheus)
 

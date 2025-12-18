@@ -128,7 +128,7 @@ author: Dongju Lee
   7. prod-user-service (Gateway, PeerAuthentication)
   8. redis (외부 접근용)
 - 모든 Service에 Istio 설정이 정상적으로 적용됨
-- 서비스 상태: 모두 정상 작동 중
+- Service Status: 모두 정상 작동 중
 
 #### Workloads View 검증
 - 총 8개 워크로드 확인:
@@ -169,7 +169,7 @@ Graph View에서는 3개 애플리케이션과 2개 서비스만 표시되었으
   2. "Display idle nodes" 옵션 활성화 (트래픽 없는 Node도 표시)
 
 ### 2.4. 캡처 스크린샷
-- `/tmp/kiali_graph_view_test.png`: Graph View (서비스 토폴로지)
+- `/tmp/kiali_graph_view_test.png`: Graph View (Service Topology)
 - `/tmp/kiali_applications_view_test.png`: Applications View (7개 애플리케이션)
 - `/tmp/kiali_istio_config_test.png`: Istio Config (전체 리소스)
 - `/tmp/kiali_services_view_verification.png`: Services View (8개 서비스 전체)
@@ -330,7 +330,7 @@ Kubernetes 환경에서 Golden Signals 대시보드가 정상적으로 동작하
 
 **테스트 절차**:
 1. 대시보드 상단의 "Service" 템플릿 변수 드롭다운 클릭
-2. 서비스 목록 확인
+2. Service List 확인
 3. 다른 서비스 선택 후 패널 업데이트 확인
 
 **결과**: 성공
@@ -492,7 +492,7 @@ Grafana Golden Signals 대시보드는 전반적으로 정상 작동하며, Kube
 ## 1. 테스트 개요
 
 ### 1.1. 테스트 목적
-Istio Service Mesh 환경에서 Kiali 대시보드가 정상적으로 동작하며, 서비스 토폴로지, 트래픽 흐름, Istio 설정이 올바르게 시각화되는지 검증
+Istio Service Mesh 환경에서 Kiali 대시보드가 정상적으로 동작하며, Service Topology, 트래픽 흐름, Istio 설정이 올바르게 시각화되는지 검증
 
 ### 1.2. 테스트 환경
 - **Kubernetes Namespace**: titanium-prod, istio-system
@@ -513,7 +513,7 @@ Istio Service Mesh 환경에서 Kiali 대시보드가 정상적으로 동작하�
 | 테스트 케이스 | 상태 | 비고 |
 |---|---|---|
 | TC-01: Overview 페이지 확인 | 성공 | titanium-prod Namespace 7개 애플리케이션 확인 |
-| TC-02: Graph View 서비스 토폴로지 | 성공 | 트래픽 흐름 및 메트릭 정상 표시 |
+| TC-02: Graph View Service Topology | 성공 | 트래픽 흐름 및 메트릭 정상 표시 |
 | TC-03: Applications View 탐색 | 성공 | 7개 애플리케이션 및 Istio 설정 확인 |
 | TC-04: Istio Config 검증 | 성공 | VirtualService, PeerAuthentication 확인 |
 
@@ -681,7 +681,7 @@ spec:
 
 1. **Workloads View 및 Services View 추가 테스트**
    - 현재 테스트에서는 Applications View만 확인
-   - Pod 상태 및 서비스 엔드포인트 추가 검증 필요
+   - Pod 상태 및 Service Endpoint 추가 검증 필요
 
 2. **Health Check 기능 검증**
    - 각 Service의 Health 상태가 실제 Pod 상태를 정확히 반영하는지 확인

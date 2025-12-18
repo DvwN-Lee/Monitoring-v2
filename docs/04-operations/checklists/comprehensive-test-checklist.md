@@ -411,7 +411,7 @@ author: Dongju Lee
 ## 주의사항
 
 1. **Cluster 접근 권한**: kubeconfig가 올바르게 설정되어 있어야 함
-2. **외부 의존성**: Docker Hub, GitHub Actions 등 외부 서비스 상태에 영향받을 수 있음
+2. **외부 의존성**: Docker Hub, GitHub Actions 등 외부 Service Status에 영향받을 수 있음
 3. **리소스 사용량**: HPA 및 부하 테스트는 일시적으로 CPU/메모리 사용량 증가
 4. **상태 변경**: 테스트 과정에서 데이터 생성 및 시스템 상태 변경됨
 5. **Rate Limiting**: 429 에러는 정상적인 Rate Limiting 동작의 증거

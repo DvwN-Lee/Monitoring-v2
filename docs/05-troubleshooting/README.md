@@ -48,7 +48,7 @@
 | NodePort Service 접근 실패 | 외부에서 NodePort를 통해 Service에 접근할 수 없습니다 | Kubernetes, NodePort Service | Medium | [문서](kubernetes/troubleshooting-nodeport-access-failure.md) |
 | CrashLoopBackOff | Pod 내 Container가 시작 직후 비정상 종료를 반복합니다 | Kubernetes, Application | High | [문서](kubernetes/troubleshooting-pod-crashloopbackoff.md) |
 | ResourceQuota 초과 | Namespace의 리소스 할당량 초과로 새 리소스 생성이 실패합니다 | Kubernetes, ResourceQuota | Medium | [문서](kubernetes/troubleshooting-resourcequota-exceeded.md) |
-| 서비스 엔드포인트 누락 | Service가 Pod에 연결되지 않아 엔드포인트가 없습니다 | Kubernetes, Service, Endpoints | High | [문서](kubernetes/troubleshooting-service-endpoint-missing.md) |
+| Service Endpoint 누락 | Service가 Pod에 연결되지 않아 엔드포인트가 없습니다 | Kubernetes, Service, Endpoints | High | [문서](kubernetes/troubleshooting-service-endpoint-missing.md) |
 
 ## Monitoring
 
