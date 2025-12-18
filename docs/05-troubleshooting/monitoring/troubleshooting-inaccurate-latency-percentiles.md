@@ -19,10 +19,10 @@ blog-service P99 Latency: 99.0ms (고정)
 ```
 
 ### 발생 상황
-- Python 서비스들의 P95/P99 레이턴시가 항상 정확히 95.0ms, 99.0ms로 표시됨
+- Python Service들의 P95/P99 레이턴시가 항상 정확히 95.0ms, 99.0ms로 표시됨
 - 실제 응답 시간이 변화해도 백분위수 값이 변하지 않음
-- API Gateway(Go 서비스)는 정상적으로 다양한 값 표시 (예: 7.23ms, 12.5ms)
-- 부하가 증가해도 Python 서비스 메트릭이 동일하게 유지됨
+- API Gateway(Go Service)는 정상적으로 다양한 값 표시 (예: 7.23ms, 12.5ms)
+- 부하가 증가해도 Python Service Metric이 동일하게 유지됨
 
 ### 영향 범위
 - 성능 병목 지점 파악 불가
@@ -251,7 +251,7 @@ curl http://localhost:8001/metrics | grep http_request_duration_seconds_bucket
 docker build -t your-registry/user-service:buckets-fix ./user-service
 docker push your-registry/user-service:buckets-fix
 
-# 모든 Python 서비스 업데이트
+# 모든 Python Service 업데이트
 kubectl set image deployment/user-service-deployment \
   user-service=your-registry/user-service:buckets-fix -n titanium-prod
 
@@ -497,7 +497,7 @@ sum(rate(http_request_duration_seconds_bucket[5m])) by (le)
 ```
 
 ## 관련 커밋
-- PR #48: fix: Python 서비스들의 Prometheus 히스토그램 버킷 개선
+- PR #48: fix: Python Service들의 Prometheus 히스토그램 버킷 개선
 - PR #49, #50: fix: Instrumentator 호환성 문제 해결
 
 ## 추가 자료

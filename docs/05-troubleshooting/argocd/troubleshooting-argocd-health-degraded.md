@@ -137,7 +137,7 @@ kubectl describe pod <pod-name> -n <namespace>
 실제 애플리케이션이 정상적으로 동작하는지 기능 테스트를 수행합니다.
 
 ```bash
-# 서비스 엔드포인트로 HTTP 요청 테스트
+# Service Endpoint로 HTTP 요청 테스트
 curl http://<service-endpoint>/health
 
 # 예상 응답: HTTP 200 OK
@@ -154,4 +154,4 @@ curl http://<service-endpoint>/health
 - [시스템 아키텍처 - CI/CD Pipeline](../../02-architecture/architecture.md#4-cicd-Pipeline)
 - [운영 가이드 - ArgoCD 운영](../../04-operations/guides/operations-guide.md)
 - [ArgoCD Git 감지 실패](troubleshooting-argocd-git-detection.md)
-- [서비스 엔드포인트 누락](../kubernetes/troubleshooting-service-endpoint-missing.md)
+- [Service Endpoint 누락](../kubernetes/troubleshooting-service-endpoint-missing.md)

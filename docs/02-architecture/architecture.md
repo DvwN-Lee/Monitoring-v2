@@ -202,7 +202,7 @@ graph TB
   - `istio-system`: Istio 컴포넌트
   - `argocd`: Argo CD
 
-#### 서비스 통신
+#### Service Communication
 - **외부 → Cluster**: Istio Ingress Gateway (NodePort)
 - **Service 간**: Istio Service Mesh (mTLS 암호화)
 - **DB 접근**: 각 Service → PostgreSQL Service
@@ -222,7 +222,7 @@ graph TB
 
 ## 3. Microservice 구조
 
-### 3.1. 서비스 목록
+### 3.1. Service List
 
 | 서비스명 | 언어 | 역할 | 주요 기능 |
 |---------|------|------|----------|
@@ -368,8 +368,8 @@ flowchart TD
 
 **실행 단계**:
 1. **Lint & Test**
-   - `golangci-lint` (Go 서비스)
-   - `flake8`, `pytest` (Python 서비스)
+   - `golangci-lint` (Go Service)
+   - `flake8`, `pytest` (Python Service)
 
 2. **Build**
    - Docker 멀티 스테이지 빌드

@@ -133,7 +133,7 @@ author: Dongju Lee
 - 타겟 개수 확인 (최소 10개 이상)
 - 그래프 렌더링 품질
 
-### 2.3 서비스 메트릭 확인
+### 2.3 Service Metric 확인
 
 **테스트 단계:**
 1. PromQL 쿼리 입력: `istio_requests_total{namespace="titanium-prod"}`
@@ -218,7 +218,7 @@ author: Dongju Lee
 - 에러율, 요청률 메트릭 표시
 - mTLS 상태 표시 (잠금 아이콘)
 
-### 3.3 서비스 그래프 확인
+### 3.3 Service Graph 확인
 
 **테스트 단계:**
 1. "Graph" 메뉴 클릭
@@ -377,7 +377,7 @@ author: Dongju Lee
 ### Kiali
 - [ ] UI 접근 성공
 - [ ] Namespace 개요 표시
-- [ ] 서비스 그래프 렌더링
+- [ ] Service Graph 렌더링
 - [ ] 트래픽 메트릭 표시
 - [ ] Istio Config 검증 성공
 
@@ -488,13 +488,13 @@ author: Dongju Lee
 - **접근 방법**: 웹 브라우저를 통해 NodePort 주소로 직접 접근. (Istio 설치 시 설정된 인증 방식에 따라 로그인 필요)
 
 #### 3.1. 핵심 기능 검증 목록
-- [ ] Kiali 접속 및 서비스 그래프 시각화
-- [ ] Namespace별 서비스 토폴로지 확인
+- [ ] Kiali 접속 및 Service Graph 시각화
+- [ ] Namespace별 Service Topology 확인
 - [ ] 서비스 상세 정보 및 인/아웃바운드 트래픽 확인
 
 #### 3.2. 상세 테스트 단계 및 예상 결과
 
-**시나리오 1: `prod` Namespace 서비스 그래프 검증**
+**시나리오 1: `prod` Namespace Service Graph 검증**
 1.  **단계 1**: `http://10.0.11.168:30164` URL로 이동하여 Kiali 대시보드에 로그인합니다.
 2.  **단계 2**: 왼쪽 메뉴에서 'Graph'를 클릭합니다.
 3.  **단계 3**: 상단 'Namespace' 셀렉트 박스에서 `prod`를 선택합니다.
@@ -570,7 +570,7 @@ author: Dongju Lee
 
 ### Kiali
 - [ ] Kiali UI 접속 성공
-- [ ] 서비스 그래프가 정상적으로 시각화됨
+- [ ] Service Graph가 정상적으로 시각화됨
 - [ ] 최소 하나의 Namespace에서 트래픽 흐름 확인
 - [ ] 서비스 상세 정보 및 메트릭이 표시됨
 
@@ -717,7 +717,7 @@ Loaded cached credentials.
 
 #### 2.2. 테스트 UI 요소 및 상호작용
 
--   **패널/위젯:** 서비스 상태, RPS, 응답시간, 알람, 로그 뷰어 등 각 대시보드 구성 요소.
+-   **패널/위젯:** Service Status, RPS, 응답시간, 알람, 로그 뷰어 등 각 대시보드 구성 요소.
 -   **차트 (`<canvas>` 또는 `<svg>`):** 라인/바 차트의 데이터 포인트.
 -   **툴팁:** 차트 호버 시 나타나는 정보 창.
 -   **시간 범위 선택기:** '지난 5분', '지난 1시간' 등.

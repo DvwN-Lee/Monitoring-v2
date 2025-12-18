@@ -96,7 +96,7 @@ kubectl -n argocd get secret argocd-initial-admin-secret \
 
 **전체 Pod 상태 확인**:
 ```bash
-# 프로덕션 서비스 상태
+# 프로덕션 Service Status
 kubectl get pods -n titanium-prod
 
 # Istio 상태
@@ -111,7 +111,7 @@ kubectl get pods -n argocd
 
 **서비스 및 엔드포인트 확인**:
 ```bash
-# 서비스 목록
+# Service List
 kubectl get svc -n titanium-prod
 
 # Ingress/Gateway 확인
@@ -430,7 +430,7 @@ kubectl logs <pod-name> -n titanium-prod -c <container-name> --previous
 
 **Service 간 통신 불가**:
 ```bash
-# 서비스 엔드포인트 확인
+# Service Endpoint 확인
 kubectl get endpoints -n titanium-prod
 
 # DNS 해석 테스트
