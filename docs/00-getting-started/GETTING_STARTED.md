@@ -7,11 +7,11 @@
 
 ## 개요
 
-본 가이드는 Cloud-Native 마이크로서비스 플랫폼 v2.0 프로젝트를 시작하기 위한 A-to-Z 설정 문서입니다.
+본 가이드는 Cloud-Native Microservice 플랫폼 v2.0 프로젝트를 시작하기 위한 A-to-Z 설정 문서입니다.
 
 **이 가이드를 완료하면**:
-- 로컬 환경(Minikube)에서 전체 마이크로서비스 스택을 실행
-- 블로그 UI, Grafana, Prometheus 등 모든 서비스에 접근
+- 로컬 환경(Minikube)에서 전체 Microservice 스택을 실행
+- 블로그 UI, Grafana, Prometheus 등 모든 Service에 접근
 - 코드 수정 시 자동 재배포(Hot Reload) 확인
 
 **예상 소요 시간**: 30~60분
@@ -117,7 +117,7 @@ Node 상태가 `Ready`이면 Cluster가 정상적으로 시작된 것입니다.
 
 Skaffold는 다음 작업을 자동으로 수행합니다:
 
-1. **빌드**: 각 마이크로서비스의 Docker 이미지를 빌드
+1. **빌드**: 각 Microservice의 Docker 이미지를 빌드
 2. **푸시**: Minikube 내부 레지스트리로 이미지 푸시
 3. **배포**: Kustomize로 Kubernetes 매니페스트를 생성하고 Cluster에 적용
 4. **감시**: 코드 변경 감지 시 자동 재빌드 및 재배포 (Hot Reload)
@@ -159,7 +159,7 @@ blog-service-xxxx              1/1     Running   0          5m
 
 #### Port Forward 설정
 
-다음 명령어를 실행하여 로컬에서 서비스에 접속할 수 있도록 합니다:
+다음 명령어를 실행하여 로컬에서 Service에 접속할 수 있도록 합니다:
 
 ```bash
 # API Gateway (블로그 UI)
@@ -174,7 +174,7 @@ kubectl port-forward svc/prometheus 9090:9090 -n monitoring &
 
 #### 접속 확인
 
-브라우저에서 다음 URL에 접속하여 서비스가 정상 동작하는지 확인합니다:
+브라우저에서 다음 URL에 접속하여 Service가 정상 동작하는지 확인합니다:
 
 | 서비스 | URL | 설명 |
 |:---|:---|:---|
@@ -196,7 +196,7 @@ kubectl logs -f <pod-name>
 kubectl logs -f deployment/api-gateway
 ```
 
-**참고**: Skaffold가 실행 중이라면 모든 서비스의 로그가 자동으로 표시됩니다.
+**참고**: Skaffold가 실행 중이라면 모든 Service의 로그가 자동으로 표시됩니다.
 
 ---
 
@@ -206,7 +206,7 @@ kubectl logs -f deployment/api-gateway
 
 Skaffold는 소스 코드 변경을 자동으로 감지하여 재배포합니다:
 
-1. 원하는 서비스의 소스 코드 수정 (예: `blog-service/blog_service.py`)
+1. 원하는 Service의 소스 코드 수정 (예: `blog-service/blog_service.py`)
 2. 파일 저장
 3. Skaffold가 자동으로 감지하여 재빌드 및 재배포
 4. 브라우저에서 변경 사항 확인
@@ -294,7 +294,7 @@ kubectl port-forward svc/<service-name> <local-port>:<service-port>
 
 ### 프로젝트 이해하기
 - [시스템 아키텍처](../02-architecture/architecture.md)
-- [서비스별 README](../../) (각 서비스 디렉토리)
+- [Service별 README](../../) (각 Service 디렉토리)
 - [모니터링 스택](../../k8s-manifests/monitoring/README.md)
 
 ### 개발 시작하기

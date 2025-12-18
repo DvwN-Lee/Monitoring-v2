@@ -4,7 +4,7 @@ last_updated: 2025-11-15
 author: Dongju Lee
 ---
 
-# 사용자 인증 서비스 고지연 시간 문제 해결
+# 사용자 Auth Service 고지연 시간 문제 해결
 
 ## 문제 현상
 
@@ -344,7 +344,7 @@ groups:
 
 ## 관련 문서
 
-- [시스템 아키텍처 - 마이크로서비스 구조](../../02-architecture/architecture.md#3-마이크로서비스-구조)
+- [시스템 아키텍처 - Microservice 구조](../../02-architecture/architecture.md#3-Microservice-구조)
 - [시스템 아키텍처 - 모니터링 및 로깅](../../02-architecture/architecture.md#5-모니터링-및-로깅)
 - [성능 개선 계획](../../04-operations/guides/performance-improvement-plan.md)
 
@@ -358,7 +358,7 @@ groups:
 | 10,000 | ~23ms | 낮음 | 사용하지 말 것 |
 | 100,000 | ~230ms | 중상 | OWASP 최소 권장 |
 | 260,000 | ~940ms | 높음 | 성능 문제 발생 |
-| 600,000 | ~2100ms | 매우 높음 | 일반 서비스에 과도함 |
+| 600,000 | ~2100ms | 매우 높음 | 일반 Service에 과도함 |
 
 ### 하드웨어별 성능 차이
 

@@ -4,7 +4,7 @@ last_updated: 2025-11-15
 author: Dongju Lee
 ---
 
-# Cloud-Native 마이크로서비스 플랫폼 운영 가이드
+# Cloud-Native Microservice 플랫폼 운영 가이드
 
 ## 목차
 1. [시스템 개요](#시스템-개요)
@@ -25,14 +25,14 @@ author: Dongju Lee
 - **Kubernetes 버전**: v1.29.7
 - **주요 Namespace**:
   - `titanium-prod`: 애플리케이션 서비스
-  - `istio-system`: Istio 서비스 메시
+  - `istio-system`: Istio Service Mesh
   - `monitoring`: Prometheus, Grafana, Loki
   - `argocd`: Argo CD GitOps
 
 ### 주요 컴포넌트
 - **애플리케이션**: API Gateway, Auth Service, User Service, Blog Service
 - **데이터베이스**: PostgreSQL (StatefulSet)
-- **서비스 메시**: Istio 1.20.1 (mTLS STRICT)
+- **Service Mesh**: Istio 1.20.1 (mTLS STRICT)
 - **모니터링**: Prometheus + Grafana + Kiali + Loki
 - **CI/CD**: GitHub Actions + Argo CD
 
@@ -267,7 +267,7 @@ kubectl port-forward -n monitoring svc/prometheus-operated 9090:9090
 
 **유용한 PromQL 쿼리**:
 ```promql
-# 서비스별 초당 요청 수
+# Service별 초당 요청 수
 rate(istio_requests_total{namespace="titanium-prod"}[5m])
 
 # P95 응답 시간
@@ -428,7 +428,7 @@ kubectl logs <pod-name> -n titanium-prod -c <container-name> --previous
 
 ### 2. 네트워크 문제
 
-**서비스 간 통신 불가**:
+**Service 간 통신 불가**:
 ```bash
 # 서비스 엔드포인트 확인
 kubectl get endpoints -n titanium-prod

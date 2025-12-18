@@ -84,7 +84,7 @@ http_requests_total{status="429"}
 
 **Overhead**: ~2ms per request
 - Redis 기반 Rate Limiter를 사용하지 않고 in-memory로 구현하여 최소화
-- 서비스 재시작 시 카운터 초기화됨 (프로덕션에서는 Redis 권장)
+- Service 재시작 시 카운터 초기화됨 (프로덕션에서는 Redis 권장)
 
 ---
 
@@ -275,7 +275,7 @@ rules:
 
 **현재**: In-memory Rate Limiter
 **계획**: Redis 기반 Rate Limiter
-- 서비스 재시작 시에도 카운터 유지
+- Service 재시작 시에도 카운터 유지
 - 여러 Replica 간 카운터 공유
 
 ### 5.2 WAF (Web Application Firewall) 도입

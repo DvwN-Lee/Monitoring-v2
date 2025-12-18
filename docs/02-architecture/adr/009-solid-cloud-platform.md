@@ -7,7 +7,7 @@
 
 ## 상황 (Context)
 
-Cloud-Native 마이크로서비스 플랫폼을 구축하기 위한 Kubernetes Cluster 환경이 필요했습니다. 학습 목적의 프로젝트이므로 비용, 접근성, 그리고 실습 자유도를 고려하여 적절한 Kubernetes 플랫폼을 선택해야 했습니다.
+Cloud-Native Microservice 플랫폼을 구축하기 위한 Kubernetes Cluster 환경이 필요했습니다. 학습 목적의 프로젝트이므로 비용, 접근성, 그리고 실습 자유도를 고려하여 적절한 Kubernetes 플랫폼을 선택해야 했습니다.
 
 ## 결정 (Decision)
 
@@ -66,7 +66,7 @@ Solid Cloud 접근 불가 시에도 개발을 계속할 수 있도록 Minikube�
 ### 긍정적 측면
 - 비용 부담 없이 장기간 실제 Kubernetes Cluster 운영 경험 획득
 - 멀티Node Cluster에서 Pod 스케줄링, 리소스 할당, Node 장애 복구 실습
-- 실제 네트워크 환경에서 Istio IngressGateway, NodePort 서비스 외부 노출 경험
+- 실제 네트워크 환경에서 Istio IngressGateway, NodePort Service 외부 노출 경험
 - Terraform으로 Cluster 리소스를 코드로 관리하는 IaC 실습
 - 대학 자원 활용으로 학습 기회 극대화
 - Minikube 병행으로 로컬-클라우드 하이브리드 개발 환경 구축

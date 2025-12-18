@@ -7,7 +7,7 @@
 
 ## 1. 프로젝트 개요
 
-Cloud-Native 마이크로서비스 플랫폼 v2.0은 로컬 환경(Minikube)에서 운영되던 블로그 플랫폼을 Solid Cloud 기반 클라우드 네이티브 아키텍처로 재구축한 프로젝트입니다.
+Cloud-Native Microservice 플랫폼 v2.0은 로컬 환경(Minikube)에서 운영되던 블로그 플랫폼을 Solid Cloud 기반 클라우드 네이티브 아키텍처로 재구축한 프로젝트입니다.
 
 ### 목표
 - Terraform을 이용한 Infrastructure as Code 구현
@@ -34,8 +34,8 @@ Cloud-Native 마이크로서비스 플랫폼 v2.0은 로컬 환경(Minikube)에�
 
 ### 2.3 Istio Service Mesh 적용
 
-- **mTLS STRICT 모드**: 서비스 간 통신 암호화로 보안 강화
-- **Kiali 시각화**: 서비스 메시 트래픽 흐름 및 의존성 모니터링
+- **mTLS STRICT 모드**: Service 간 통신 암호화로 보안 강화
+- **Kiali 시각화**: Service Mesh 트래픽 흐름 및 의존성 모니터링
 - **Golden Signals Dashboard**: Latency, Traffic, Errors, Saturation 지표 통합 모니터링
 
 ### 2.4 성능 최적화 (Phase 1+2)
@@ -61,7 +61,7 @@ Cloud-Native 마이크로서비스 플랫폼 v2.0은 로컬 환경(Minikube)에�
 ### 3.3 Distributed Tracing 미구축
 
 - Prometheus, Grafana, Loki를 통한 메트릭 및 로그 수집은 완료
-- Jaeger 또는 Tempo를 활용한 Distributed Tracing 미도입으로 서비스 간 요청 추적 어려움
+- Jaeger 또는 Tempo를 활용한 Distributed Tracing 미도입으로 Service 간 요청 추적 어려움
 
 ### 3.4 카테고리 동적 관리 색상 충돌 가능성
 
@@ -82,12 +82,12 @@ Cloud-Native 마이크로서비스 플랫폼 v2.0은 로컬 환경(Minikube)에�
 
 - **mTLS 통신**: Istio Sidecar를 통한 자동 암호화 및 인증
 - **Traffic Management**: VirtualService, DestinationRule을 통한 세밀한 트래픽 제어
-- **Observability**: Kiali, Prometheus를 통한 서비스 메시 가시성 확보
+- **Observability**: Kiali, Prometheus를 통한 Service Mesh 가시성 확보
 
 ### 4.3 관측성(Observability)의 중요성
 
 - **Golden Signals**: Latency, Traffic, Errors, Saturation 지표를 중심으로 모니터링
-- **중앙 로깅**: Loki를 통해 모든 서비스 로그를 한곳에서 조회
+- **중앙 로깅**: Loki를 통해 모든 Service 로그를 한곳에서 조회
 - **Alert 설정**: Prometheus Alert Rule을 통한 장애 사전 감지
 
 ### 4.4 성능 최적화 기법
@@ -114,7 +114,7 @@ Cloud-Native 마이크로서비스 플랫폼 v2.0은 로컬 환경(Minikube)에�
 
 ### 5.3 관측성 확장
 
-- **Distributed Tracing**: Jaeger 또는 Tempo 도입하여 서비스 간 요청 추적
+- **Distributed Tracing**: Jaeger 또는 Tempo 도입하여 Service 간 요청 추적
 - **SLO/SLI 정의**: 서비스 수준 목표(SLO) 및 지표(SLI) 명확히 정의
 - **Custom Metrics**: 비즈니스 로직 관련 커스텀 메트릭 수집 (예: 게시글 작성 수, 사용자 활동)
 
@@ -164,7 +164,7 @@ Cloud-Native 마이크로서비스 플랫폼 v2.0은 로컬 환경(Minikube)에�
 
 ## 7. 결론
 
-Cloud-Native 마이크로서비스 플랫폼 v2.0 프로젝트는 Terraform IaC, GitOps CI/CD, Istio Service Mesh, Prometheus/Grafana 관측성을 성공적으로 구축한 프로젝트입니다.
+Cloud-Native Microservice 플랫폼 v2.0 프로젝트는 Terraform IaC, GitOps CI/CD, Istio Service Mesh, Prometheus/Grafana 관측성을 성공적으로 구축한 프로젝트입니다.
 
 특히 보안/성능 개선을 통해 P95 Latency 74.76ms, Error Rate 0.01%를 달성하여 프로덕션 수준의 성능과 안정성을 확보했습니다.
 

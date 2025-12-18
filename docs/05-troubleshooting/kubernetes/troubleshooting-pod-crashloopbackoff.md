@@ -35,7 +35,7 @@ auth-service-5f7b64f8f6-z8g9h   0/1     CrashLoopBackOff   5          10m
     *   **ConfigMap/Secret 누락 또는 잘못된 마운트**: 설정 파일이나 인증서 등을 담고 있는 ConfigMap 또는 Secret이 존재하지 않거나, Pod에 잘못된 경로로 마운트되어 애플리케이션이 이를 찾지 못하는 경우.
 
 3.  **의존 서비스 연결 실패**:
-    *   데이터베이스, 캐시, 다른 마이크로서비스 등 애플리케이션이 시작 시점에 반드시 연결해야 하는 외부 서비스에 접속하지 못하는 경우. (예: 잘못된 DB 호스트 주소, 인증 실패)
+    *   데이터베이스, 캐시, 다른 Microservice 등 애플리케이션이 시작 시점에 반드시 연결해야 하는 외부 Service에 접속하지 못하는 경우. (예: 잘못된 DB 호스트 주소, 인증 실패)
 
 4.  **리소스 부족**: Container에 할당된 메모리(`limits.memory`)가 너무 적어, 애플리케이션이 시작 중에 메모리 부족(Out of Memory)으로 인해 강제 종료(OOMKilled)되는 경우. `describe pod`에서 `Reason: OOMKilled`로 확인할 수 있습니다.
 
@@ -85,7 +85,7 @@ kubectl describe pod <pod-name>
 
 *   **의존 서비스 연결 실패 시**:
     *   연결하려는 서비스(예: `redis-service`, `postgres-db`)가 정상적으로 실행 중인지 `kubectl get pods,svc`로 확인합니다.
-    *   서비스의 ClusterIP나 DNS 이름이 올바른지 확인합니다. (예: `<service-name>.<namespace>.svc.cluster.local`)
+    *   Service의 ClusterIP나 DNS 이름이 올바른지 확인합니다. (예: `<service-name>.<namespace>.svc.cluster.local`)
     *   네트워크 정책(NetworkPolicy)에 의해 통신이 차단되지는 않았는지 확인합니다.
 
 *   **리소스 부족(OOMKilled) 시**:

@@ -42,7 +42,7 @@ kubectl logs -n monitoring -l app.kubernetes.io/name=promtail
 
 ### 2단계: Loki 데이터소스 연결 테스트
 
-Grafana 대시보드에서 `Configuration > Data Sources > Loki`로 이동한 후, **"Save & Test"** 버튼을 클릭하여 Loki 서버와의 연결 상태를 확인했습니다. "Data source is working" 메시지가 나타나며 연결에는 문제가 없음을 확인했습니다. 만약 여기서 오류가 발생한다면 Loki 서비스의 URL(`http://loki-stack.monitoring.svc.cluster.local:3100`)이 올바른지 확인해야 합니다.
+Grafana 대시보드에서 `Configuration > Data Sources > Loki`로 이동한 후, **"Save & Test"** 버튼을 클릭하여 Loki 서버와의 연결 상태를 확인했습니다. "Data source is working" 메시지가 나타나며 연결에는 문제가 없음을 확인했습니다. 만약 여기서 오류가 발생한다면 Loki Service의 URL(`http://loki-stack.monitoring.svc.cluster.local:3100`)이 올바른지 확인해야 합니다.
 
 ### 3단계: Promtail 설정 검증 (`scrape_configs`)
 
@@ -90,7 +90,7 @@ kubectl rollout restart daemonset/loki-stack-promtail -n monitoring
 
 모든 조치 완료 후, Grafana Explore에서 다시 로그 조회를 시도했습니다.
 
-1.  **로그 스트림 확인**: `{app="user-service"}`와 같은 쿼리를 실행했을 때, 해당 서비스의 로그가 실시간으로 스트리밍되는 것을 확인했습니다.
+1.  **로그 스트림 확인**: `{app="user-service"}`와 같은 쿼리를 실행했을 때, 해당 Service의 로그가 실시간으로 스트리밍되는 것을 확인했습니다.
 2.  **기본 LogQL 쿼리 테스트**: `Log labels` 드롭다운에서 `namespace`, `pod`, `container` 등의 레이블이 정상적으로 표시되는 것을 확인하고, 이를 기반으로 한 필터링이 잘 동작하는지 검증했습니다.
 
 ## 6. 교훈

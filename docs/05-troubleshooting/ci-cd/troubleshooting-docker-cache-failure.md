@@ -25,7 +25,7 @@ Docker 빌드 캐시가 작동하지 않는 문제는 주로 Dockerfile의 구�
     *   가장 흔한 실수는 자주 변경되는 소스 코드(`COPY . .`)를, 자주 변경되지 않는 의존성 설치(`RUN pip install ...`)보다 앞에 두는 것입니다. 이 경우 소스 코드가 조금만 바뀌어도 의존성 설치부터 모든 단계를 다시 실행하게 됩니다.
 
 2.  **CI 실행 환경의 일시성(Ephemeral Nature)**:
-    *   GitHub Actions와 같은 대부분의 CI/CD 서비스는 각 작업(job)을 격리된 깨끗한 가상 환경(runner)에서 실행합니다. 작업이 끝나면 해당 환경은 파기되므로, 로컬 Docker 데몬이 유지하는 빌드 캐시가 다음 작업으로 이어지지 않습니다.
+    *   GitHub Actions와 같은 대부분의 CI/CD Service는 각 작업(job)을 격리된 깨끗한 가상 환경(runner)에서 실행합니다. 작업이 끝나면 해당 환경은 파기되므로, 로컬 Docker 데몬이 유지하는 빌드 캐시가 다음 작업으로 이어지지 않습니다.
 
 3.  **`docker/build-push-action`의 캐시 설정 부재**:
     *   `docker/build-push-action`을 사용할 때, 빌드 캐시를 어디에 저장하고(`cache-to`), 어디서부터 가져올지(`cache-from`) 명시적으로 설정하지 않으면, CI 환경의 한계로 인해 캐시를 전혀 활용할 수 없습니다.

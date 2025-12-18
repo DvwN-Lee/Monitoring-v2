@@ -2,7 +2,7 @@
 
 ## 프로젝트 개요
 
-**프로젝트명**: Cloud-Native 마이크로서비스 플랫폼 v2.0
+**프로젝트명**: Cloud-Native Microservice 플랫폼 v2.0
 
 **프로젝트 기간**: 2025년 9월 30일 ~ 2025년 11월 15일
 
@@ -10,7 +10,7 @@
 
 **Kubernetes 버전**: v1.29.7
 
-이 프로젝트는 로컬 개발 환경(Minikube + SQLite)에서 동작하던 마이크로서비스를 클라우드 환경(Solid Cloud + PostgreSQL)으로 전환하고, 완전 자동화된 CI/CD Pipeline, 서비스 메시, 그리고 포괄적인 관측성 시스템을 구축하여 엔터프라이즈급 마이크로서비스 플랫폼을 완성했습니다.
+이 프로젝트는 로컬 개발 환경(Minikube + SQLite)에서 동작하던 Microservice를 클라우드 환경(Solid Cloud + PostgreSQL)으로 전환하고, 완전 자동화된 CI/CD Pipeline, Service Mesh, 그리고 포괄적인 관측성 시스템을 구축하여 엔터프라이즈급 Microservice 플랫폼을 완성했습니다.
 
 **전체 완료율**:
 - Must-Have 요구사항: 100%
@@ -154,14 +154,14 @@ Kubernetes Cluster
 
 **1. Prometheus 기반 메트릭 수집**:
 - Prometheus Operator 설치 및 구성
-- ServiceMonitor 생성 (각 마이크로서비스별)
+- ServiceMonitor 생성 (각 Microservice별)
 - 모든 Namespace에서 메트릭 수집 설정
 - Custom Rules: CPU/메모리 사용량 알림 규칙
 
 **2. Grafana 시각화**:
 - Golden Signals Dashboard 구축
   - **Latency**: P95, P99 응답 시간 추적
-  - **Traffic**: 서비스별 초당 요청(RPS)
+  - **Traffic**: Service별 초당 요청(RPS)
   - **Errors**: 4xx, 5xx 에러 비율
   - **Saturation**: CPU 및 메모리 사용률
 - 데이터소스 자동 프로비저닝 (Prometheus, Loki)
@@ -196,15 +196,15 @@ Kubernetes Cluster
 
 ---
 
-## Week 4: 서비스 메시 및 보안
+## Week 4: Service Mesh 및 보안
 
 **기간**: 2025-10-21 ~ 2025-10-27
 
-**목표**: Istio 서비스 메시 도입 및 고급 기능 구현
+**목표**: Istio Service Mesh 도입 및 고급 기능 구현
 
 ### 주요 성과
 
-**1. Istio 서비스 메시 구축**:
+**1. Istio Service Mesh 구축**:
 - Istio 1.20.1 설치 (demo profile)
 - 구성 요소: istiod, istio-ingressgateway, istio-egressgateway
 - 사이드카 자동 주입: 모든 애플리케이션 Pod에 Envoy proxy 주입
@@ -213,23 +213,23 @@ Kubernetes Cluster
 
 **2. mTLS 보안 강화**:
 - PeerAuthentication STRICT 모드 활성화
-- DestinationRule: 모든 서비스에 ISTIO_MUTUAL TLS 모드 적용
+- DestinationRule: 모든 Service에 ISTIO_MUTUAL TLS 모드 적용
 - 인증서 자동 발급 및 갱신
-- 서비스 간 통신 100% 암호화
+- Service 간 통신 100% 암호화
 
 **3. 자동 스케일링 (HPA)**:
 - Metrics Server 설치 (kubelet TLS 설정)
-- HPA 적용 서비스: user-service, auth-service, blog-service, api-gateway
+- HPA 적용 Service: user-service, auth-service, blog-service, api-gateway
 - 설정: minReplicas: 2, maxReplicas: 5, CPU 목표: 70%
 
 **4. API Rate Limiting**:
 - Istio EnvoyFilter 사용
-- 적용 대상: load-balancer 서비스
+- 적용 대상: load-balancer Service
 - 제한: 분당 100 요청 (Local Rate Limit)
 - Token Bucket 알고리즘 적용
 
 **5. 관찰성 향상**:
-- Kiali 대시보드: 서비스 메시 토폴로지 시각화
+- Kiali 대시보드: Service Mesh 토폴로지 시각화
 - Jaeger 분산 추적 (기본 설치)
 - Prometheus Istio 메트릭 자동 수집
 
@@ -271,7 +271,7 @@ Kubernetes Cluster
 **Istio 리소스**:
 - Gateway: 1개 (titanium-gateway)
 - VirtualService: 1개 (load-balancer-vs)
-- DestinationRule: 8개 (default + 7개 서비스별)
+- DestinationRule: 8개 (default + 7개 Service별)
 - PeerAuthentication: 1개 (default-mtls STRICT)
 - EnvoyFilter: 1개 (rate-limit-filter)
 
@@ -421,7 +421,7 @@ Kubernetes Cluster
 | | AlertManager | - | 알림 관리 |
 | **로깅** | Loki | 3.5.7 | 중앙 로그 저장소 |
 | | Promtail | 3.5.1 | 로그 수집 에이전트 |
-| **서비스 메시** | Istio | 1.20.1 | mTLS, 트래픽 관리 |
+| **Service Mesh** | Istio | 1.20.1 | mTLS, 트래픽 관리 |
 | **데이터베이스** | PostgreSQL | - | 관계형 데이터베이스 |
 | **테스트** | k6 | v1.3.0 | 부하 테스트 |
 
@@ -452,7 +452,7 @@ Kubernetes Cluster
 ### 3. 보안 강화
 
 **달성 내용**:
-- mTLS를 통한 서비스 간 암호화 통신 (100%)
+- mTLS를 통한 Service 간 암호화 통신 (100%)
 - Trivy를 통한 자동 보안 스캔
 - NetworkPolicy를 통한 네트워크 격리
 - RBAC를 통한 접근 제어
@@ -499,9 +499,9 @@ Kubernetes Cluster
 - Kustomize를 활용한 환경별 설정 관리
 - Git을 Single Source of Truth로 사용하는 배포 전략
 
-### 2. Istio 서비스 메시
+### 2. Istio Service Mesh
 - Sidecar 패턴을 통한 트래픽 관리
-- mTLS를 통한 서비스 간 보안 통신
+- mTLS를 통한 Service 간 보안 통신
 - Envoy 프록시 메트릭 수집 및 활용
 - Control Plane vs Data Plane의 역할 분리
 
@@ -533,7 +533,7 @@ Kubernetes Cluster
 | Week 1 | 9/30 - 10/6 | 인프라 기반 구축 | 100% |
 | Week 2 | 10/7 - 10/13 | CI/CD Pipeline 구축 | 100% |
 | Week 3 | 10/14 - 10/20 | 관측성 시스템 구축 | 100% |
-| Week 4 | 10/21 - 10/27 | 서비스 메시 및 보안 | 100% |
+| Week 4 | 10/21 - 10/27 | Service Mesh 및 보안 | 100% |
 | Week 5 | 10/28 - 11/3 | 테스트 및 최적화 | 100% |
 
 ---
@@ -550,11 +550,11 @@ Kubernetes Cluster
 **현재 시스템 상태**:
 - 안정적으로 운영 중
 - 완전 자동화된 CI/CD Pipeline
-- 서비스 간 통신 100% 암호화 (mTLS)
+- Service 간 통신 100% 암호화 (mTLS)
 - 실시간 모니터링 및 로깅 시스템 구축
 - 고가용성 및 자동 확장 구현
 
-특히 Istio 서비스 메시와 관측성 시스템 구축을 통해 엔터프라이즈급 마이크로서비스 플랫폼의 핵심 요소들을 성공적으로 구현했으며, GitOps 원칙을 따르는 선언적 배포 관리를 실현했습니다.
+특히 Istio Service Mesh와 관측성 시스템 구축을 통해 엔터프라이즈급 Microservice 플랫폼의 핵심 요소들을 성공적으로 구현했으며, GitOps 원칙을 따르는 선언적 배포 관리를 실현했습니다.
 
 ---
 
