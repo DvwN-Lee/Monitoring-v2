@@ -79,7 +79,7 @@ kubectl get svc -n titanium-prod
 # PostgreSQL 연결 테스트
 kubectl exec -it postgresql-0 -n titanium-prod -- psql -U postgres -d titanium
 
-# 서비스 엔드포인트 확인
+# Service Endpoint 확인
 kubectl get svc -n titanium-prod
 
 # 로그 확인

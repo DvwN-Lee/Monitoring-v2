@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Monitoring-v2 프로젝트 종합 테스트 스크립트
-# Gemini 테스트 전략 기반 자동화
+# 자동화된 통합 테스트
 
 set -e
 
@@ -55,28 +55,28 @@ echo ""
 # Phase 1: 인프라 및 환경 검증
 log_section "Phase 1: 인프라 및 환경 검증"
 
-# 1-1. Kubernetes 노드 상태
-log_info "1-1. Kubernetes 노드 상태 확인"
+# 1-1. Kubernetes Node 상태
+log_info "1-1. Kubernetes Node 상태 확인"
 if kubectl get nodes --no-headers | grep -q "Ready"; then
     NODE_COUNT=$(kubectl get nodes --no-headers | wc -l | tr -d ' ')
     READY_COUNT=$(kubectl get nodes --no-headers | grep "Ready" | wc -l | tr -d ' ')
     if [ "$NODE_COUNT" -eq "$READY_COUNT" ]; then
-        log_success "모든 노드 ($NODE_COUNT개) Ready 상태"
+        log_success "모든 Node ($NODE_COUNT개) Ready 상태"
     else
-        log_error "일부 노드가 Ready 상태가 아닙니다 ($READY_COUNT/$NODE_COUNT)"
+        log_error "일부 Node가 Ready 상태가 아닙니다 ($READY_COUNT/$NODE_COUNT)"
     fi
 else
-    log_error "노드 상태 확인 실패"
+    log_error "Node 상태 확인 실패"
 fi
 
-# 1-2. 네임스페이스 확인
-log_info "1-2. 핵심 네임스페이스 확인"
+# 1-2. Namespace 확인
+log_info "1-2. 핵심 Namespace 확인"
 REQUIRED_NS=("titanium-prod" "monitoring" "istio-system" "argocd")
 for ns in "${REQUIRED_NS[@]}"; do
     if kubectl get ns "$ns" &> /dev/null; then
-        log_success "네임스페이스 '$ns' 존재"
+        log_success "Namespace '$ns' 존재"
     else
-        log_error "네임스페이스 '$ns' 없음"
+        log_error "Namespace '$ns' 없음"
     fi
 done
 
@@ -121,8 +121,8 @@ for svc in "${SERVICES[@]}"; do
     fi
 done
 
-# Phase 3: 서비스 간 통신 및 라우팅 검증
-log_section "Phase 3: 서비스 간 통신 및 라우팅 검증"
+# Phase 3: Service 간 통신 및 라우팅 검증
+log_section "Phase 3: Service 간 통신 및 라우팅 검증"
 
 # 3-1. Istio Ingress Gateway IP 확인
 log_info "3-1. Istio Ingress Gateway IP 확인"
@@ -161,8 +161,8 @@ else
     log_error "Auth API 라우팅 실패 (HTTP $HTTP_CODE)"
 fi
 
-# Phase 4: 서비스 메시 고급 기능 검증
-log_section "Phase 4: 서비스 메시 고급 기능 검증"
+# Phase 4: Service Mesh 고급 기능 검증
+log_section "Phase 4: Service Mesh 고급 기능 검증"
 
 # 4-1. HPA 설정 확인
 log_info "4-1. HPA 설정 확인"

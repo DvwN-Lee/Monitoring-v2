@@ -1,5 +1,5 @@
 #!/bin/bash
-# Solid Cloud 클러스터 전체 백업 스크립트
+# Solid Cloud Cluster 전체 백업 스크립트
 # 실행: ./scripts/backup-solid-cloud.sh
 
 set -e
@@ -10,7 +10,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}=== Solid Cloud 클러스터 백업 시작 ===${NC}"
+echo -e "${GREEN}=== Solid Cloud Cluster 백업 시작 ===${NC}"
 echo ""
 
 # 환경 변수 설정
@@ -27,10 +27,10 @@ cd $BACKUP_DIR
 echo -e "${YELLOW}백업 디렉토리: $BACKUP_DIR${NC}"
 echo ""
 
-# 클러스터 연결 확인
-echo -e "${GREEN}[1/8] 클러스터 연결 확인${NC}"
+# Cluster 연결 확인
+echo -e "${GREEN}[1/8] Cluster 연결 확인${NC}"
 if ! kubectl cluster-info &> /dev/null; then
-    echo -e "${RED}ERROR: Kubernetes 클러스터에 연결할 수 없습니다${NC}"
+    echo -e "${RED}ERROR: Kubernetes Cluster에 연결할 수 없습니다${NC}"
     echo "먼저 ./scripts/switch-to-cloud.sh를 실행하세요"
     exit 1
 fi
@@ -101,7 +101,7 @@ echo ""
 # Kubernetes 리소스 백업
 echo -e "${GREEN}[6/8] Kubernetes 리소스 백업${NC}"
 
-# 전체 네임스페이스 리소스
+# 전체 Namespace 리소스
 kubectl get all -n $NAMESPACE -o yaml > $BACKUP_DIR/k8s-all-resources-$BACKUP_DATE.yaml
 
 # 개별 리소스 타입
@@ -205,6 +205,6 @@ echo ""
 echo "다음 단계:"
 echo "  1. 백업 검증: cat $BACKUP_DIR/BACKUP_MANIFEST.txt"
 echo "  2. 오프사이트 백업: 외부 저장소로 아카이브 복사"
-echo "  3. 클러스터 삭제: terraform destroy (백업 검증 후)"
+echo "  3. Cluster 삭제: terraform destroy (백업 검증 후)"
 echo "  4. 복구: ./scripts/restore-solid-cloud.sh"
 echo ""

@@ -22,7 +22,7 @@ class AuthConfig:
 
 @dataclass
 class ServiceUrls:
-    """호출할 다른 마이크로서비스의 주소"""
+    """호출할 다른 Microservice의 주소"""
     # k8s-configmap.yml에 정의된 환경 변수 값을 읽어옵니다.
     user_service: str = os.getenv('USER_SERVICE_URL', 'http://user-service:8001')
 

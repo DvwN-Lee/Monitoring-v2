@@ -18,7 +18,7 @@ loki:
       chunks_directory: /var/loki/chunks
       rules_directory: /var/loki/rules
 
-  # TSDB 스키마 설정 (v13)
+  # TSDB Schema 설정 (v13)
   schemaConfig:
     configs:
       - from: "2025-11-01"  # 마이그레이션 시작 날짜
@@ -98,7 +98,7 @@ monitoring:
     grafanaAgent:
       installOperator: false
 
-# 테스트 파드 비활성화
+# 테스트 Pod 비활성화
 test:
   enabled: false
 

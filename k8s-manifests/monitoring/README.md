@@ -4,7 +4,7 @@
 
 ## 개요
 
-본 프로젝트는 **Prometheus + Grafana + Loki**로 구성된 관측성(Observability) 스택을 통해 마이크로서비스의 메트릭, 로그, 트레이스를 통합 수집하고 시각화합니다.
+본 프로젝트는 **Prometheus + Grafana + Loki**로 구성된 관측성(Observability) 스택을 통해 Microservice의 메트릭, 로그, 트레이스를 통합 수집하고 시각화합니다.
 
 ## 구성 요소
 
@@ -17,7 +17,7 @@
 **설정 파일**:
 - `prometheus-values.yaml`: Prometheus 서버 설정
 - `prometheus-rules.yaml`: 알림 규칙 정의
-- `servicemonitor-*.yaml`: 각 마이크로서비스의 메트릭 수집 대상 정의
+- `servicemonitor-*.yaml`: 각 Microservice의 메트릭 수집 대상 정의
 
 **주요 설정**:
 ```yaml
@@ -32,7 +32,7 @@ prometheus:
 ```
 
 **ServiceMonitor**:
-각 마이크로서비스는 ServiceMonitor를 통해 Prometheus의 수집 대상으로 등록됩니다:
+각 Microservice는 ServiceMonitor를 통해 Prometheus의 수집 대상으로 등록됩니다:
 - `servicemonitor-api-gateway.yaml`: API Gateway 메트릭 수집
 - `servicemonitor-auth-service.yaml`: Auth Service 메트릭 수집
 - `servicemonitor-user-service.yaml`: User Service 메트릭 수집
@@ -183,7 +183,7 @@ spec:
 - `kube_pod_status_phase`: Pod 상태
 
 **Istio 메트릭**:
-- `istio_requests_total`: Istio 서비스 메시 요청 수
+- `istio_requests_total`: Istio Service Mesh 요청 수
 - `istio_request_duration_milliseconds`: 요청 지연시간
 - `istio_tcp_connections_opened_total`: TCP 연결 수
 
@@ -195,7 +195,7 @@ Loki에서 로그를 조회하기 위한 LogQL 쿼리 예시입니다.
 # titanium-prod Namespace의 모든 로그
 {namespace="titanium-prod"}
 
-# 특정 서비스의 로그
+# 특정 Service의 로그
 {namespace="titanium-prod", app="api-gateway"}
 
 # 에러 로그만 필터링

@@ -118,7 +118,7 @@ async def handle_stats():
     is_db_healthy = await db.health_check()
     is_cache_healthy = await cache.ping()
 
-    # 전체 서비스 상태 결정
+    # 전체 Service Status 결정
     service_status = "online"
     if not is_db_healthy or not is_cache_healthy:
         service_status = "degraded"

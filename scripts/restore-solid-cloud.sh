@@ -1,5 +1,5 @@
 #!/bin/bash
-# Solid Cloud 클러스터 데이터 복구 스크립트
+# Solid Cloud Cluster 데이터 복구 스크립트
 # 실행: ./scripts/restore-solid-cloud.sh <backup-directory>
 
 set -e
@@ -10,7 +10,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}=== Solid Cloud 클러스터 복구 시작 ===${NC}"
+echo -e "${GREEN}=== Solid Cloud Cluster 복구 시작 ===${NC}"
 echo ""
 
 # 인자 확인
@@ -58,11 +58,11 @@ fi
 export NAMESPACE=titanium-prod
 export PG_POD=postgresql-0
 
-# 클러스터 연결 확인
-echo -e "${GREEN}[1/7] 클러스터 연결 확인${NC}"
+# Cluster 연결 확인
+echo -e "${GREEN}[1/7] Cluster 연결 확인${NC}"
 if ! kubectl cluster-info &> /dev/null; then
-    echo -e "${RED}ERROR: Kubernetes 클러스터에 연결할 수 없습니다${NC}"
-    echo "먼저 새 클러스터에 연결하세요:"
+    echo -e "${RED}ERROR: Kubernetes Cluster에 연결할 수 없습니다${NC}"
+    echo "먼저 새 Cluster에 연결하세요:"
     echo "  ./scripts/switch-to-cloud.sh"
     exit 1
 fi
@@ -71,14 +71,14 @@ CURRENT_CONTEXT=$(kubectl config current-context)
 echo "현재 컨텍스트: $CURRENT_CONTEXT"
 echo ""
 
-# 네임스페이스 확인 및 생성
-echo -e "${GREEN}[2/7] 네임스페이스 확인${NC}"
+# Namespace 확인 및 생성
+echo -e "${GREEN}[2/7] Namespace 확인${NC}"
 if ! kubectl get namespace $NAMESPACE &> /dev/null; then
-    echo "네임스페이스 생성 중: $NAMESPACE"
+    echo "Namespace 생성 중: $NAMESPACE"
     kubectl create namespace $NAMESPACE
     kubectl label namespace $NAMESPACE istio-injection=enabled
 else
-    echo "네임스페이스 존재: $NAMESPACE"
+    echo "Namespace 존재: $NAMESPACE"
 fi
 echo ""
 

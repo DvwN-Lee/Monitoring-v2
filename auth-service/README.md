@@ -1,11 +1,11 @@
 # Authentication Service (auth-service)
 
 ## 1. 개요
-- **인증 전문 마이크로서비스**: `auth-service`는 시스템 전체의 사용자 인증을 전담하는 서비스로, Python과 FastAPI 프레임워크를 기반으로 구축됨
+- **인증 전문 Microservice**: `auth-service`는 시스템 전체의 사용자 인증을 전담하는 서비스로, Python과 FastAPI 프레임워크를 기반으로 구축됨
 
 - **JWT 기반 인증**: 사용자의 로그인 요청을 처리하여 자격 증명이 유효할 경우, JWT(JSON Web Token)를 발급함. 또한, 다른 서비스로부터 전달받은 토큰의 유효성을 검증하는 역할을 수행
 
-- **서비스 간 통신**: 인증 과정에서 실제 사용자 정보의 유효성 검증은 `user-service`에 위임함. 이는 서비스의 단일 책임 원칙(Single Responsibility Principle)을 따르는 설계임
+- **Service 간 통신**: 인증 과정에서 실제 사용자 정보의 유효성 검증은 `user-service`에 위임함. 이는 Service의 단일 책임 원칙(Single Responsibility Principle)을 따르는 설계임
 
 ## 2. 핵심 기능 및 책임
 - **사용자 로그인**: 사용자의 아이디와 비밀번호를 받아 `user-service`를 통해 유효성을 검증하고, 성공 시 JWT를 생성하여 반환
@@ -14,7 +14,7 @@
 
 - **토큰 검증 (Token Verification)**: 다른 서비스(예: `blog-service`)에서 API 접근 권한을 확인하기 위해 전달한 토큰의 서명, 만료 시간 등을 검증하고 결과를 반환
 
-- **모니터링 지원**: `load-balancer`가 서비스 상태를 수집할 수 있도록 헬스 체크(`- /health`) 및 간단한 통계(`- /stats`) 엔드포인트를 제공
+- **모니터링 지원**: `load-balancer`가 Service Status를 수집할 수 있도록 헬스 체크(`- /health`) 및 간단한 통계(`- /stats`) 엔드포인트를 제공
 
 ## 3. 기술적 구현 (`auth_service.py`, `main.py`)
 - Python의 비동기 웹 프레임워크인 **FastAPI**를 기반으로 API 서버를 구현했으며, `user-service`와의 통신을 위해 비동기 HTTP 클라이언트 라이브러리인 **aiohttp**를 사용
@@ -28,7 +28,7 @@
 -   **토큰 서명 및 발급**: `PyJWT` 라이브러리를 사용하여 구성된 페이로드를 **HS256 알고리즘**과 환경 변수로 설정된 `JWT_SECRET` 키로 서명하여 최종 토큰을 생성하고 클라이언트에게 반환
 
 ### 3.2. 토큰 검증 로직 (`verify_token` 함수)
-- 다른 서비스가 보호된 리소스에 대한 접근을 요청할 때, `Authorization: Bearer <token>` 헤더를 이 서비스의 `/verify` 엔드포인트로 전달
+- 다른 Service가 보호된 리소스에 대한 접근을 요청할 때, `Authorization: Bearer <token>` 헤더를 이 Service의 `/verify` 엔드포인트로 전달
 - `verify_token` 함수는 `jwt.decode`를 사용하여 전달된 토큰을 검증
 - 검증 과정에서는 **서명의 유효성**과 **토큰의 만료 여부**를 모두 확인
     - **검증 성공**: 토큰에 담겨있던 페이로드(사용자 정보)를 반환
@@ -39,7 +39,7 @@
 |:---|:---|:---|
 |`/login`|`POST`|사용자 아이디와 비밀번호로 로그인을 시도하고, 성공 시 JWT를 반환|
 |`/verify`|`GET`|`Authorization` 헤더로 전달된 JWT의 유효성을 검증|
-|`/health`|`GET`|서비스의 상태를 확인하는 헬스 체크 엔드포인트. 항상 `200 OK`를 반환|
+|`/health`|`GET`|Service의 상태를 확인하는 헬스 체크 엔드포인트. 항상 `200 OK`를 반환|
 |`/stats`|`GET`|`load-balancer`가 모니터링을 위해 사용하는 통계 엔드포인트|
 
 ## 5. Container화 (`Dockerfile`)
@@ -50,6 +50,6 @@
 ## 6. 설정 (`config.py`)
 `auth-service`는 아래 환경 변수를 통해 설정을 관리하며, 이 값들은 Kubernetes `ConfigMap` 또는 `docker-compose.yml`을 통해 주입됨
 
-- `USER_SERVICE_URL`: 인증 정보를 검증하기 위해 호출할 사용자 서비스의 주소
+- `USER_SERVICE_URL`: 인증 정보를 검증하기 위해 호출할 User Service의 주소
 - `INTERNAL_API_SECRET`: JWT 서명 및 검증에 사용할 비밀 키
-- **(서버 포트)**: 서비스가 실행될 포트는 코드 내에서 `8002`로 지정되어 있음
+- **(서버 포트)**: Service가 실행될 포트는 코드 내에서 `8002`로 지정되어 있음

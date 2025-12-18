@@ -75,12 +75,12 @@ jobs:
           # kustomization.yaml 파일 경로
           KUSTOMIZE_FILE="k8s-manifests/overlays/solid-cloud/kustomization.yaml"
 
-          # 각 서비스의 이미지 태그 업데이트
+          # 각 Service의 이미지 태그 업데이트
           for service in $SERVICES; do
             echo "Updating $service to tag: main-$SHORT_SHA"
 
             # yq 없이 sed를 사용하여 업데이트
-            # images 섹션에서 해당 서비스의 newTag를 업데이트
+            # images 섹션에서 해당 Service의 newTag를 업데이트
             sed -i.bak "/name: $DOCKER_HUB_USERNAME\/$service/,/newTag:/ s/newTag:.*/newTag: main-$SHORT_SHA/" $KUSTOMIZE_FILE
           done
 

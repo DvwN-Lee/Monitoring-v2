@@ -29,22 +29,22 @@ check_status() {
   fi
 }
 
-echo "1. Kubernetes 클러스터 연결 테스트"
+echo "1. Kubernetes Cluster 연결 테스트"
 echo "-----------------------------------"
 kubectl cluster-info > /dev/null 2>&1
 check_status
 echo ""
 
-echo "2. 노드 상태 확인"
+echo "2. Node 상태 확인"
 echo "-----------------------------------"
 kubectl get nodes
 EXPECTED_NODES=3
 ACTUAL_NODES=$(kubectl get nodes --no-headers | wc -l | tr -d ' ')
 if [ "$ACTUAL_NODES" -eq "$EXPECTED_NODES" ]; then
-  echo -e "${GREEN}✓ 노드 수 확인: $ACTUAL_NODES/$EXPECTED_NODES${NC}"
+  echo -e "${GREEN}✓ Node 수 확인: $ACTUAL_NODES/$EXPECTED_NODES${NC}"
   ((PASSED++))
 else
-  echo -e "${RED}✗ 노드 수 불일치: $ACTUAL_NODES/$EXPECTED_NODES${NC}"
+  echo -e "${RED}✗ Node 수 불일치: $ACTUAL_NODES/$EXPECTED_NODES${NC}"
   ((FAILED++))
 fi
 echo ""
@@ -70,14 +70,14 @@ kubectl wait --for=condition=ready pod -l app=postgresql -n titanium-prod --time
 check_status
 echo ""
 
-echo "5. PostgreSQL Database 스키마 확인"
+echo "5. PostgreSQL Database Schema 확인"
 echo "-----------------------------------"
 TABLES=$(kubectl exec postgresql-0 -n titanium-prod -- psql -U postgres -d titanium -t -c "\dt" 2>/dev/null | grep -c "table")
 if [ "$TABLES" -ge 3 ]; then
-  echo -e "${GREEN}✓ Database 스키마 확인: $TABLES 테이블 존재${NC}"
+  echo -e "${GREEN}✓ Database Schema 확인: $TABLES 테이블 존재${NC}"
   ((PASSED++))
 else
-  echo -e "${RED}✗ Database 스키마 불완전: $TABLES 테이블${NC}"
+  echo -e "${RED}✗ Database Schema 불완전: $TABLES 테이블${NC}"
   ((FAILED++))
 fi
 
