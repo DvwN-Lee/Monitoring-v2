@@ -237,7 +237,7 @@ python3 blog_service.py
 # 모든 요청이 200 OK 응답을 받아야 함
 ```
 
-### 2. 클러스터 테스트
+### 2. Cluster 테스트
 
 ```bash
 # Istio Ingress Gateway를 통한 요청
@@ -296,7 +296,7 @@ kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 909
 
 ## Base URL
 - 로컬: http://localhost:8005
-- 클러스터: http://istio-ingressgateway.istio-system.svc.cluster.local
+- Cluster: http://istio-ingressgateway.istio-system.svc.cluster.local
 
 ## 엔드포인트
 
@@ -345,7 +345,7 @@ func TestRouting(t *testing.T) {
 }
 ```
 
-### 3. CI/CD 파이프라인에 E2E 테스트 추가
+### 3. CI/CD Pipeline에 E2E 테스트 추가
 
 ```yaml
 # .github/workflows/ci.yml

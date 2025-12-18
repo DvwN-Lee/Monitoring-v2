@@ -42,13 +42,13 @@
 |`/health`|`GET`|서비스의 상태를 확인하는 헬스 체크 엔드포인트. 항상 `200 OK`를 반환|
 |`/stats`|`GET`|`load-balancer`가 모니터링을 위해 사용하는 통계 엔드포인트|
 
-## 5. 컨테이너화 (`Dockerfile`)
+## 5. Container화 (`Dockerfile`)
 - **베이스 이미지**: `python:3.11-slim`을 사용하여 가볍고 효율적인 환경을 구성
 - **의존성 설치**: `requirements.txt`에 명시된 라이브러리(`fastapi`, `uvicorn`, `pyjwt`, `aiohttp`)를 설치
 - **애플리케이션 실행**: `uvicorn` ASGI 서버를 사용하여 FastAPI 애플리케이션을 실행
 
 ## 6. 설정 (`config.py`)
-`auth-service`는 아래 환경 변수를 통해 설정을 관리하며, 이 값들은 쿠버네티스 `ConfigMap` 또는 `docker-compose.yml`을 통해 주입됨
+`auth-service`는 아래 환경 변수를 통해 설정을 관리하며, 이 값들은 Kubernetes `ConfigMap` 또는 `docker-compose.yml`을 통해 주입됨
 
 - `USER_SERVICE_URL`: 인증 정보를 검증하기 위해 호출할 사용자 서비스의 주소
 - `INTERNAL_API_SECRET`: JWT 서명 및 검증에 사용할 비밀 키

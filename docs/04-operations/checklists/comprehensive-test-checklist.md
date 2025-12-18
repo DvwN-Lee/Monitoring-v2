@@ -30,16 +30,16 @@ author: Dongju Lee
 
 ## Phase 1: 인프라 및 환경 검증 (Critical)
 
-### 1-1. Kubernetes 클러스터 노드 상태 확인
+### 1-1. Kubernetes Cluster Node 상태 확인
 - [ ] **테스트 수행**
   ```bash
   kubectl get nodes
   ```
-- [ ] **성공 기준**: 모든 노드의 STATUS가 `Ready`
-- [ ] **결과 기록**: _____개 노드 모두 Ready 상태
+- [ ] **성공 기준**: 모든 Node의 STATUS가 `Ready`
+- [ ] **결과 기록**: _____개 Node 모두 Ready 상태
 - [ ] **예상 시간**: 1분
 
-### 1-2. 핵심 네임스페이스 존재 여부 확인
+### 1-2. 핵심 Namespace 존재 여부 확인
 - [ ] **테스트 수행**
   ```bash
   kubectl get ns
@@ -264,15 +264,15 @@ author: Dongju Lee
 
 ---
 
-## Phase 6: CI/CD 및 GitOps 파이프라인 검증 (Critical)
+## Phase 6: CI/CD 및 GitOps Pipeline 검증 (Critical)
 
-### 6-1. CI 파이프라인 트리거 및 실행 확인 (선택사항)
+### 6-1. CI Pipeline 트리거 및 실행 확인 (선택사항)
 - [ ] **테스트 수행**
   1. README.md 파일 간단한 수정
   2. 새 브랜치로 푸시
   3. main 브랜치로 PR 생성
 - [ ] **성공 기준**: GitHub Actions CI 워크플로우 자동 실행, 모든 Job 성공
-- [ ] **결과 기록**: CI 파이프라인 _____ (성공/실패)
+- [ ] **결과 기록**: CI Pipeline _____ (성공/실패)
 - [ ] **예상 시간**: 15분
 
 ### 6-2. Argo CD 상태 확인
@@ -407,11 +407,11 @@ author: Dongju Lee
 - 테스트 담당자: _____________________
 - Kubernetes 버전: _____________________
 - Istio 버전: 1.20.1
-- 클러스터 노드 수: _____개
+- Cluster Node 수: _____개
 
 ## 주의사항
 
-1. **클러스터 접근 권한**: kubeconfig가 올바르게 설정되어 있어야 함
+1. **Cluster 접근 권한**: kubeconfig가 올바르게 설정되어 있어야 함
 2. **외부 의존성**: Docker Hub, GitHub Actions 등 외부 서비스 상태에 영향받을 수 있음
 3. **리소스 사용량**: HPA 및 부하 테스트는 일시적으로 CPU/메모리 사용량 증가
 4. **상태 변경**: 테스트 과정에서 데이터 생성 및 시스템 상태 변경됨

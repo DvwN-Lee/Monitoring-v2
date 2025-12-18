@@ -6,7 +6,7 @@ author: Dongju Lee
 
 # Token 기반 Kubernetes 인증 설정 가이드
 
-이 문서는 Solid Cloud 환경에서 kubeconfig 파일 없이 Service Account Token을 사용하여 Kubernetes 클러스터에 접근하는 방법을 설명합니다.
+이 문서는 Solid Cloud 환경에서 kubeconfig 파일 없이 Service Account Token을 사용하여 Kubernetes Cluster에 접근하는 방법을 설명합니다.
 
 ---
 
@@ -20,7 +20,7 @@ author: Dongju Lee
 ### Token 기반 인증의 장점
 - 환경 변수만으로 간단히 설정 가능
 - `.env.k8s` 파일 하나로 모든 인증 정보 관리
-- CI/CD 파이프라인 및 자동화 스크립트와 잘 통합
+- CI/CD Pipeline 및 자동화 스크립트와 잘 통합
 - 인스턴스 환경에서도 쉽게 사용 가능
 - Secret 관리 도구와 연동 용이
 
@@ -48,7 +48,7 @@ Solid Cloud 관리자 또는 Kubernetes 관리 페이지에서 API Server URL을
 **방법 1: Kubernetes 1.24 이상 (권장)**
 
 ```bash
-# 기존 클러스터에 접근 가능한 경우
+# 기존 Cluster에 접근 가능한 경우
 
 # Service Account 생성
 kubectl create serviceaccount monitoring-sa -n default
@@ -321,11 +321,11 @@ A: 네, 가능합니다. kubectl config 명령어로 새로운 context를 추가
 
 A: `kubectl create token`으로 발급한 Token은 `--duration` 옵션으로 유효 기간을 설정할 수 있습니다. 기본값은 1시간이며, 최대 87600시간(10년)까지 설정 가능합니다.
 
-### Q3: 여러 클러스터를 관리하려면 어떻게 하나요?
+### Q3: 여러 Cluster를 관리하려면 어떻게 하나요?
 
-A: 각 클러스터별로 다른 `.env.k8s` 파일을 만들고 (예: `.env.k8s.dev`, `.env.k8s.prod`), 각각의 환경 변수를 로드하여 kubectl config 명령어를 실행하면 됩니다.
+A: 각 Cluster별로 다른 `.env.k8s` 파일을 만들고 (예: `.env.k8s.dev`, `.env.k8s.prod`), 각각의 환경 변수를 로드하여 kubectl config 명령어를 실행하면 됩니다.
 
-### Q4: CI/CD 파이프라인에서 어떻게 사용하나요?
+### Q4: CI/CD Pipeline에서 어떻게 사용하나요?
 
 A: GitHub Actions, GitLab CI 등에서 환경 변수로 `K8S_API_SERVER`, `K8S_TOKEN`, `K8S_CA_CERT`를 설정하고, kubectl config 명령어를 실행하면 됩니다.
 

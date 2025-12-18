@@ -11,7 +11,7 @@ author: Dongju Lee
 **테스트 일시**: 2025-11-13
 **테스트 방법**: Chrome DevTools Protocol (CDP) 자동화
 **테스트 대상**: Grafana Golden Signals 대시보드, Kiali 서비스 메시 대시보드
-**클러스터**: titanium-prod (Kubernetes + Istio)
+**Cluster**: titanium-prod (Kubernetes + Istio)
 
 ## 1. Grafana Golden Signals 대시보드 테스트
 
@@ -166,7 +166,7 @@ Graph View에서는 3개 애플리케이션과 2개 서비스만 표시되었으
 - 모든 서비스와 워크로드는 정상적으로 존재하며 실행 중입니다
 - 더 많은 서비스를 Graph View에서 보려면:
   1. 시간 창을 "Last 10 minutes" 또는 "Last 1 hour"로 확대
-  2. "Display idle nodes" 옵션 활성화 (트래픽 없는 노드도 표시)
+  2. "Display idle nodes" 옵션 활성화 (트래픽 없는 Node도 표시)
 
 ### 2.4. 캡처 스크린샷
 - `/tmp/kiali_graph_view_test.png`: Graph View (서비스 토폴로지)
@@ -286,7 +286,7 @@ Kubernetes 환경에서 Golden Signals 대시보드가 정상적으로 동작하
 
 **이슈**:
 - 초기 테스트 시 localhost:30300 접속 실패
-- 해결: 실제 노드 IP 주소 (10.0.11.169) 사용
+- 해결: 실제 Node IP 주소 (10.0.11.169) 사용
 
 ### 3.2. TC-02: 패널 데이터 로딩 상태 확인
 
@@ -436,7 +436,7 @@ sum(container_memory_working_set_bytes{namespace="titanium-prod", pod=~"prod-.*"
 
 | 이슈 | 원인 | 해결 방안 |
 |---|---|---|
-| localhost 접속 실패 | NodePort 서비스가 노드 IP로만 접근 가능 | 실제 노드 IP (10.0.11.169) 사용 |
+| localhost 접속 실패 | NodePort 서비스가 Node IP로만 접근 가능 | 실제 Node IP (10.0.11.169) 사용 |
 | 대시보드 검색 미동작 | 대시보드 태그 또는 인덱싱 이슈 가능성 | UID를 사용한 직접 URL 접근 |
 | 시간 범위 옵션 클릭 타임아웃 | UI 응답 지연 | ESC 키로 대화상자 닫기 후 재시도 |
 
@@ -503,7 +503,7 @@ Istio 서비스 메시 환경에서 Kiali 대시보드가 정상적으로 동작
 - **인증 방식**: anonymous
 
 ### 1.3. 테스트 대상 기능
-1. Overview - 네임스페이스 및 애플리케이션 개요
+1. Overview - Namespace 및 애플리케이션 개요
 2. Graph View - 서비스 메시 토폴로지 시각화
 3. Applications View - 애플리케이션 목록 및 상태
 4. Istio Config - Istio 리소스 설정 검증
@@ -512,7 +512,7 @@ Istio 서비스 메시 환경에서 Kiali 대시보드가 정상적으로 동작
 
 | 테스트 케이스 | 상태 | 비고 |
 |---|---|---|
-| TC-01: Overview 페이지 확인 | 성공 | titanium-prod 네임스페이스 7개 애플리케이션 확인 |
+| TC-01: Overview 페이지 확인 | 성공 | titanium-prod Namespace 7개 애플리케이션 확인 |
 | TC-02: Graph View 서비스 토폴로지 | 성공 | 트래픽 흐름 및 메트릭 정상 표시 |
 | TC-03: Applications View 탐색 | 성공 | 7개 애플리케이션 및 Istio 설정 확인 |
 | TC-04: Istio Config 검증 | 성공 | VirtualService, PeerAuthentication 확인 |
@@ -524,15 +524,15 @@ Istio 서비스 메시 환경에서 Kiali 대시보드가 정상적으로 동작
 **테스트 절차**:
 1. Kiali URL (http://10.0.11.169:30164) 접속
 2. Overview 페이지 로딩 확인
-3. titanium-prod 네임스페이스 상태 확인
+3. titanium-prod Namespace 상태 확인
 
 **결과**: 성공
 
 **관찰 사항**:
-- titanium-prod 네임스페이스에 7개 애플리케이션 확인
+- titanium-prod Namespace에 7개 애플리케이션 확인
 - mTLS 상태: 전체 활성화 (Full dark icon)
 - Inbound traffic 표시 정상
-- istio-system 네임스페이스에 6개 컨트롤 플레인 애플리케이션 확인
+- istio-system Namespace에 6개 컨트롤 플레인 애플리케이션 확인
 
 **확인된 애플리케이션**:
 1. api-gateway
@@ -547,7 +547,7 @@ Istio 서비스 메시 환경에서 Kiali 대시보드가 정상적으로 동작
 
 **테스트 절차**:
 1. Graph View로 이동
-2. titanium-prod 네임스페이스 선택
+2. titanium-prod Namespace 선택
 3. Display 옵션에서 Response Time(95th Percentile) 활성화
 4. Traffic Animation 활성화
 5. 서비스 간 트래픽 흐름 확인
@@ -566,20 +566,20 @@ Graph Summary:
 ```
 
 **Graph View 주요 기능 확인**:
-- 서비스 노드 시각화: 정상
+- 서비스 Node 시각화: 정상
 - 트래픽 애니메이션: 정상 작동
 - Response Time 표시: P95 메트릭 정상 표시
 - 엣지 상태: 모두 녹색 (정상 통신)
 
 **이슈**:
 - "Select Namespaces" 버튼 클릭 시 Overview 페이지로 리디렉션됨
-- 해결: URL 직접 접근으로 네임스페이스 선택 (`?namespaces=titanium-prod`)
+- 해결: URL 직접 접근으로 Namespace 선택 (`?namespaces=titanium-prod`)
 
 ### 3.3. TC-03: Applications View 애플리케이션 목록
 
 **테스트 절차**:
 1. Applications View로 이동
-2. titanium-prod 네임스페이스의 애플리케이션 목록 확인
+2. titanium-prod Namespace의 애플리케이션 목록 확인
 3. 각 애플리케이션의 Istio 설정 확인
 
 **결과**: 성공
@@ -605,7 +605,7 @@ Graph Summary:
 
 **테스트 절차**:
 1. Istio Config View로 이동
-2. titanium-prod 네임스페이스의 Istio 리소스 목록 확인
+2. titanium-prod Namespace의 Istio 리소스 목록 확인
 3. 주요 리소스 상세 확인:
    - VirtualService: prod-titanium-vs
    - PeerAuthentication: prod-default-mtls
@@ -627,7 +627,7 @@ Graph Summary:
 #### PeerAuthentication (3개)
 1. **prod-default-mtls**
    - **mTLS Mode: STRICT**
-   - 용도: titanium-prod 네임스페이스 전체에 STRICT mTLS 적용
+   - 용도: titanium-prod Namespace 전체에 STRICT mTLS 적용
    - Namespace-wide 정책
 
 2. **prod-postgresql-mtls-disable**
@@ -659,7 +659,7 @@ spec:
   mtls:
     mode: STRICT
 ```
-- titanium-prod 네임스페이스의 모든 워크로드에 STRICT mTLS 적용
+- titanium-prod Namespace의 모든 워크로드에 STRICT mTLS 적용
 - 모든 서비스 간 통신이 상호 TLS 인증 필요
 - Overview 페이지에서 전체 mTLS 활성화 아이콘(full dark) 확인
 
@@ -675,7 +675,7 @@ spec:
 
 | 이슈 | 원인 | 해결 방안 |
 |---|---|---|
-| Namespace 선택 버튼 미동작 | UI 버그 또는 설정 문제 | URL 파라미터로 직접 네임스페이스 지정 |
+| Namespace 선택 버튼 미동작 | UI 버그 또는 설정 문제 | URL 파라미터로 직접 Namespace 지정 |
 
 ### 5.2. 개선 권장 사항
 
@@ -774,8 +774,8 @@ Kiali 대시보드는 Istio 서비스 메시의 상태를 효과적으로 시각
 
 ### 시스템 정보
 - **접속 URL**: http://10.0.11.168:31304/blog/
-- **배포 환경**: Solid Cloud Kubernetes 클러스터
-- **네임스페이스**: titanium-prod
+- **배포 환경**: Solid Cloud Kubernetes Cluster
+- **Namespace**: titanium-prod
 - **서비스**: Blog Service (Python FastAPI + Jinja2 템플릿)
 - **Pod 상태**: 2/2 Running (Istio Sidecar 포함)
 
@@ -1131,9 +1131,9 @@ Blog Service UI는 **전반적으로 안정적이고 사용자 친화적**입니
 - `/tmp/uiux_test_scenarios.txt`: Gemini가 생성한 전체 테스트 시나리오
 
 ### 관련 문서
-- [시스템 아키텍처](../02-architecture/architecture.md)
-- [운영 가이드](./operations-guide.md)
-- [프로젝트 회고](../07-retrospective/project-retrospective.md)
+- [시스템 아키텍처](../../02-architecture/architecture.md)
+- [운영 가이드](../guides/operations-guide.md)
+- [프로젝트 회고](../../08-retrospective/project-retrospective.md)
 
 ### 외부 참고
 - [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/)

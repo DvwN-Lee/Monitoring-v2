@@ -20,7 +20,7 @@ Prometheus에 정의된 알림 규칙(Alerting Rule)이 임계값을 초과하�
 
 ## 3. 원인 분석
 
-Solid Cloud 클러스터 환경에서 발생한 이 문제의 원인은 다음과 같이 추정되었습니다.
+Solid Cloud Cluster 환경에서 발생한 이 문제의 원인은 다음과 같이 추정되었습니다.
 
 1.  **Prometheus-Alertmanager 연결 오류**: Prometheus 설정 파일(`prometheus.yml`)에 Alertmanager의 서비스 주소가 잘못 설정되었거나, 네트워크 정책(Network Policy)에 의해 통신이 차단되었을 수 있습니다.
 2.  **Alertmanager 라우팅(Routing) 설정 오류**: Alertmanager의 `config.yml`에서 `route` 설정이 잘못되어 Firing된 알림이 적절한 `receiver`로 전달되지 못했을 수 있습니다. 예를 들어, `match` 또는 `match_re` 조건이 레이블과 일치하지 않는 경우입니다.
@@ -45,7 +45,7 @@ Solid Cloud 클러스터 환경에서 발생한 이 문제의 원인은 다음�
 
 ### 3단계: Alertmanager ConfigMap의 Route 및 Receiver 설정 검증
 
-- Kubernetes 클러스터에서 Alertmanager의 ConfigMap을 확인합니다. (`alertmanager-main` 등)
+- Kubernetes Cluster에서 Alertmanager의 ConfigMap을 확인합니다. (`alertmanager-main` 등)
 - `data.alertmanager.yml` 파일의 내용을 검토합니다.
     - `route`의 `group_by`, `group_wait`, `group_interval` 등 기본 설정을 확인합니다.
     - 하위 `routes`에서 알림의 레이블(예: `severity`, `alertname`)과 `match` 조건이 올바르게 설정되어 원하는 `receiver`로 연결되는지 검증합니다.

@@ -43,9 +43,9 @@ Events:
 
 ## 3. 원인 분석
 
-1.  **Pod 리소스 요청(requests) 미설정**: HPA가 CPU 또는 메모리 사용률(utilization)을 기준으로 스케일링하려면, 대상 Pod의 컨테이너에 반드시 해당 리소스의 `requests` 값이 설정되어 있어야 합니다. HPA는 `(현재 사용량 / 요청량)` 공식을 통해 사용률을 계산하는데, `requests`가 없으면 분모가 0이 되므로 계산이 불가능합니다. `describe hpa` 이벤트의 `missing request for cpu` 메시지가 이 경우에 해당합니다.
+1.  **Pod 리소스 요청(requests) 미설정**: HPA가 CPU 또는 메모리 사용률(utilization)을 기준으로 스케일링하려면, 대상 Pod의 Container에 반드시 해당 리소스의 `requests` 값이 설정되어 있어야 합니다. HPA는 `(현재 사용량 / 요청량)` 공식을 통해 사용률을 계산하는데, `requests`가 없으면 분모가 0이 되므로 계산이 불가능합니다. `describe hpa` 이벤트의 `missing request for cpu` 메시지가 이 경우에 해당합니다.
 
-2.  **Metrics Server 비정상 동작**: HPA는 메트릭 수집을 위해 Metrics Server에 의존합니다. 만약 Metrics Server가 클러스터에 설치되지 않았거나, 설치되었더라도 Kubelet 통신 문제, TLS 인증서 오류 등으로 정상 동작하지 않으면 HPA는 메트릭을 가져올 수 없습니다. 이 경우 `kubectl top nodes` 명령어 또한 실패합니다.
+2.  **Metrics Server 비정상 동작**: HPA는 메트릭 수집을 위해 Metrics Server에 의존합니다. 만약 Metrics Server가 Cluster에 설치되지 않았거나, 설치되었더라도 Kubelet 통신 문제, TLS 인증서 오류 등으로 정상 동작하지 않으면 HPA는 메트릭을 가져올 수 없습니다. 이 경우 `kubectl top nodes` 명령어 또한 실패합니다.
 
 3.  **HPA와 대상 리소스 간의 레이블/이름 불일치**: HPA의 `scaleTargetRef`에 지정된 Deployment, StatefulSet 등의 이름이나 종류가 실제 대상과 일치하지 않으면 HPA는 어떤 Pod를 타겟으로 해야 할지 찾지 못합니다.
 
@@ -59,7 +59,7 @@ Events:
 
 #### 2단계: Pod 리소스 요청(requests) 설정
 
-`missing request` 오류가 확인되면, HPA의 대상이 되는 Deployment(또는 StatefulSet 등)의 YAML 설정 파일을 열어 컨테이너 스펙에 `resources.requests`를 추가하거나 수정합니다.
+`missing request` 오류가 확인되면, HPA의 대상이 되는 Deployment(또는 StatefulSet 등)의 YAML 설정 파일을 열어 Container 스펙에 `resources.requests`를 추가하거나 수정합니다.
 
 **Deployment YAML 수정 예시:**
 

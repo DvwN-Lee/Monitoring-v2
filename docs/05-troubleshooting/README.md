@@ -24,7 +24,7 @@
 | 문제 | 증상 | 관련 컴포넌트 | 심각도 | 문서 |
 |------|------|--------------|--------|------|
 | Docker 이미지 캐시 실패 | 빌드 시 Docker 레이어 캐시를 사용하지 못해 빌드 시간이 길어집니다 | Docker, CI/CD Pipeline | Medium | [문서](ci-cd/troubleshooting-docker-cache-failure.md) |
-| DockerHub 로그인 실패 | CI/CD 파이프라인에서 DockerHub에 로그인할 수 없습니다 | DockerHub, CI/CD Pipeline | High | [문서](ci-cd/troubleshooting-dockerhub-login-failure.md) |
+| DockerHub 로그인 실패 | CI/CD Pipeline에서 DockerHub에 로그인할 수 없습니다 | DockerHub, CI/CD Pipeline | High | [문서](ci-cd/troubleshooting-dockerhub-login-failure.md) |
 | GitHub Actions 트리거 실패 | 특정 이벤트(push, PR) 발생 시 워크플로우가 실행되지 않습니다 | GitHub Actions | High | [문서](ci-cd/troubleshooting-github-actions-trigger.md) |
 | Trivy 스캔 타임아웃 | 이미지 취약점 스캔(Trivy) 단계에서 시간 초과가 발생합니다 | Trivy, CI/CD Pipeline | Medium | [문서](ci-cd/troubleshooting-trivy-scan-timeout.md) |
 
@@ -38,16 +38,16 @@
 | 프로토콜 자동 감지 실패 | Istio가 트래픽 프로토콜을 잘못 해석하여 요청이 실패합니다 | Istio, Service | Medium | [문서](istio/troubleshooting-istio-protocol-selection.md) |
 | 속도 제한(Rate Limit) 미적용 | 설정한 속도 제한 규칙이 동작하지 않아 트래픽 제어에 실패합니다 | Istio, EnvoyFilter | Medium | [문서](istio/troubleshooting-istio-rate-limiting.md) |
 | Go Reverse Proxy와 라우팅 충돌 | Go로 구현된 리버스 프록시와 Istio 라우팅 규칙 간 충돌이 발생합니다 | Istio, Go | High | [문서](istio/troubleshooting-istio-routing-with-go-reverseproxy.md) |
-| Sidecar 컨테이너 CrashLoop | `istio-proxy` 컨테이너가 반복적으로 재시작됩니다 | Istio, Sidecar Injector | High | [문서](istio/troubleshooting-istio-sidecar-crashloop.md) |
+| Sidecar Container CrashLoop | `istio-proxy` Container가 반복적으로 재시작됩니다 | Istio, Sidecar Injector | High | [문서](istio/troubleshooting-istio-sidecar-crashloop.md) |
 
 ## Kubernetes
 
 | 문제 | 증상 | 관련 컴포넌트 | 심각도 | 문서 |
 |------|------|--------------|--------|------|
-| ImagePullBackOff | Pod가 컨테이너 이미지를 레지스트리에서 가져오지 못합니다 | Kubernetes, Container Registry | High | [문서](kubernetes/troubleshooting-imagepullbackoff.md) |
+| ImagePullBackOff | Pod가 Container 이미지를 레지스트리에서 가져오지 못합니다 | Kubernetes, Container Registry | High | [문서](kubernetes/troubleshooting-imagepullbackoff.md) |
 | NodePort 서비스 접근 실패 | 외부에서 NodePort를 통해 서비스에 접근할 수 없습니다 | Kubernetes, NodePort Service | Medium | [문서](kubernetes/troubleshooting-nodeport-access-failure.md) |
-| CrashLoopBackOff | Pod 내 컨테이너가 시작 직후 비정상 종료를 반복합니다 | Kubernetes, Application | High | [문서](kubernetes/troubleshooting-pod-crashloopbackoff.md) |
-| ResourceQuota 초과 | 네임스페이스의 리소스 할당량 초과로 새 리소스 생성이 실패합니다 | Kubernetes, ResourceQuota | Medium | [문서](kubernetes/troubleshooting-resourcequota-exceeded.md) |
+| CrashLoopBackOff | Pod 내 Container가 시작 직후 비정상 종료를 반복합니다 | Kubernetes, Application | High | [문서](kubernetes/troubleshooting-pod-crashloopbackoff.md) |
+| ResourceQuota 초과 | Namespace의 리소스 할당량 초과로 새 리소스 생성이 실패합니다 | Kubernetes, ResourceQuota | Medium | [문서](kubernetes/troubleshooting-resourcequota-exceeded.md) |
 | 서비스 엔드포인트 누락 | Service가 Pod에 연결되지 않아 엔드포인트가 없습니다 | Kubernetes, Service, Endpoints | High | [문서](kubernetes/troubleshooting-service-endpoint-missing.md) |
 
 ## Monitoring
@@ -60,6 +60,7 @@
 | 인증 서비스 높은 지연 시간 | 인증 관련 API 요청의 응답 시간이 비정상적으로 높습니다 | Auth Service, Monitoring | High | [문서](monitoring/troubleshooting-high-latency-on-auth-service.md) |
 | HPA 메트릭 수집 실패 | HPA가 스케일링에 필요한 메트릭을 수집하지 못합니다 | Kubernetes HPA, Metrics Server | High | [문서](monitoring/troubleshooting-hpa-metrics-failure.md) |
 | 부정확한 Latency 백분위수 | 모니터링 시스템에서 집계된 지연 시간 백분위수 값이 실제와 다릅니다 | Prometheus, App Metrics | Medium | [문서](monitoring/troubleshooting-inaccurate-latency-percentiles.md) |
+| Kiali 그래프 빈 화면 | Kiali UI에서 트래픽 그래프가 표시되지 않습니다 | Kiali, Prometheus | Medium | [문서](monitoring/troubleshooting-kiali-empty-graph.md) |
 | Loki 로그 수집 실패 | Log agent가 로그를 수집하여 Loki로 전송하지 못합니다 | Loki, Promtail | High | [문서](monitoring/troubleshooting-loki-log-collection-failure.md) |
 | Metrics Server 실패 | `kubectl top`, HPA 등이 메트릭 부족으로 작동하지 않습니다 | Kubernetes, Metrics Server | High | [문서](monitoring/troubleshooting-metrics-server-failure.md) |
 | Prometheus 메트릭 수집 실패 | Prometheus가 타겟 서비스의 메트릭을 수집(scrape)하지 못합니다 | Prometheus, Service Discovery | High | [문서](monitoring/troubleshooting-prometheus-metric-collection-failure.md) |
@@ -87,7 +88,7 @@
 
 ### 통계
 
-- **전체 문제 해결 건수**: 32건
+- **전체 문제 해결 건수**: 33건
 - **카테고리**: 6개 (Application, ArgoCD, CI/CD, Istio, Kubernetes, Monitoring)
 - **평균 해결 시간**: 1-4시간 (문제 복잡도에 따라 상이)
 - **재발 건수**: 0건 (모든 문제에 대한 예방책 적용)

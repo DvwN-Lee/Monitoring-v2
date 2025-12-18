@@ -8,7 +8,7 @@ author: Dongju Lee
 
 ## 1. 문제 상황
 
-Argo CD UI에서 관리 중인 Application의 상태가 초록색 `Synced`가 아닌 노란색 `OutOfSync`로 표시되는 문제가 발생했습니다. 이는 Git 리포지토리에 정의된 의도된 상태(Desired State)와 현재 Kubernetes 클러스터에 배포된 실제 상태(Live State)가 일치하지 않음을 의미하며, GitOps의 핵심 원칙이 깨졌다는 신호입니다.
+Argo CD UI에서 관리 중인 Application의 상태가 초록색 `Synced`가 아닌 노란색 `OutOfSync`로 표시되는 문제가 발생했습니다. 이는 Git 리포지토리에 정의된 의도된 상태(Desired State)와 현재 Kubernetes Cluster에 배포된 실제 상태(Live State)가 일치하지 않음을 의미하며, GitOps의 핵심 원칙이 깨졌다는 신호입니다.
 
 ## 2. 증상
 
@@ -19,10 +19,10 @@ Argo CD UI에서 관리 중인 Application의 상태가 초록색 `Synced`가 �
 
 ## 3. 원인 분석
 
-`OutOfSync` 상태는 Git과 클러스터 간의 불일치를 의미하며, 다양한 원인으로 발생할 수 있습니다.
+`OutOfSync` 상태는 Git과 Cluster 간의 불일치를 의미하며, 다양한 원인으로 발생할 수 있습니다.
 
 1.  **`kubectl`을 사용한 수동 변경 (가장 흔한 원인)**:
-    *   Git 리포지토리를 통하지 않고, 터미널에서 `kubectl edit deployment <name>`, `kubectl scale --replicas=5 ...`, `kubectl patch ...` 등 명령어를 사용하여 클러스터의 리소스를 직접 변경한 경우입니다. 이는 GitOps 워크플로우를 우회하는 행동으로, Git에 기록된 상태와 실제 상태 간의 불일치를 즉시 유발합니다.
+    *   Git 리포지토리를 통하지 않고, 터미널에서 `kubectl edit deployment <name>`, `kubectl scale --replicas=5 ...`, `kubectl patch ...` 등 명령어를 사용하여 Cluster의 리소스를 직접 변경한 경우입니다. 이는 GitOps 워크플로우를 우회하는 행동으로, Git에 기록된 상태와 실제 상태 간의 불일치를 즉시 유발합니다.
 
 2.  **자동 동기화(Auto-Sync) 비활성화**:
     *   Argo CD Application에 자동 동기화(`automated`) 설정이 되어있지 않은 상태에서, Git 리포지토리에 새로운 변경사항이 푸시된 경우입니다. Argo CD는 변경을 감지하고 `OutOfSync` 상태로 전환하지만, 사용자의 수동 승인(SYNC 버튼 클릭)을 기다리게 됩니다.
@@ -33,7 +33,7 @@ Argo CD UI에서 관리 중인 Application의 상태가 초록색 `Synced`가 �
     *   특정 Operator가 관리하는 CRD(Custom Resource Definition)의 상태를 동적으로 변경하는 경우.
 
 4.  **이전 동기화의 부분적 실패**:
-    *   이전 동기화(Sync) 작업이 네트워크 문제, 권한 부족, 잘못된 매니페스트 등의 이유로 일부 리소스만 적용하고 실패한 경우, 클러스터는 불완전한 상태로 남아 `OutOfSync`가 될 수 있습니다.
+    *   이전 동기화(Sync) 작업이 네트워크 문제, 권한 부족, 잘못된 매니페스트 등의 이유로 일부 리소스만 적용하고 실패한 경우, Cluster는 불완전한 상태로 남아 `OutOfSync`가 될 수 있습니다.
 
 ## 4. 해결 방법
 
@@ -41,12 +41,12 @@ Argo CD UI에서 관리 중인 Application의 상태가 초록색 `Synced`가 �
 
 -   가장 먼저 할 일은 **무엇이 다른지** 확인하는 것입니다.
 -   Argo CD UI에서 `OutOfSync` 상태인 리소스를 클릭하고, 오른쪽의 **DIFF** 탭을 선택합니다.
--   왼쪽(DESIRED)에는 Git에 정의된 상태가, 오른쪽(LIVE)에는 클러스터의 실제 상태가 표시되어 어떤 필드가 다른지 명확하게 비교할 수 있습니다. 이를 통해 `kubectl`로 수정한 부분이나 HPA가 변경한 부분을 정확히 찾아낼 수 있습니다.
+-   왼쪽(DESIRED)에는 Git에 정의된 상태가, 오른쪽(LIVE)에는 Cluster의 실제 상태가 표시되어 어떤 필드가 다른지 명확하게 비교할 수 있습니다. 이를 통해 `kubectl`로 수정한 부분이나 HPA가 변경한 부분을 정확히 찾아낼 수 있습니다.
 
 #### 2단계: 수동 동기화(SYNC) 실행
 
 -   만약 `OutOfSync`의 원인이 Git의 최신 변경사항을 아직 적용하지 않았기 때문이라면, UI 상단의 **SYNC** 버튼을 클릭합니다.
--   동기화 옵션을 확인하고 'Synchronize'를 누르면 Argo CD가 Git의 상태를 클러스터에 적용하여 `Synced` 상태로 만듭니다.
+-   동기화 옵션을 확인하고 'Synchronize'를 누르면 Argo CD가 Git의 상태를 Cluster에 적용하여 `Synced` 상태로 만듭니다.
 
 #### 3단계: `selfHeal` 기능 활성화로 자동 복구 설정
 
@@ -145,12 +145,12 @@ git show HEAD:<path-to-manifest>
 
 ## 6. 교훈
 
-1.  **`OutOfSync`는 GitOps 원칙 위반의 경고등**: 이 상태는 누군가 또는 무언가가 Git이 아닌 다른 방법으로 클러스터를 변경했음을 의미합니다. 클러스터의 모든 변경은 Git을 통해 이루어져야 한다는 원칙을 다시 한번 상기해야 합니다.
+1.  **`OutOfSync`는 GitOps 원칙 위반의 경고등**: 이 상태는 누군가 또는 무언가가 Git이 아닌 다른 방법으로 Cluster를 변경했음을 의미합니다. Cluster의 모든 변경은 Git을 통해 이루어져야 한다는 원칙을 다시 한번 상기해야 합니다.
 2.  **`kubectl` 직접 사용은 신중하게**: 긴급 장애 대응과 같은 예외적인 상황이 아니라면 `kubectl`로 리소스를 직접 수정하는 것은 지양해야 합니다. 만약 수정했다면, 최대한 빨리 해당 변경사항을 Git 리포지토리에도 반영하여 상태를 일치시켜야 합니다.
 3.  **`selfHeal`은 강력하지만 이해가 필요하다**: `selfHeal`은 Git 상태와의 일관성을 강제하는 매우 유용한 기능이지만, 다른 컨트롤러와의 상호작용을 고려하지 않고 사용하면 의도치 않은 롤백을 유발할 수 있습니다. 동작 방식을 정확히 이해하고 적용해야 합니다.
 
 ## 관련 문서
 
-- [시스템 아키텍처 - CI/CD 파이프라인](../../02-architecture/architecture.md#4-cicd-파이프라인)
+- [시스템 아키텍처 - CI/CD Pipeline](../../02-architecture/architecture.md#4-cicd-Pipeline)
 - [운영 가이드 - ArgoCD 운영](../../04-operations/guides/operations-guide.md)
 - [ArgoCD Git 감지 실패](troubleshooting-argocd-git-detection.md)

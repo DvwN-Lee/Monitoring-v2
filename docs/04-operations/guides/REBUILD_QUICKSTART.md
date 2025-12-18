@@ -1,15 +1,15 @@
-# Solid Cloud 클러스터 재구축 빠른 시작 가이드
+# Solid Cloud Cluster 재구축 빠른 시작 가이드
 
 ## 개요
 
-Solid Cloud K8s 클러스터를 백업하고 재구축하는 전체 프로세스를 자동화된 스크립트로 실행하는 가이드입니다.
+Solid Cloud K8s Cluster를 백업하고 재구축하는 전체 프로세스를 자동화된 스크립트로 실행하는 가이드입니다.
 
 ## 사전 요구사항
 
 ### 필수 권한
 
-- [ ] Kubernetes 클러스터 관리자 권한 (cluster-admin)
-- [ ] Solid Cloud API 토큰 (클러스터 생성/삭제)
+- [ ] Kubernetes Cluster 관리자 권한 (cluster-admin)
+- [ ] Solid Cloud API 토큰 (Cluster 생성/삭제)
 - [ ] Terraform state 읽기/쓰기 권한
 
 ```bash
@@ -51,10 +51,10 @@ df -h ~
 
 2. 백업 검증 및 오프사이트 저장
 
-3. 기존 클러스터 삭제
+3. 기존 Cluster 삭제
    └── terraform destroy
 
-4. 새 클러스터 생성
+4. 새 Cluster 생성
    └── Solid Cloud 콘솔 또는 CLI
 
 5. 인프라 재구축
@@ -70,10 +70,10 @@ df -h ~
 
 ## Step 1: 백업 실행
 
-### 1.1 클러스터 연결
+### 1.1 Cluster 연결
 
 ```bash
-# Solid Cloud 클러스터로 연결
+# Solid Cloud Cluster로 연결
 cd ~/Desktop/Git/Monitoring-v2
 
 # kubectl context 전환
@@ -110,7 +110,7 @@ kubectl get pods -n titanium-prod
 다음 단계:
   1. 백업 검증: cat ~/solid-cloud-backup/20250124/BACKUP_MANIFEST.txt
   2. 오프사이트 백업: 외부 저장소로 아카이브 복사
-  3. 클러스터 삭제: terraform destroy (백업 검증 후)
+  3. Cluster 삭제: terraform destroy (백업 검증 후)
   4. 복구: ./scripts/restore-solid-cloud.sh
 ```
 
@@ -153,7 +153,7 @@ cp ~/solid-cloud-backup/solid-cloud-backup-*.tar.gz /Volumes/ExternalDisk/
 
 ---
 
-## Step 2: 기존 클러스터 삭제
+## Step 2: 기존 Cluster 삭제
 
 ### 2.1 최종 확인 체크리스트
 
@@ -189,27 +189,27 @@ terraform destroy
 ### 2.3 Solid Cloud 인스턴스 삭제
 
 ```bash
-# Solid Cloud 콘솔에서 클러스터 삭제
+# Solid Cloud 콘솔에서 Cluster 삭제
 # 또는 CLI 사용:
 # solid-cloud cluster delete <cluster-name>
 ```
 
 ---
 
-## Step 3: 새 클러스터 생성
+## Step 3: 새 Cluster 생성
 
-### 3.1 Solid Cloud에서 새 클러스터 생성
+### 3.1 Solid Cloud에서 새 Cluster 생성
 
 **Solid Cloud 콘솔에서**:
-1. 클러스터 생성 페이지로 이동
-2. 클러스터 설정:
+1. Cluster 생성 페이지로 이동
+2. Cluster 설정:
    - 이름: titanium-cluster (또는 원하는 이름)
    - 리전: kr-seoul
    - Kubernetes 버전: v1.29.7 이상
-   - 노드 수: 3-4개 (기존과 동일)
-   - 노드 타입: 기존과 동일
+   - Node 수: 3-4개 (기존과 동일)
+   - Node 타입: 기존과 동일
 3. 생성 버튼 클릭
-4. 클러스터가 Running 상태가 될 때까지 대기 (5~10분)
+4. Cluster가 Running 상태가 될 때까지 대기 (5~10분)
 
 ### 3.2 kubeconfig 설정
 
@@ -220,8 +220,8 @@ terraform destroy
 # .env.k8s 파일 업데이트
 # ⚠️ 보안: 직접 파일에 작성하지 말고, 보안 방법 사용
 cat > ~/Desktop/Git/Monitoring-v2/.env.k8s << 'EOF'
-# Solid Cloud Kubernetes Credentials (새 클러스터)
-K8S_API_SERVER="https://새클러스터-api-server:6443"
+# Solid Cloud Kubernetes Credentials (새 Cluster)
+K8S_API_SERVER="https://새Cluster-api-server:6443"
 K8S_TOKEN="새로운_서비스_어카운트_토큰"
 K8S_CA_CERT="새로운_CA_인증서_base64"
 K8S_CLUSTER_NAME="solid-cloud"
@@ -250,7 +250,7 @@ kubectl get nodes
 ```bash
 cd ~/Desktop/Git/Monitoring-v2/terraform/environments/solid-cloud
 
-# Terraform 초기화 (새 클러스터용)
+# Terraform 초기화 (새 Cluster용)
 terraform init
 
 # PostgreSQL 비밀번호 설정 (백업 시 사용한 것과 동일하게)
@@ -285,7 +285,7 @@ unset TF_VAR_postgres_password
 ### 4.2 인프라 생성 확인
 
 ```bash
-# 네임스페이스 확인
+# Namespace 확인
 kubectl get namespace titanium-prod
 
 # PostgreSQL 리소스 확인
@@ -333,7 +333,7 @@ ls -d ~/solid-cloud-backup/*/
 ```
 
 **스크립트가 자동으로 수행하는 작업**:
-1. 네임스페이스 생성 및 확인
+1. Namespace 생성 및 확인
 2. Secret 및 ConfigMap 복구
 3. PVC 복구 및 Bound 대기
 4. PostgreSQL StatefulSet 복구
@@ -488,8 +488,8 @@ kubectl top pods -n titanium-prod
 ```
 
 **롤백 조건**:
-- [ ] 노드 CPU 사용률 > 90% 지속
-- [ ] 노드 메모리 사용률 > 95% 지속
+- [ ] Node CPU 사용률 > 90% 지속
+- [ ] Node 메모리 사용률 > 95% 지속
 - [ ] PVC 용량 부족 (사용률 > 90%)
 
 ---
@@ -574,7 +574,7 @@ kubectl get gateway,virtualservice -n titanium-prod
 
 ### Q3: 백업 중에 서비스가 중단되나요?
 
-**A**: 아니요. 백업은 운영 중인 클러스터에서 실행되며, 서비스는 계속 운영됩니다.
+**A**: 아니요. 백업은 운영 중인 Cluster에서 실행되며, 서비스는 계속 운영됩니다.
 - PostgreSQL: `pg_dump`는 읽기 전용 작업으로 서비스에 영향 없음
 - Redis: `SAVE` 명령은 짧은 블로킹이 발생하지만 몇 초 이내
 
@@ -582,7 +582,7 @@ kubectl get gateway,virtualservice -n titanium-prod
 
 **A**: 데이터 중요도에 따라 다르지만, 권장 사항:
 - **매일 자동 백업** (새벽 시간대)
-- **주요 변경 전 수동 백업** (클러스터 업그레이드, 마이그레이션 등)
+- **주요 변경 전 수동 백업** (Cluster 업그레이드, 마이그레이션 등)
 - **월 1회 복구 테스트** (백업 유효성 검증)
 
 ### Q5: 백업 파일을 어디에 저장해야 하나요?
@@ -597,7 +597,7 @@ kubectl get gateway,virtualservice -n titanium-prod
 ## 체크리스트
 
 ### 백업 체크리스트
-- [ ] 클러스터 연결 확인
+- [ ] Cluster 연결 확인
 - [ ] 백업 스크립트 실행 완료
 - [ ] 백업 매니페스트 확인
 - [ ] PostgreSQL 백업 파일 검증
@@ -607,8 +607,8 @@ kubectl get gateway,virtualservice -n titanium-prod
 
 ### 재구축 체크리스트
 - [ ] 백업 검증 완료
-- [ ] 기존 클러스터 삭제 완료
-- [ ] 새 클러스터 생성 완료
+- [ ] 기존 Cluster 삭제 완료
+- [ ] 새 Cluster 생성 완료
 - [ ] kubeconfig 설정 완료
 - [ ] Terraform apply 성공
 - [ ] 인프라 리소스 생성 확인

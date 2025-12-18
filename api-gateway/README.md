@@ -9,7 +9,7 @@
 - **요청 라우팅 (Request Routing)**: `/api/` 경로로 들어온 요청의 세부 경로를 분석하여 `auth-service`, `user-service`, `blog-service` 등 적절한 마이크로서비스로 전달
 - **경로 재작성 (Path Rewriting)**: 일부 요청에 대해 외부에서 사용하는 경로를 내부 서비스가 이해하는 경로로 변환 (예: `/api/register` -> `/users`)
 - **안정성 확보 (Stability)**: 내부 서비스 호출 시와 클라이언트 요청 수신 시에 각각 타임아웃을 설정하여 특정 서비스의 장애가 전체 시스템으로 전파되는 것을 방지
-- **헬스 체크 및 모니터링 지원**: 쿠버네티스와 같은 오케스트레이션 도구를 위한 헬스 체크(`- /health`) 엔드포인트와, `load-balancer`가 서비스 상태를 수집할 수 있도록 간단한 통계(`- /stats`) 엔드포인트를 제공
+- **헬스 체크 및 모니터링 지원**: Kubernetes와 같은 오케스트레이션 도구를 위한 헬스 체크(`- /health`) 엔드포인트와, `load-balancer`가 서비스 상태를 수집할 수 있도록 간단한 통계(`- /stats`) 엔드포인트를 제공
 
 ## 3. 기술적 구현 (main.go)
 - API 게이트웨이는 Go의 표준 라이브러리인 `net/http`와 `net/http/httputil`을 사용하여 효율적인 리버스 프록시 서버를 구현
@@ -59,15 +59,15 @@ mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
 |`/health`|`GET`|서비스의 상태를 확인하는 헬스 체크 엔드포인트입니다. 항상 200 OK를 반환|
 |`/stats`|`GET`|load-balancer가 모니터링을 위해 사용하는 통계 엔드포인트, `{ "api-gateway": { "service_status": "online" } }` 형식의 JSON을 반환|
 
-## 5. 컨테이너화 (Dockerfile)
-API 게이트웨이는 효율적인 배포를 위해 `Multi-stage Docker build`를 사용, 이를 통해 Go 런타임이나 운영체제 도구가 포함되지 않은 초경량(ultra-lightweight)의 보안성이 높은 컨테이너 이미지를 만듦
+## 5. Container화 (Dockerfile)
+API 게이트웨이는 효율적인 배포를 위해 `Multi-stage Docker build`를 사용, 이를 통해 Go 런타임이나 운영체제 도구가 포함되지 않은 초경량(ultra-lightweight)의 보안성이 높은 Container 이미지를 만듦
 
 - Build Stage: `golang:1.24-alpine` 이미지를 기반으로 소스 코드를 정적 바이너리 파일(- /server)로 컴파일
 
 - Final Stage: `scratch 이미지(매우 작은 이미지)`에 빌드된 바이너리 파일 하나만 복사하여 최종 이미지를 생성
 
 6. 설정
-API 게이트웨이는 아래 `환경 변수`를 통해 설정을 관리, 해당 값들은 쿠버네티스 `ConfigMap` 또는 `docker-compose.yml` 파일을 통해 주입됨
+API 게이트웨이는 아래 `환경 변수`를 통해 설정을 관리, 해당 값들은 Kubernetes `ConfigMap` 또는 `docker-compose.yml` 파일을 통해 주입됨
 
 - **API_GATEWAY_PORT**: 게이트웨이 서버가 실행될 `포트(기본값: 8000)`
 

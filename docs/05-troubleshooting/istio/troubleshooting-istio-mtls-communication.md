@@ -12,7 +12,7 @@ Istio `PeerAuthentication`을 `STRICT` 모드로 설정한 후, 서비스 간 �
 ## 증상
 - 클라이언트 서비스에서 서버 서비스로 요청 시 503 Service Unavailable 에러가 발생합니다.
 - Envoy 프록시 로그에서 `upstream connect error or disconnect/reset before headers`와 같은 메시지가 나타납니다.
-- `kubectl logs <pod-name> -c istio-proxy` 명령으로 istio-proxy 컨테이너의 로그를 확인하면 TLS 핸드셰이크 실패 또는 인증서 관련 오류 메시지를 발견할 수 있습니다.
+- `kubectl logs <pod-name> -c istio-proxy` 명령으로 istio-proxy Container의 로그를 확인하면 TLS 핸드셰이크 실패 또는 인증서 관련 오류 메시지를 발견할 수 있습니다.
 
 ## 원인 분석
 1.  **DestinationRule 누락 또는 mTLS 모드 불일치**: `PeerAuthentication`이 `STRICT` 모드로 설정되면, 클라이언트 측 서비스는 서버 서비스로 요청을 보낼 때 mTLS를 사용해야 합니다. 이때 클라이언트 측에 해당 서버 서비스로의 트래픽에 대해 mTLS를 활성화하도록 지시하는 `DestinationRule`이 없거나, `mTLS` 모드가 일치하지 않으면 통신이 실패합니다.
@@ -53,7 +53,7 @@ kubectl get peerauthentication -n <namespace> -o yaml
 ```bash
 kubectl get pod -n <namespace> -l app=<service-label> -o yaml | grep 'istio-proxy'
 ```
-`istio-proxy` 컨테이너가 존재하고, Pod의 READY 상태가 `2/2`인지 확인합니다. Sidecar가 주입되지 않은 Pod가 있다면, 해당 Deployment/Pod에 Sidecar 자동 주입이 활성화되어 있는지 확인하고 필요한 경우 수동으로 주입합니다.
+`istio-proxy` Container가 존재하고, Pod의 READY 상태가 `2/2`인지 확인합니다. Sidecar가 주입되지 않은 Pod가 있다면, 해당 Deployment/Pod에 Sidecar 자동 주입이 활성화되어 있는지 확인하고 필요한 경우 수동으로 주입합니다.
 
 ## 검증
 - `DestinationRule` 및 `PeerAuthentication` 설정을 수정한 후, 관련 서비스의 Pod를 재시작합니다.

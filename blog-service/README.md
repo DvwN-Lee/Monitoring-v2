@@ -48,9 +48,9 @@
 |`/blog/*`|`GET`|블로그 SPA (`index.html`)를 렌더링. 클라이언트 사이드 라우팅을 지원|
 |`/blog/static/*`|`GET`|JavaScript, CSS 등 정적 파일을 제공|
 
-## 6. 컨테이너화 (`Dockerfile`)
+## 6. Container화 (`Dockerfile`)
 - **베이스 이미지**: `python:3.11-slim`을 사용하여 경량화된 이미지를 생성
-- **정적 파일 포함**: `templates`와 `static` 디렉터리를 컨테이너 이미지 안으로 복사하여, 서비스가 직접 웹 UI를 서빙할 수 있도록 함
+- **정적 파일 포함**: `templates`와 `static` 디렉터리를 Container 이미지 안으로 복사하여, 서비스가 직접 웹 UI를 서빙할 수 있도록 함
 - **애플리케이션 실행**: `uvicorn` ASGI 서버를 사용하여 `8005` 포트에서 FastAPI 앱을 실행
 
 ## 7. 설정

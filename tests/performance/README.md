@@ -201,12 +201,12 @@ k6 테스트 결과에서 주요 확인 지표:
 ### k6가 설치되지 않았습니다
 위의 "k6 설치" 섹션을 참고하여 k6를 설치하거나, Docker를 사용하세요.
 
-### 클러스터에 접근할 수 없습니다
+### Cluster에 접근할 수 없습니다
 ```bash
 # Kubernetes 컨텍스트 확인
 kubectl config current-context
 
-# 클러스터 상태 확인
+# Cluster 상태 확인
 kubectl cluster-info
 ```
 

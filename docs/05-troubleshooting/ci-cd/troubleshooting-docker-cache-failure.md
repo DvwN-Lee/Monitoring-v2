@@ -8,7 +8,7 @@ author: Dongju Lee
 
 ## 1. 문제 상황
 
-소스 코드의 주석이나 README 파일 등 아주 작은 부분만 수정했음에도 불구하고, GitHub Actions CI 파이프라인에서 `docker build` 명령이 실행될 때 모든 레이어(layer)를 처음부터 다시 빌드하는 문제가 발생했습니다. 이로 인해 매번 빌드 시간이 불필요하게 길어져(10분 이상 소요) CI 실행 효율이 크게 저하되었습니다.
+소스 코드의 주석이나 README 파일 등 아주 작은 부분만 수정했음에도 불구하고, GitHub Actions CI Pipeline에서 `docker build` 명령이 실행될 때 모든 레이어(layer)를 처음부터 다시 빌드하는 문제가 발생했습니다. 이로 인해 매번 빌드 시간이 불필요하게 길어져(10분 이상 소요) CI 실행 효율이 크게 저하되었습니다.
 
 ## 2. 증상
 
@@ -174,5 +174,5 @@ git push
 
 ## 관련 문서
 
-- [시스템 아키텍처 - CI/CD 파이프라인](../../02-architecture/architecture.md#4-cicd-파이프라인)
+- [시스템 아키텍처 - CI/CD Pipeline](../../02-architecture/architecture.md#4-cicd-Pipeline)
 - [운영 가이드](../../04-operations/guides/operations-guide.md)

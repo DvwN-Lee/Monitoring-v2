@@ -162,13 +162,13 @@ graph TB
 
 1. **CI Pipeline (GitHub Actions)**
    - 코드 Push 시 자동으로 빌드, 테스트, 보안 스캔 수행
-   - 컨테이너 이미지를 빌드하여 레지스트리에 Push
+   - Container 이미지를 빌드하여 레지스트리에 Push
    - GitOps Config 저장소의 이미지 태그를 자동 업데이트
 
 2. **CD Pipeline (Argo CD)**
    - GitOps Config 변경을 감지하여 자동 동기화
-   - Kubernetes 클러스터에 모든 리소스를 선언적으로 배포
-   - 실제 이미지 Pull은 Kubernetes 노드의 Kubelet이 수행
+   - Kubernetes Cluster에 모든 리소스를 선언적으로 배포
+   - 실제 이미지 Pull은 Kubernetes Node의 Kubelet이 수행
 
 3. **Service Mesh (Istio)**
    - 모든 서비스 간 통신을 mTLS로 자동 암호화
@@ -195,15 +195,15 @@ graph TB
 
 ### 2.3. 네트워크 구조
 
-#### Kubernetes 클러스터 구성
-- **네임스페이스 구조**
+#### Kubernetes Cluster 구성
+- **Namespace 구조**
   - `titanium-prod`: 애플리케이션 서비스
   - `monitoring`: Prometheus, Grafana, Loki
   - `istio-system`: Istio 컴포넌트
   - `argocd`: Argo CD
 
 #### 서비스 통신
-- **외부 → 클러스터**: Istio Ingress Gateway (NodePort)
+- **외부 → Cluster**: Istio Ingress Gateway (NodePort)
 - **서비스 간**: Istio Service Mesh (mTLS 암호화)
 - **DB 접근**: 각 서비스 → PostgreSQL Service
 
@@ -242,7 +242,7 @@ graph TB
   - 역할: 1초마다 API Gateway, Auth Service, Blog Service로 HTTP 요청 전송
   - 배포: 2개 replica로 지속적인 트래픽 생성
   - 목적: Grafana 대시보드의 실시간 메트릭 시각화 및 모니터링 시스템 검증
-  - 기술: curl 기반 컨테이너 (Istio sidecar 주입)
+  - 기술: curl 기반 Container (Istio sidecar 주입)
 
 ### 3.4. 서비스 간 통신 흐름
 
@@ -311,9 +311,9 @@ sequenceDiagram
 
 ---
 
-## 4. CI/CD 파이프라인
+## 4. CI/CD Pipeline
 
-### 4.1. CI 파이프라인 (GitHub Actions)
+### 4.1. CI Pipeline (GitHub Actions)
 
 **트리거**: `main` 브랜치에 코드 Push
 
@@ -380,13 +380,13 @@ flowchart TD
    - HIGH/CRITICAL 발견 시 빌드 실패
 
 4. **Push**
-   - 컨테이너 레지스트리에 이미지 업로드
+   - Container 레지스트리에 이미지 업로드
 
 5. **Update Manifests**
    - GitOps 저장소의 이미지 태그 업데이트
    - 자동 커밋 및 푸시
 
-### 4.2. CD 파이프라인 (Argo CD)
+### 4.2. CD Pipeline (Argo CD)
 
 ```mermaid
 flowchart TD
@@ -473,13 +473,13 @@ flowchart TD
 
 **주요 대시보드**:
 - Golden Signals (Latency, Traffic, Errors, Saturation)
-- Kubernetes 클러스터 상태
+- Kubernetes Cluster 상태
 - 서비스별 상세 메트릭
 
 ### 5.2. Loki + Promtail (로그)
 
 **로그 수집 방식**:
-- Promtail이 각 노드에서 컨테이너 로그 수집
+- Promtail이 각 Node에서 Container 로그 수집
 - Loki에 저장 후 Grafana에서 조회
 
 **장점**:
@@ -515,16 +515,16 @@ flowchart TD
 **목적**: 개발 및 테스트 환경
 
 **구성**:
-- Kubernetes 클러스터: 3 노드
-- 네임스페이스: 기능별로 분리
+- Kubernetes Cluster: 3 Node
+- Namespace: 기능별로 분리
 - 리소스 제한: 각 서비스별 CPU/메모리 제한 설정
 
 ### 7.2. AWS 전환 고려사항
 
 **Solid Cloud 테스트 완료 후 AWS 배포 시 변경 사항**:
-- EKS 클러스터 사용
+- EKS Cluster 사용
 - AWS ALB를 Ingress Controller로 사용
-- ECR을 컨테이너 레지스트리로 사용
+- ECR을 Container 레지스트리로 사용
 - RDS를 PostgreSQL로 사용 (선택사항)
 
 ---

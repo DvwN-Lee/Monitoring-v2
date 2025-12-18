@@ -11,7 +11,7 @@ Cloud-Native 마이크로서비스 플랫폼 v2.0은 로컬 환경(Minikube)에�
 
 ### 목표
 - Terraform을 이용한 Infrastructure as Code 구현
-- GitOps 기반 CI/CD 파이프라인 구축
+- GitOps 기반 CI/CD Pipeline 구축
 - Istio Service Mesh 적용 (mTLS STRICT)
 - Prometheus + Grafana + Loki 관측성 시스템 구축
 - 성능 최적화 및 보안 강화
@@ -26,7 +26,7 @@ Cloud-Native 마이크로서비스 플랫폼 v2.0은 로컬 환경(Minikube)에�
 - **Troubleshooting 가이드 30건+**: 실제 발생한 문제와 해결 방법을 카테고리별로 체계적으로 정리
 - **단계별 문서 구조**: 계획(01-planning) → 설계(02-architecture) → 구현(03-implementation) → 운영(04-operations)으로 프로젝트 진행 과정을 시간순으로 기록
 
-### 2.2 GitOps 기반 자동화 파이프라인
+### 2.2 GitOps 기반 자동화 Pipeline
 
 - **GitHub Actions + Argo CD**: Git Push 후 5분 이내 자동 배포 달성
 - **보안 스캔 자동화**: Trivy를 활용한 Docker Image 취약점 스캔
@@ -166,7 +166,7 @@ Cloud-Native 마이크로서비스 플랫폼 v2.0은 로컬 환경(Minikube)에�
 
 Cloud-Native 마이크로서비스 플랫폼 v2.0 프로젝트는 Terraform IaC, GitOps CI/CD, Istio Service Mesh, Prometheus/Grafana 관측성을 성공적으로 구축한 프로젝트입니다.
 
-특히 Phase 1+2 보안/성능 개선을 통해 P95 Latency 74.76ms, Error Rate 0.01%를 달성하여 프로덕션 수준의 성능과 안정성을 확보했습니다.
+특히 보안/성능 개선을 통해 P95 Latency 74.76ms, Error Rate 0.01%를 달성하여 프로덕션 수준의 성능과 안정성을 확보했습니다.
 
 체계적인 문서화와 트러블슈팅 가이드 작성을 통해 프로젝트 진행 과정과 의사결정 근거를 명확히 기록했으며, 이는 향후 유지보수 및 확장에 큰 도움이 될 것입니다.
 

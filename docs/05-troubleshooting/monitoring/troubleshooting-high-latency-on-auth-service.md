@@ -199,7 +199,7 @@ chmod +x test_register_latency.sh
 # 예상 결과: 200-300ms
 ```
 
-### 2. 클러스터 배포 및 테스트
+### 2. Cluster 배포 및 테스트
 
 ```bash
 # 이미지 빌드
@@ -297,7 +297,7 @@ def test_password_hashing_performance():
     assert elapsed < 300, f"Password hashing took {elapsed:.2f}ms, expected < 300ms"
 ```
 
-### 2. CI/CD 파이프라인에 성능 테스트 추가
+### 2. CI/CD Pipeline에 성능 테스트 추가
 
 ```yaml
 # .github/workflows/ci.yml
@@ -364,7 +364,7 @@ groups:
 
 - 로컬 개발 환경 (M1 Mac): 100,000회 → 150ms
 - 클라우드 VM (2 vCPU): 100,000회 → 250ms
-- 컨테이너 제한 (0.5 CPU): 100,000회 → 400ms
+- Container 제한 (0.5 CPU): 100,000회 → 400ms
 
 CPU 리소스에 따라 적절한 반복 횟수 조정 필요.
 

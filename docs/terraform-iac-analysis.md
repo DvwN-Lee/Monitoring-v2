@@ -19,7 +19,7 @@ Terraform IaC 구성을 전체 분석한 결과, **3개의 잠재적 문제**를
 
 | 카테고리 | 리소스 수 | 주요 리소스 |
 |---------|----------|------------|
-| CloudStack 인프라 | 11개 | Network, Firewall, k3s Master/Worker 노드, Public IP |
+| CloudStack 인프라 | 11개 | Network, Firewall, k3s Master/Worker Node, Public IP |
 | Kubernetes 기본 | 4개 | 3개 Namespace, ResourceQuota |
 | PostgreSQL Stack | 5개 | Secret, ConfigMap, PVC, StatefulSet, Service |
 | Application | 1개 | prod-app-secrets |
@@ -30,7 +30,7 @@ Terraform IaC 구성을 전체 분석한 결과, **3개의 잠재적 문제**를
 - **Terraform State**: 127KB, 최신 상태 (12월 15일)
 - **Master Public IP**: 10.0.1.70
 - **Kubernetes Version**: v1.33.6+k3s1
-- **노드 구성**: 1 Master + 2 Workers
+- **Node 구성**: 1 Master + 2 Workers
 
 ## 2. 발견된 문제 및 수정 사항
 
@@ -54,7 +54,7 @@ PUBLIC_IP=$(curl -sf -H "DomainId: 1" http://data-server.cloudstack.internal/lat
 
 **수정 파일**: `terraform/modules/instance/scripts/k3s-server.sh:13`
 
-### 2.2. Loki Datasource ConfigMap 네임스페이스 오류 (중간)
+### 2.2. Loki Datasource ConfigMap Namespace 오류 (중간)
 
 **문제:**
 ```hcl
@@ -118,8 +118,8 @@ resource "kubernetes_persistent_volume_claim" "postgresql" {
 
 | 검증 항목 | 상태 | 결과 |
 |----------|------|------|
-| Kubernetes 클러스터 연결 | ✓ | 정상 |
-| 노드 상태 | ✓ | 3/3 Ready (1 Master, 2 Workers) |
+| Kubernetes Cluster 연결 | ✓ | 정상 |
+| Node 상태 | ✓ | 3/3 Ready (1 Master, 2 Workers) |
 | Namespace | ✓ | titanium-prod, monitoring, argocd 존재 |
 
 ### 3.2. 데이터베이스
@@ -128,7 +128,7 @@ resource "kubernetes_persistent_volume_claim" "postgresql" {
 |----------|------|------|
 | PostgreSQL Pod | ✓ | postgresql-0 Running |
 | PVC 바인딩 | ✓ | postgresql-pvc Bound |
-| Database 스키마 | ✓ | 3개 테이블 (users, posts, categories) |
+| Database Schema | ✓ | 3개 테이블 (users, posts, categories) |
 | 초기 데이터 | ✓ | 6개 카테고리 존재 |
 
 ### 3.3. Application
@@ -211,11 +211,11 @@ IaC 배포 후 시스템 상태를 자동으로 검증하는 스크립트를 작
 **경로**: `scripts/verify-deployment.sh`
 
 **검증 항목** (15개):
-1. Kubernetes 클러스터 연결
-2. 노드 상태 (3개)
+1. Kubernetes Cluster 연결
+2. Node 상태 (3개)
 3. Namespace 존재 (3개)
 4. PostgreSQL Pod 상태
-5. Database 스키마 (3개 테이블)
+5. Database Schema (3개 테이블)
 6. Categories 데이터 (6개)
 7. Application Secrets
 8. Application Pods (10개)
@@ -247,7 +247,7 @@ IaC 배포 후 시스템 상태를 자동으로 검증하는 스크립트를 작
 **근거:**
 1. 23개 리소스 모두 Terraform State에 정상 등록
 2. 모든 서비스가 Running 상태로 배포됨
-3. Database 스키마 및 데이터 정상 초기화
+3. Database Schema 및 데이터 정상 초기화
 4. 모니터링 스택 (Loki, Promtail) 정상 작동
 5. Argo CD GitOps 연동 정상
 
@@ -277,7 +277,6 @@ IaC 배포 후 시스템 상태를 자동으로 검증하는 스크립트를 작
 - Terraform State: `terraform/environments/solid-cloud/terraform.tfstate`
 - 검증 스크립트: `scripts/verify-deployment.sh`
 - Secret 관리 가이드: `terraform/environments/solid-cloud/SECRET_MANAGEMENT.md`
-- 분석 계획: `~/.claude/plans/purrfect-growing-squirrel.md`
 
 ## 변경 이력
 

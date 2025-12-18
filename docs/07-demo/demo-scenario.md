@@ -25,7 +25,7 @@
 ```mermaid
 graph TD
     Start([데모 시작]) --> Step1[1. 시스템 개요<br/>3분]
-    Step1 --> |Kiali 그래프| Step2[2. CI/CD 파이프라인<br/>5분]
+    Step1 --> |Kiali 그래프| Step2[2. CI/CD Pipeline<br/>5분]
     Step2 --> |Git Push → 자동 배포| Step3[3. 모니터링 시스템<br/>7분]
     Step3 --> |Grafana + Kiali| Step4[4. 보안 & 서비스 메시<br/>3분]
     Step4 --> |mTLS 확인| Decision{시간 여유?}
@@ -49,7 +49,7 @@ graph TD
 - 프로젝트 배경 및 v1.0 대비 개선사항 설명
 - 기술 스택 소개 (Terraform, GitOps, Istio, Prometheus)
 
-### 2. CI/CD 파이프라인 시연 (5분)
+### 2. CI/CD Pipeline 시연 (5분)
 - 코드 변경 및 Git Push
 - GitHub Actions 자동 실행 (빌드, 테스트, 보안 스캔)
 - Argo CD 자동 동기화
@@ -76,8 +76,8 @@ graph TD
 ## 사전 준비 사항
 
 ### 환경 요구사항
-- Kubernetes 클러스터 실행 중
-- 모든 서비스가 titanium-prod, istio-system, monitoring 네임스페이스에 배포됨
+- Kubernetes Cluster 실행 중
+- 모든 서비스가 titanium-prod, istio-system, monitoring Namespace에 배포됨
 - Load Generator 배포로 지속적인 메트릭 생성
 
 ### 접속 정보

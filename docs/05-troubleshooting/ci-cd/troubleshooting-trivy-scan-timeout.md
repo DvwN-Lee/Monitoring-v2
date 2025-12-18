@@ -8,7 +8,7 @@ author: Dongju Lee
 
 ## 1. 문제 상황
 
-CI 파이프라인에 통합된 `aquasecurity/trivy-action`을 이용한 Docker 이미지 보안 스캔 단계가 정상적으로 완료되지 않고, 지정된 시간을 초과하여 작업(job) 자체가 실패하는 문제가 발생했습니다. 이로 인해 보안 취약점 점검이 이루어지지 않은 채 빌드가 중단되었습니다.
+CI Pipeline에 통합된 `aquasecurity/trivy-action`을 이용한 Docker 이미지 보안 스캔 단계가 정상적으로 완료되지 않고, 지정된 시간을 초과하여 작업(job) 자체가 실패하는 문제가 발생했습니다. 이로 인해 보안 취약점 점검이 이루어지지 않은 채 빌드가 중단되었습니다.
 
 ## 2. 증상
 
@@ -176,9 +176,9 @@ grep -A 10 "trivy-action" .github/workflows/ci.yml
 
 1.  **외부 의존 작업에는 항상 `timeout`을 고려**: 보안 스캔, 대용량 파일 다운로드 등 외부 서비스나 네트워크에 의존하는 작업은 예상치 못한 지연이 발생할 수 있으므로, 기본값에 의존하기보다 명시적으로 넉넉한 `timeout`을 설정하는 것이 안정적입니다.
 2.  **캐시는 CI 시간 단축의 핵심**: Trivy DB, 패키지 의존성 등 반복적으로 다운로드되는 데이터는 적극적으로 캐싱하여 CI 실행 시간을 줄이고 비용을 절약해야 합니다.
-3.  **작은 이미지가 모든 면에서 유리하다**: 이미지 크기는 빌드, 푸시, 스캔, 배포 시간뿐만 아니라 저장 비용에도 영향을 미칩니다. Dockerfile 최적화는 CI/CD 파이프라인 전체의 효율성을 높이는 중요한 활동입니다.
+3.  **작은 이미지가 모든 면에서 유리하다**: 이미지 크기는 빌드, 푸시, 스캔, 배포 시간뿐만 아니라 저장 비용에도 영향을 미칩니다. Dockerfile 최적화는 CI/CD Pipeline 전체의 효율성을 높이는 중요한 활동입니다.
 
 ## 관련 문서
 
-- [시스템 아키텍처 - CI/CD 파이프라인](../../02-architecture/architecture.md#4-cicd-파이프라인)
+- [시스템 아키텍처 - CI/CD Pipeline](../../02-architecture/architecture.md#4-cicd-Pipeline)
 - [운영 가이드](../../04-operations/guides/operations-guide.md)

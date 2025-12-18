@@ -65,7 +65,7 @@ stringData:
   INTERNAL_API_SECRET: <SOLID_CLOUD_API_SECRET>
 ```
 
-2. Solid Cloud 클러스터 컨텍스트로 전환:
+2. Solid Cloud Cluster 컨텍스트로 전환:
 
 ```bash
 kubectl config use-context solid-cloud
@@ -243,7 +243,7 @@ git add sealed-secret.yaml
 git commit -m "feat: Add sealed secrets"
 ```
 
-4. 클러스터에 적용:
+4. Cluster에 적용:
 
 ```bash
 kubectl apply -f sealed-secret.yaml

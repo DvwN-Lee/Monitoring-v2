@@ -8,7 +8,7 @@ author: Dongju Lee
 
 ## 테스트 환경 정보
 
-- 클러스터 IP: 10.0.11.168
+- Cluster IP: 10.0.11.168
 - Grafana: http://10.0.11.168:30300
 - Prometheus: http://10.0.11.168:30090
 - Kiali: http://10.0.11.168:30164
@@ -201,20 +201,20 @@ author: Dongju Lee
 - 페이지 로딩 시간 (5초 이내)
 - Istio 버전 정보 표시
 
-### 3.2 네임스페이스 개요 확인
+### 3.2 Namespace 개요 확인
 
 **테스트 단계:**
 1. "Overview" 메뉴 클릭
-2. titanium-dev, titanium-staging, titanium-prod 네임스페이스 확인
-3. 각 네임스페이스의 애플리케이션 개수 확인
+2. titanium-dev, titanium-staging, titanium-prod Namespace 확인
+3. 각 Namespace의 애플리케이션 개수 확인
 
 **예상 결과:**
-- 3개 네임스페이스가 모두 표시됨
-- 각 네임스페이스에 4개 애플리케이션 (api-gateway, auth-service, user-service, blog-service) 표시
+- 3개 Namespace가 모두 표시됨
+- 각 Namespace에 4개 애플리케이션 (api-gateway, auth-service, user-service, blog-service) 표시
 - 헬스 상태가 녹색 (정상)
 
 **확인 포인트:**
-- 네임스페이스별 애플리케이션, 워크로드, 서비스 개수
+- Namespace별 애플리케이션, 워크로드, 서비스 개수
 - 에러율, 요청률 메트릭 표시
 - mTLS 상태 표시 (잠금 아이콘)
 
@@ -222,7 +222,7 @@ author: Dongju Lee
 
 **테스트 단계:**
 1. "Graph" 메뉴 클릭
-2. 네임스페이스 선택: titanium-prod
+2. Namespace 선택: titanium-prod
 3. Display 옵션: "Request Distribution", "Traffic Animation" 활성화
 4. 그래프 레이아웃 변경 (Dagre → Kiali)
 
@@ -241,7 +241,7 @@ author: Dongju Lee
 
 **테스트 단계:**
 1. "Applications" 메뉴 클릭
-2. titanium-prod 네임스페이스의 "prod-blog" 애플리케이션 클릭
+2. titanium-prod Namespace의 "prod-blog" 애플리케이션 클릭
 3. "Overview", "Traffic", "Inbound Metrics", "Outbound Metrics" 탭 확인
 
 **예상 결과:**
@@ -259,7 +259,7 @@ author: Dongju Lee
 
 **테스트 단계:**
 1. "Istio Config" 메뉴 클릭
-2. titanium-prod 네임스페이스 선택
+2. titanium-prod Namespace 선택
 3. VirtualService, DestinationRule 목록 확인
 4. 각 설정의 유효성 검증 상태 확인
 
@@ -297,7 +297,7 @@ author: Dongju Lee
 3. 로그 스트림 확인
 
 **예상 결과:**
-- titanium-prod 네임스페이스의 모든 로그 표시
+- titanium-prod Namespace의 모든 로그 표시
 - 로그 레벨, 타임스탬프, 메시지 정상 표시
 - 스트림별로 그룹핑됨
 
@@ -376,7 +376,7 @@ author: Dongju Lee
 
 ### Kiali
 - [ ] UI 접근 성공
-- [ ] 네임스페이스 개요 표시
+- [ ] Namespace 개요 표시
 - [ ] 서비스 그래프 렌더링
 - [ ] 트래픽 메트릭 표시
 - [ ] Istio Config 검증 성공
@@ -400,22 +400,22 @@ author: Dongju Lee
 
 #### 1.1. 핵심 기능 검증 목록
 - [ ] Grafana 접속 및 기본 대시보드 확인
-- [ ] Kubernetes 클러스터 전체 현황 대시보드 검증
+- [ ] Kubernetes Cluster 전체 현황 대시보드 검증
 - [ ] 마이크로서비스별 상세 성능 대시보드 검증
 - [ ] Loki 데이터소스를 이용한 로그 쿼리 검증
 
 #### 1.2. 상세 테스트 단계 및 예상 결과
 
-**시나리오 1: Kubernetes 클러스터 리소스 대시보드 검증**
+**시나리오 1: Kubernetes Cluster 리소스 대시보드 검증**
 1.  **단계 1**: `http://10.0.11.168:30300` URL로 이동하여 Grafana에 로그인합니다.
 2.  **단계 2**: 왼쪽 메뉴에서 'Dashboards' 아이콘을 클릭합니다.
 3.  **단계 3**: 'Browse' 탭에서 'Kubernetes / Compute Resources / Cluster' 대시보드를 찾아 클릭합니다.
 4.  **단계 4**: 대시보드가 로딩되고 CPU, Memory, Filesystem 사용량과 같은 패널들이 나타나는지 확인합니다.
 5.  **예상 결과**:
     - 대시보드 내 모든 패널에 'No data' 또는 에러 메시지 없이 데이터가 정상적으로 시각화됩니다.
-    - 클러스터의 전체 CPU 사용량, 메모리 사용량, Pod 용량 등의 메트릭이 실시간으로 표시됩니다.
+    - Cluster의 전체 CPU 사용량, 메모리 사용량, Pod 용량 등의 메트릭이 실시간으로 표시됩니다.
 6.  **주요 확인 포인트**:
-    - `node_cpu_seconds_total`, `node_memory_MemAvailable_bytes` 등 핵심 노드 메트릭 수집 여부.
+    - `node_cpu_seconds_total`, `node_memory_MemAvailable_bytes` 등 핵심 Node 메트릭 수집 여부.
     - 패널의 시간 범위(Time range)를 변경했을 때 데이터가 올바르게 다시 그려지는지 확인.
 
 **시나리오 2: `user-service` 성능 대시보드 검증**
@@ -438,7 +438,7 @@ author: Dongju Lee
 4.  **단계 4**: 쿼리 결과로 `auth-service`의 로그가 시간순으로 표시되는지 확인합니다.
 5.  **단계 5**: 쿼리를 `{namespace="prod", app="auth-service"} |= "error"`로 수정하여 에러 로그만 필터링되는지 확인합니다.
 6.  **예상 결과**:
-    - 지정된 네임스페이스와 앱 라벨에 해당하는 로그 스트림이 정상적으로 조회됩니다.
+    - 지정된 Namespace와 앱 라벨에 해당하는 로그 스트림이 정상적으로 조회됩니다.
     - 라인 필터(`|=`)를 사용한 로그 내용 검색이 정확하게 동작합니다.
 7.  **주요 확인 포인트**:
     - Grafana와 Loki 데이터소스 연결 상태.
@@ -462,7 +462,7 @@ author: Dongju Lee
 1.  **단계 1**: `http://10.0.11.168:30090` URL로 이동하여 Prometheus UI에 접근합니다.
 2.  **단계 2**: 상단 메뉴에서 'Graph'를 클릭합니다.
 3.  **단계 3**: 'Expression' 입력창에 `up{job="kubelet"}` 쿼리를 입력하고 'Execute' 버튼을 클릭합니다.
-4.  **단계 4**: 쿼리 결과로 각 노드의 kubelet 상태를 나타내는 시계열 데이터가 'Table' 뷰에 표시되는지 확인합니다.
+4.  **단계 4**: 쿼리 결과로 각 Node의 kubelet 상태를 나타내는 시계열 데이터가 'Table' 뷰에 표시되는지 확인합니다.
 5.  **예상 결과**:
     - 쿼리 결과로 하나 이상의 시계열 데이터가 반환되며, 값은 `1` (up) 이어야 합니다.
     - `instance`, `job` 등의 라벨이 올바르게 표시됩니다.
@@ -489,18 +489,18 @@ author: Dongju Lee
 
 #### 3.1. 핵심 기능 검증 목록
 - [ ] Kiali 접속 및 서비스 그래프 시각화
-- [ ] 네임스페이스별 서비스 토폴로지 확인
+- [ ] Namespace별 서비스 토폴로지 확인
 - [ ] 서비스 상세 정보 및 인/아웃바운드 트래픽 확인
 
 #### 3.2. 상세 테스트 단계 및 예상 결과
 
-**시나리오 1: `prod` 네임스페이스 서비스 그래프 검증**
+**시나리오 1: `prod` Namespace 서비스 그래프 검증**
 1.  **단계 1**: `http://10.0.11.168:30164` URL로 이동하여 Kiali 대시보드에 로그인합니다.
 2.  **단계 2**: 왼쪽 메뉴에서 'Graph'를 클릭합니다.
 3.  **단계 3**: 상단 'Namespace' 셀렉트 박스에서 `prod`를 선택합니다.
 4.  **단계 4**: 'Display' 드롭다운 메뉴에서 'Traffic Animation'과 'Response Time' 엣지 라벨을 활성화합니다.
 5.  **예상 결과**:
-    - `prod` 네임스페이스의 서비스들(`api-gateway`, `auth-service` 등)과 외부 트래픽(ingress) 간의 관계가 그래프로 시각화됩니다.
+    - `prod` Namespace의 서비스들(`api-gateway`, `auth-service` 등)과 외부 트래픽(ingress) 간의 관계가 그래프로 시각화됩니다.
     - 서비스 간 연결선(edge) 위로 트래픽 흐름을 나타내는 애니메이션이 표시됩니다.
     - 각 연결선에는 95th percentile 응답 시간이 표시됩니다.
 6.  **주요 확인 포인트**:
@@ -532,13 +532,13 @@ author: Dongju Lee
 
 #### 4.2. 상세 테스트 단계 및 예상 결과
 
-**시나리오 1: 전체 네임스페이스 로그 조회**
+**시나리오 1: 전체 Namespace 로그 조회**
 1.  **단계 1**: Grafana에서 'Explore' 메뉴로 이동합니다.
 2.  **단계 2**: 데이터소스 선택 드롭다운에서 'Loki'를 선택합니다.
 3.  **단계 3**: LogQL 쿼리 입력창에 `{namespace=~"titanium-.*"}`를 입력하고 실행합니다.
 4.  **예상 결과**:
-    - `titanium-dev`, `titanium-staging`, `titanium-prod` 네임스페이스의 모든 로그가 시간순으로 정렬되어 표시됩니다.
-    - 각 로그 라인에 네임스페이스, Pod 이름, 컨테이너 이름 등의 메타데이터가 함께 표시됩니다.
+    - `titanium-dev`, `titanium-staging`, `titanium-prod` Namespace의 모든 로그가 시간순으로 정렬되어 표시됩니다.
+    - 각 로그 라인에 Namespace, Pod 이름, Container 이름 등의 메타데이터가 함께 표시됩니다.
 5.  **주요 확인 포인트**:
     - 로그 볼륨 그래프가 정상적으로 렌더링되어 시간대별 로그 발생량을 시각화하는지 확인.
 
@@ -571,7 +571,7 @@ author: Dongju Lee
 ### Kiali
 - [ ] Kiali UI 접속 성공
 - [ ] 서비스 그래프가 정상적으로 시각화됨
-- [ ] 최소 하나의 네임스페이스에서 트래픽 흐름 확인
+- [ ] 최소 하나의 Namespace에서 트래픽 흐름 확인
 - [ ] 서비스 상세 정보 및 메트릭이 표시됨
 
 ### Loki (Grafana Explore)
