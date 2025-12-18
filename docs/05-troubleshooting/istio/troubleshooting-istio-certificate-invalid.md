@@ -11,13 +11,13 @@ Istio mTLS 통신 시 인증서 검증 실패로 인해 서비스 간 연결이 
 
 ## 증상
 - 서비스 간 통신 시 `TLS handshake failed`, `certificate validation failed`와 같은 에러 메시지가 발생합니다.
-- `kubectl logs <pod-name> -c istio-proxy` 명령으로 istio-proxy 컨테이너의 로그를 확인하면 인증서 관련 오류나 TLS 핸드셰이크 실패 메시지가 반복적으로 나타납니다.
+- `kubectl logs <pod-name> -c istio-proxy` 명령으로 istio-proxy Container의 로그를 확인하면 인증서 관련 오류나 TLS 핸드셰이크 실패 메시지가 반복적으로 나타납니다.
 - `istioctl proxy-config secret <pod-name>` 명령으로 확인 시 인증서가 만료되었거나 유효하지 않다고 표시될 수 있습니다.
 
 ## 원인 분석
 1.  **istiod와 Sidecar 간 통신 장애로 인증서 갱신 실패**: istiod(Istio control plane)는 Sidecar에 인증서를 발급하고 갱신하는 역할을 합니다. istiod와 Sidecar 간의 네트워크 문제, istiod의 과부하 등으로 인해 Sidecar가 제때 인증서를 갱신하지 못할 수 있습니다.
 2.  **인증서 만료**: Sidecar에 주입된 인증서가 만료되었지만, 어떤 이유로든 갱신되지 않아 유효성 검증에 실패할 수 있습니다. Istio 인증서는 기본적으로 90일마다 갱신됩니다.
-3.  **시스템 시간 동기화 문제**: 클러스터 내의 노드 간 또는 Pod 간 시스템 시간(RTC)이 동기화되지 않으면, 인증서의 유효 기간을 잘못 판단하여 유효성 검증에 실패할 수 있습니다.
+3.  **시스템 시간 동기화 문제**: Cluster 내의 Node 간 또는 Pod 간 시스템 시간(RTC)이 동기화되지 않으면, 인증서의 유효 기간을 잘못 판단하여 유효성 검증에 실패할 수 있습니다.
 4.  **Citadel/istiod 설정 오류**: Istio의 CA(Certificate Authority) 역할을 하는 Citadel(또는 istiod 내부 CA)의 설정에 오류가 있거나, 자체 서명 인증서 사용 시 루트 인증서 배포에 문제가 있을 수 있습니다.
 
 ## 해결 방법(단계별)
@@ -36,7 +36,7 @@ kubectl rollout restart deployment <deployment-name> -n <namespace>
 이 방법으로 문제가 해결된다면, 일시적인 통신 문제나 인증서 갱신 메커니즘의 지연이 원인이었을 가능성이 높습니다.
 
 ### 4단계: 시스템 시간 동기화 확인
-클러스터 노드들의 시스템 시간이 정확하게 동기화되어 있는지 확인합니다. NTP(Network Time Protocol) 서버를 통해 시간이 동기화되도록 설정되어 있는지 확인하고, 필요한 경우 `ntpdate` 또는 `chrony`와 같은 도구를 사용하여 시간을 동기화합니다. 시간 불일치는 인증서 유효성 검증 실패의 흔한 원인 중 하나입니다.
+Cluster Node들의 시스템 시간이 정확하게 동기화되어 있는지 확인합니다. NTP(Network Time Protocol) 서버를 통해 시간이 동기화되도록 설정되어 있는지 확인하고, 필요한 경우 `ntpdate` 또는 `chrony`와 같은 도구를 사용하여 시간을 동기화합니다. 시간 불일치는 인증서 유효성 검증 실패의 흔한 원인 중 하나입니다.
 
 ## 검증
 - 해결 방법 적용 후, 해당 Pod를 재시작하거나 새로운 Pod를 배포하여 서비스 간 통신이 정상적으로 이루어지는지 확인합니다.
@@ -44,7 +44,7 @@ kubectl rollout restart deployment <deployment-name> -n <namespace>
 - `kubectl logs <pod-name> -c istio-proxy` 명령으로 istio-proxy 로그에 더 이상 인증서 관련 오류 메시지가 발생하지 않는지 확인합니다.
 
 ## 교훈
-Istio mTLS 환경에서 인증서 유효성 문제는 서비스 메시의 보안과 안정성에 직접적인 영향을 미칩니다. 인증서 만료, istiod와의 통신 문제, 시스템 시간 불일치 등 다양한 원인이 있을 수 있으므로, `istioctl` 도구와 로그를 활용하여 체계적으로 문제를 진단하는 것이 중요합니다. 특히, 클러스터 내 모든 구성 요소의 시간 동기화는 mTLS 환경에서 매우 중요하게 관리되어야 할 부분입니다.
+Istio mTLS 환경에서 인증서 유효성 문제는 서비스 메시의 보안과 안정성에 직접적인 영향을 미칩니다. 인증서 만료, istiod와의 통신 문제, 시스템 시간 불일치 등 다양한 원인이 있을 수 있으므로, `istioctl` 도구와 로그를 활용하여 체계적으로 문제를 진단하는 것이 중요합니다. 특히, Cluster 내 모든 구성 요소의 시간 동기화는 mTLS 환경에서 매우 중요하게 관리되어야 할 부분입니다.
 
 ## 관련 문서
 

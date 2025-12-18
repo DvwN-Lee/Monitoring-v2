@@ -20,11 +20,11 @@ NAME                            READY   STATUS             RESTARTS   AGE
 auth-service-5f7b64f8f6-z8g9h   0/1     CrashLoopBackOff   5          10m
 ```
 
-`CrashLoopBackOff`는 Pod의 컨테이너가 시작된 직후 비정상적으로 종료(crash)되어, Kubernetes가 재시작 정책에 따라 컨테이너를 계속 다시 시작하려고 시도하지만 반복적으로 실패하는 상태를 의미합니다. Kubernetes는 재시작 시도 사이의 간격을 점차 늘리게 되는데, 이를 "BackOff"라고 합니다.
+`CrashLoopBackOff`는 Pod의 Container가 시작된 직후 비정상적으로 종료(crash)되어, Kubernetes가 재시작 정책에 따라 Container를 계속 다시 시작하려고 시도하지만 반복적으로 실패하는 상태를 의미합니다. Kubernetes는 재시작 시도 사이의 간격을 점차 늘리게 되는데, 이를 "BackOff"라고 합니다.
 
 ## 3. 원인 분석
 
-`CrashLoopBackOff`는 컨테이너 자체가 실행되지 못하는 `ImagePullBackOff`와 달리, **컨테이너는 시작되었지만 내부의 애플리케이션이 비정상적으로 종료**될 때 발생합니다. 주요 원인은 다음과 같습니다.
+`CrashLoopBackOff`는 Container 자체가 실행되지 못하는 `ImagePullBackOff`와 달리, **Container는 시작되었지만 내부의 애플리케이션이 비정상적으로 종료**될 때 발생합니다. 주요 원인은 다음과 같습니다.
 
 1.  **애플리케이션 시작 오류**:
     *   코드 자체의 버그로 인해 시작 과정에서 처리되지 않은 예외(exception)가 발생하는 경우.
@@ -37,7 +37,7 @@ auth-service-5f7b64f8f6-z8g9h   0/1     CrashLoopBackOff   5          10m
 3.  **의존 서비스 연결 실패**:
     *   데이터베이스, 캐시, 다른 마이크로서비스 등 애플리케이션이 시작 시점에 반드시 연결해야 하는 외부 서비스에 접속하지 못하는 경우. (예: 잘못된 DB 호스트 주소, 인증 실패)
 
-4.  **리소스 부족**: 컨테이너에 할당된 메모리(`limits.memory`)가 너무 적어, 애플리케이션이 시작 중에 메모리 부족(Out of Memory)으로 인해 강제 종료(OOMKilled)되는 경우. `describe pod`에서 `Reason: OOMKilled`로 확인할 수 있습니다.
+4.  **리소스 부족**: Container에 할당된 메모리(`limits.memory`)가 너무 적어, 애플리케이션이 시작 중에 메모리 부족(Out of Memory)으로 인해 강제 종료(OOMKilled)되는 경우. `describe pod`에서 `Reason: OOMKilled`로 확인할 수 있습니다.
 
 5.  **Liveness/Readiness Probe 실패**: Liveness Probe가 잘못 설정되어 정상적인 애플리케이션을 비정상으로 판단하고 계속 재시작시키는 경우.
 
@@ -45,17 +45,17 @@ auth-service-5f7b64f8f6-z8g9h   0/1     CrashLoopBackOff   5          10m
 
 #### 1단계: `kubectl logs`로 애플리케이션 로그 확인
 
-`CrashLoopBackOff` 문제 해결의 가장 중요한 첫 단계는 **애플리케이션의 로그를 확인**하는 것입니다. 컨테이너가 왜 비정상적으로 종료되었는지에 대한 직접적인 단서가 로그에 남아있습니다.
+`CrashLoopBackOff` 문제 해결의 가장 중요한 첫 단계는 **애플리케이션의 로그를 확인**하는 것입니다. Container가 왜 비정상적으로 종료되었는지에 대한 직접적인 단서가 로그에 남아있습니다.
 
 ```bash
-# 현재 비정상 종료된 컨테이너의 로그 확인
+# 현재 비정상 종료된 Container의 로그 확인
 $ kubectl logs <pod-name>
 
-# 이전(previous)에 비정상 종료되었던 컨테이너의 로그 확인 (매우 유용)
+# 이전(previous)에 비정상 종료되었던 Container의 로그 확인 (매우 유용)
 $ kubectl logs --previous <pod-name>
 ```
 
-`--previous` 플래그는 현재 재시작을 기다리는 컨테이너가 아니라, 바로 직전에 실패했던 컨테이너의 로그를 보여주므로 원인 파악에 결정적입니다.
+`--previous` 플래그는 현재 재시작을 기다리는 Container가 아니라, 바로 직전에 실패했던 Container의 로그를 보여주므로 원인 파악에 결정적입니다.
 
 **로그 분석 예시:**
 *   `Error: connect ECONNREFUSED 127.0.0.1:6379`: Redis 연결 실패
@@ -73,8 +73,8 @@ kubectl describe pod <pod-name>
 
 여기서 확인할 주요 정보는 다음과 같습니다.
 *   **Events**: Pod의 생명주기 동안 발생한 이벤트들.
-*   **State / Last State**: 컨테이너의 현재 상태와 이전 상태. `Last State`의 `Reason`과 `Exit Code`는 중요한 단서입니다. (예: `Reason: OOMKilled`, `Exit Code: 137` -> 메모리 부족)
-*   **Environment**: 컨테이너에 설정된 환경변수들이 올바른지 확인합니다.
+*   **State / Last State**: Container의 현재 상태와 이전 상태. `Last State`의 `Reason`과 `Exit Code`는 중요한 단서입니다. (예: `Reason: OOMKilled`, `Exit Code: 137` -> 메모리 부족)
+*   **Environment**: Container에 설정된 환경변수들이 올바른지 확인합니다.
 *   **Volumes / Mounts**: ConfigMap, Secret, PVC 등이 올바르게 마운트되었는지 경로를 확인합니다.
 
 #### 3단계: 원인에 따른 조치
@@ -89,7 +89,7 @@ kubectl describe pod <pod-name>
     *   네트워크 정책(NetworkPolicy)에 의해 통신이 차단되지는 않았는지 확인합니다.
 
 *   **리소스 부족(OOMKilled) 시**:
-    *   Deployment YAML에서 해당 컨테이너의 `resources.limits.memory` 값을 증설하고 재배포합니다.
+    *   Deployment YAML에서 해당 Container의 `resources.limits.memory` 값을 증설하고 재배포합니다.
 
 #### 4단계: 검증
 
@@ -99,7 +99,7 @@ kubectl describe pod <pod-name>
 
 1.  **로그, 로그, 로그**: `CrashLoopBackOff`의 원인은 90% 이상 애플리케이션 로그에 있습니다. `kubectl logs`와 `kubectl logs --previous`를 가장 먼저 확인하는 습관이 중요합니다.
 2.  **`describe pod`는 종합 진단서**: 로그로 해결되지 않을 때, `describe pod`는 환경변수, 볼륨 마운트, 이벤트 등 Pod와 관련된 모든 컨텍스트를 제공하므로 종합적인 상황 파악에 필수적입니다.
-3.  **CrashLoopBackOff는 결과이지 원인이 아니다**: `CrashLoopBackOff`는 "컨테이너가 반복적으로 비정상 종료되고 있다"는 상태를 나타내는 Kubernetes의 표현일 뿐, 실제 원인은 애플리케이션 내부에 있음을 명심해야 합니다.
+3.  **CrashLoopBackOff는 결과이지 원인이 아니다**: `CrashLoopBackOff`는 "Container가 반복적으로 비정상 종료되고 있다"는 상태를 나타내는 Kubernetes의 표현일 뿐, 실제 원인은 애플리케이션 내부에 있음을 명심해야 합니다.
 
 ## 관련 문서
 

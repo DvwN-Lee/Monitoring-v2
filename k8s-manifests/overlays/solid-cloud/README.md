@@ -53,7 +53,7 @@ kubectl get svc -n titanium-prod
 ## 구성 내용
 
 ### Namespace
-- `titanium-prod`: 프로덕션 네임스페이스
+- `titanium-prod`: 프로덕션 Namespace
 
 ### ConfigMap Patches
 - PostgreSQL 연결 설정
@@ -104,7 +104,7 @@ kubectl rollout restart deployment/prod-blog-service-deployment -n titanium-prod
 # 모든 리소스 삭제
 kubectl delete -k k8s-manifests/overlays/solid-cloud
 
-# 네임스페이스 삭제 (내부 모든 리소스 삭제)
+# Namespace 삭제 (내부 모든 리소스 삭제)
 kubectl delete namespace titanium-prod
 ```
 

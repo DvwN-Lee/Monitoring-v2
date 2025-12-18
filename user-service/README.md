@@ -43,12 +43,12 @@
 |`/health`|`GET`|서비스의 기본 상태를 확인하는 헬스 체크 엔드포인트|
 |`/stats`|`GET`|`load-balancer`를 위해 DB와 캐시를 포함한 서비스의 상세 상태 정보를 반환|
 
-## 5. 컨테이너화 (`Dockerfile`)
-- **베이스 이미지**: `python:3.11-slim`을 사용하여 컨테이너 이미지의 크기를 최소화
+## 5. Container화 (`Dockerfile`)
+- **베이스 이미지**: `python:3.11-slim`을 사용하여 Container 이미지의 크기를 최소화
 - **의존성 설치**: `requirements.txt`에 명시된 라이브러리(`fastapi`, `uvicorn`, `werkzeug`, `redis` 등)를 설치 
 - **애플리케이션 실행**: `uvicorn`을 사용하여 `8001` 포트에서 FastAPI 애플리케이션을 실행
 
 ## 6. 설정 (`config.py`)
-- `DATABASE_PATH`: SQLite 데이터베이스 파일이 저장될 경로. 컨테이너 내부의 `/data/app.db`를 가리키며, 이 경로는 쿠버네티스 PVC(PersistentVolumeClaim)와 연결되어 데이터 영속성을 보장
+- `DATABASE_PATH`: SQLite 데이터베이스 파일이 저장될 경로. Container 내부의 `/data/app.db`를 가리키며, 이 경로는 Kubernetes PVC(PersistentVolumeClaim)와 연결되어 데이터 영속성을 보장
 - `REDIS_HOST`: 접속할 Redis 서버의 호스트 이름
 - `REDIS_PORT`: 접속할 Redis 서버의 포트

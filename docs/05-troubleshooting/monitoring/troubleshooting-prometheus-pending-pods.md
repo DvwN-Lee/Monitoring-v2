@@ -8,11 +8,11 @@ author: Dongju Lee
 
 ## 1. 문제 상황
 
-Solid Cloud 클러스터 환경에 `kube-prometheus-stack` 헬름 차트를 사용하여 Prometheus와 Grafana를 배포하는 과정에서, 관련 Pod들이 `Pending` 상태에 머무르며 정상적으로 실행되지 않는 문제가 발생했습니다. 이로 인해 모니터링 시스템이 동작하지 않았고, 메트릭 수집 및 시각화가 불가능했습니다.
+Solid Cloud Cluster 환경에 `kube-prometheus-stack` 헬름 차트를 사용하여 Prometheus와 Grafana를 배포하는 과정에서, 관련 Pod들이 `Pending` 상태에 머무르며 정상적으로 실행되지 않는 문제가 발생했습니다. 이로 인해 모니터링 시스템이 동작하지 않았고, 메트릭 수집 및 시각화가 불가능했습니다.
 
 ## 2. 증상
 
-`kubectl` 명령어를 사용하여 `monitoring` 네임스페이스의 Pod 상태를 확인했을 때, `prometheus-prometheus-kube-prometheus-prometheus-0` Pod와 `prometheus-grafana-xxxxxxxxxx-xxxxx` Pod가 `Pending` 상태로 나타났습니다.
+`kubectl` 명령어를 사용하여 `monitoring` Namespace의 Pod 상태를 확인했을 때, `prometheus-prometheus-kube-prometheus-prometheus-0` Pod와 `prometheus-grafana-xxxxxxxxxx-xxxxx` Pod가 `Pending` 상태로 나타났습니다.
 
 ```bash
 $ kubectl get pods -n monitoring
@@ -26,7 +26,7 @@ prometheus-prometheus-node-exporter-2v6fg                   1/1     Running   0 
 prometheus-prometheus-node-exporter-8b2t5                   1/1     Running   0          10m
 ```
 
-`kubectl describe pod` 명령어로 Pod의 상세 상태를 확인한 결과, `Events` 섹션에서 `FailedScheduling` 이벤트가 기록된 것을 확인했습니다. 이벤트 메시지는 "0/2 nodes are available: 2 Insufficient cpu, 2 Insufficient memory" 와 같이 클러스터 내 리소스 부족을 명확히 나타내고 있었습니다.
+`kubectl describe pod` 명령어로 Pod의 상세 상태를 확인한 결과, `Events` 섹션에서 `FailedScheduling` 이벤트가 기록된 것을 확인했습니다. 이벤트 메시지는 "0/2 nodes are available: 2 Insufficient cpu, 2 Insufficient memory" 와 같이 Cluster 내 리소스 부족을 명확히 나타내고 있었습니다.
 
 ```bash
 $ kubectl describe pod prometheus-prometheus-kube-prometheus-prometheus-0 -n monitoring
@@ -52,11 +52,11 @@ Events:
 
 `describe` 명령어의 이벤트 로그를 통해 파악한 주요 원인은 다음과 같습니다.
 
-1.  **클러스터 리소스 부족 (CPU, 메모리)**: Prometheus 및 Grafana Pod가 필요로 하는 리소스(`requests`) 양에 비해, 현재 클러스터의 가용 가능한 노드 리소스가 부족한 상태였습니다. 스케줄러는 Pod를 할당할 적절한 노드를 찾지 못해 `Pending` 상태로 대기시킵니다.
+1.  **Cluster 리소스 부족 (CPU, 메모리)**: Prometheus 및 Grafana Pod가 필요로 하는 리소스(`requests`) 양에 비해, 현재 Cluster의 가용 가능한 Node 리소스가 부족한 상태였습니다. 스케줄러는 Pod를 할당할 적절한 Node를 찾지 못해 `Pending` 상태로 대기시킵니다.
 2.  **PVC 바인딩 실패**: Prometheus 서버는 데이터를 저장하기 위해 PersistentVolume(PV)을 요구합니다. 이때 사용되는 PVC가 적절한 PV와 바인딩되지 않으면 Pod는 시작될 수 없습니다. 주요 원인은 다음과 같습니다.
-    *   **잘못된 StorageClass 이름**: PVC에 명시된 `storageClassName`이 Solid Cloud 클러스터에 존재하지 않거나 잘못 지정된 경우.
+    *   **잘못된 StorageClass 이름**: PVC에 명시된 `storageClassName`이 Solid Cloud Cluster에 존재하지 않거나 잘못 지정된 경우.
     *   **PV 프로비저닝 실패**: 동적 프로비저닝(Dynamic Provisioning)이 설정된 경우, StorageClass에 문제가 있어 PV 생성이 실패하는 경우.
-3.  **노드 가용 용량 부족**: 특정 노드에 이미 많은 Pod가 할당되어 있어 추가적인 Pod를 스케줄링할 CPU, 메모리, 또는 스토리지 용량이 없는 경우입니다.
+3.  **Node 가용 용량 부족**: 특정 Node에 이미 많은 Pod가 할당되어 있어 추가적인 Pod를 스케줄링할 CPU, 메모리, 또는 스토리지 용량이 없는 경우입니다.
 
 ## 4. 해결 방법
 
@@ -82,9 +82,9 @@ Events:
   Warning  FailedScheduling  2m    default-scheduler  persistentvolumeclaim "prometheus-db" is not bound
 ```
 
-#### 2단계: 노드 리소스 상태 확인
+#### 2단계: Node 리소스 상태 확인
 
-원인이 리소스 부족으로 추정될 경우, `kubectl top nodes` 명령어로 각 노드의 현재 CPU 및 메모리 사용량을 확인하여 클러스터의 전반적인 리소스 현황을 파악합니다.
+원인이 리소스 부족으로 추정될 경우, `kubectl top nodes` 명령어로 각 Node의 현재 CPU 및 메모리 사용량을 확인하여 Cluster의 전반적인 리소스 현황을 파악합니다.
 
 ```bash
 $ kubectl top nodes
@@ -119,7 +119,7 @@ Events:
 #### 4단계: 원인에 따른 조치 수행
 
 *   **리소스 부족 시: 리소스 요청량 조정**
-    `kube-prometheus-stack` 헬름 차트의 `values.yaml` 파일에서 Prometheus와 Grafana의 리소스 요청량(`requests`)과 한도(`limits`)를 Solid Cloud 클러스터 환경에 맞게 하향 조정합니다.
+    `kube-prometheus-stack` 헬름 차트의 `values.yaml` 파일에서 Prometheus와 Grafana의 리소스 요청량(`requests`)과 한도(`limits`)를 Solid Cloud Cluster 환경에 맞게 하향 조정합니다.
 
     **`values.yaml` 수정 예시:**
     ```yaml
@@ -146,7 +146,7 @@ Events:
     수정 후 `helm upgrade` 명령어로 변경사항을 적용합니다.
 
 *   **PVC 문제 시: StorageClass 설정 확인 및 수정**
-    `values.yaml` 파일에서 PVC 관련 설정, 특히 `storageClassName`이 클러스터에서 사용 가능한 이름과 일치하는지 확인하고 수정합니다. 만약 특정 StorageClass를 사용하지 않으려면 `storageClassName`을 `null` 또는 `""`로 설정하여 기본 StorageClass를 사용하도록 할 수 있습니다.
+    `values.yaml` 파일에서 PVC 관련 설정, 특히 `storageClassName`이 Cluster에서 사용 가능한 이름과 일치하는지 확인하고 수정합니다. 만약 특정 StorageClass를 사용하지 않으려면 `storageClassName`을 `null` 또는 `""`로 설정하여 기본 StorageClass를 사용하도록 할 수 있습니다.
 
     **`values.yaml` 수정 예시:**
     ```yaml
@@ -155,7 +155,7 @@ Events:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              storageClassName: solid-cloud-storage # 클러스터에 맞는 StorageClass 이름으로 변경
+              storageClassName: solid-cloud-storage # Cluster에 맞는 StorageClass 이름으로 변경
               accessModes: ["ReadWriteOnce"]
               resources:
                 requests:
@@ -182,9 +182,9 @@ prometheus-prometheus-node-exporter-8b2t5                   1/1     Running   0 
 
 ## 6. 교훈
 
-1.  **리소스 요청/한도 설정의 중요성**: Pod 배포 시 리소스 `requests`와 `limits`는 클러스터의 가용 용량에 맞춰 신중하게 설정해야 합니다. 특히 개발 또는 테스트 환경에서는 프로덕션 수준의 높은 값 대신 환경에 맞는 최소한의 값으로 시작하는 것이 효율적입니다.
-2.  **PVC와 StorageClass 사전 검증**: 상태 저장 애플리케이션(Stateful Application) 배포 시, PVC가 요구하는 `storageClassName`이 대상 클러스터에 실제로 존재하는지, 그리고 정상적으로 동작하는지 사전에 `kubectl get sc` 명령 등으로 검증하는 절차가 필수적입니다.
-3.  **`describe` 명령어의 생활화**: `Pending`, `Error`, `CrashLoopBackOff` 등 비정상 상태의 쿠버네티스 오브젝트를 진단할 때 `kubectl describe` 명령어는 문제의 원인을 파악할 수 있는 가장 기본적인 단서를 제공하므로 습관적으로 사용하는 것이 좋습니다.
+1.  **리소스 요청/한도 설정의 중요성**: Pod 배포 시 리소스 `requests`와 `limits`는 Cluster의 가용 용량에 맞춰 신중하게 설정해야 합니다. 특히 개발 또는 테스트 환경에서는 프로덕션 수준의 높은 값 대신 환경에 맞는 최소한의 값으로 시작하는 것이 효율적입니다.
+2.  **PVC와 StorageClass 사전 검증**: 상태 저장 애플리케이션(Stateful Application) 배포 시, PVC가 요구하는 `storageClassName`이 대상 Cluster에 실제로 존재하는지, 그리고 정상적으로 동작하는지 사전에 `kubectl get sc` 명령 등으로 검증하는 절차가 필수적입니다.
+3.  **`describe` 명령어의 생활화**: `Pending`, `Error`, `CrashLoopBackOff` 등 비정상 상태의 Kubernetes 오브젝트를 진단할 때 `kubectl describe` 명령어는 문제의 원인을 파악할 수 있는 가장 기본적인 단서를 제공하므로 습관적으로 사용하는 것이 좋습니다.
 
 ## 관련 문서
 

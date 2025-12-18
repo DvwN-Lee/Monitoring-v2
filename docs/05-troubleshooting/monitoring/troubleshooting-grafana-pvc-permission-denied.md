@@ -44,7 +44,7 @@ Kubernetes에서 PVC(PersistentVolumeClaim)를 마운트할 때, 볼륨의 소�
 ### 기술적 배경
 
 #### Grafana의 기본 사용자 ID
-Grafana 컨테이너는 보안을 위해 root가 아닌 전용 사용자로 실행됩니다:
+Grafana Container는 보안을 위해 root가 아닌 전용 사용자로 실행됩니다:
 - User ID: `472`
 - Group ID: `472`
 - 사용자 이름: `grafana`
@@ -118,8 +118,8 @@ grafana:
 #### 설정 설명
 
 - `fsGroup: 472`: 마운트된 볼륨의 그룹 소유권을 472로 설정
-- `runAsUser: 472`: 컨테이너를 UID 472로 실행
-- `runAsGroup: 472`: 컨테이너를 GID 472로 실행
+- `runAsUser: 472`: Container를 UID 472로 실행
+- `runAsGroup: 472`: Container를 GID 472로 실행
 - `initChownData.enabled: false`: 불필요한 init container 비활성화
 
 ### 해결 방안 2: 수동 권한 변경 (임시 방편)
@@ -309,7 +309,7 @@ fi
 ./scripts/check-pvc-permissions.sh prometheus-grafana monitoring
 ```
 
-### 3. CI/CD 파이프라인 검증
+### 3. CI/CD Pipeline 검증
 
 ```yaml
 # .github/workflows/deploy.yml
@@ -336,8 +336,8 @@ fi
 ### 보안 컨텍스트 설정 필수
 모든 StatefulSet 및 Deployment에 `podSecurityContext` 명시:
 - fsGroup: 애플리케이션의 UID/GID
-- runAsUser: 컨테이너 실행 사용자
-- runAsGroup: 컨테이너 실행 그룹
+- runAsUser: Container 실행 사용자
+- runAsGroup: Container 실행 그룹
 
 ### 권장 패턴
 \`\`\`yaml
@@ -369,8 +369,8 @@ podSecurityContext:
 ### fsGroup vs runAsUser
 
 - `fsGroup`: 볼륨 마운트 시 **파일시스템의 그룹 소유권** 설정
-- `runAsUser`: 컨테이너 **프로세스 실행** 사용자 설정
-- `runAsGroup`: 컨테이너 **프로세스 실행** 그룹 설정
+- `runAsUser`: Container **프로세스 실행** 사용자 설정
+- `runAsGroup`: Container **프로세스 실행** 그룹 설정
 
 **둘 다 설정하는 것이 권장됩니다.**
 

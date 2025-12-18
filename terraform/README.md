@@ -4,7 +4,7 @@ Terraform 모듈을 사용하여 Solid Cloud 인프라를 자동화합니다.
 
 ## Terraform으로 생성되는 리소스
 
-`terraform apply` 실행 시, Kubernetes 클러스터 내에 다음과 같은 리소스들이 자동으로 생성됩니다:
+`terraform apply` 실행 시, Kubernetes Cluster 내에 다음과 같은 리소스들이 자동으로 생성됩니다:
 
 ```mermaid
 graph TD
@@ -90,7 +90,7 @@ postgres_db       = "titanium"
 # Kubernetes 설정
 kubeconfig_path = "~/.kube/config"  # kubeconfig 파일 경로
 
-# 네임스페이스 설정
+# Namespace 설정
 app_namespace        = "titanium-prod"
 monitoring_namespace = "monitoring"
 argocd_namespace     = "argocd"
@@ -154,9 +154,9 @@ VPC, Subnet, Security Group, Load Balancer를 관리합니다.
 
 ### Kubernetes Module
 
-Kubernetes 클러스터와 네임스페이스를 관리합니다.
+Kubernetes Cluster와 Namespace를 관리합니다.
 
-**생성되는 네임스페이스:**
+**생성되는 Namespace:**
 - `titanium-prod`: 애플리케이션 서비스
 - `monitoring`: Prometheus, Grafana
 - `argocd`: Argo CD

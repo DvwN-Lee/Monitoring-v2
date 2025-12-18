@@ -169,13 +169,13 @@ proxy := httputil.NewSingleHostReverseProxy(targetURL)
 
 ### 2. 개발 환경에서 테스트
 
-로컬 Minikube나 Kind 클러스터에 Istio를 설치하여 프록시 구현을 사전 검증:
+로컬 Minikube나 Kind Cluster에 Istio를 설치하여 프록시 구현을 사전 검증:
 
 ```bash
 # Istio 설치
 istioctl install --set profile=demo -y
 
-# 네임스페이스에 사이드카 주입 활성화
+# Namespace에 사이드카 주입 활성화
 kubectl label namespace default istio-injection=enabled
 
 # 프록시 테스트

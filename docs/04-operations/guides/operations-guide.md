@@ -23,7 +23,7 @@ author: Dongju Lee
 ### 아키텍처
 - **환경**: Solid Cloud (CloudStack 기반)
 - **Kubernetes 버전**: v1.29.7
-- **주요 네임스페이스**:
+- **주요 Namespace**:
   - `titanium-prod`: 애플리케이션 서비스
   - `istio-system`: Istio 서비스 메시
   - `monitoring`: Prometheus, Grafana, Loki
@@ -40,17 +40,17 @@ author: Dongju Lee
 
 ## 접속 및 인증
 
-### Kubernetes 클러스터 접속
+### Kubernetes Cluster 접속
 
 **kubectl 설정 확인**:
 ```bash
 # 현재 컨텍스트 확인
 kubectl config current-context
 
-# 클러스터 정보 확인
+# Cluster 정보 확인
 kubectl cluster-info
 
-# 네임스페이스 목록 확인
+# Namespace 목록 확인
 kubectl get namespaces
 ```
 
@@ -80,7 +80,7 @@ kubectl config use-context solid-cloud
 |--------|-----|------|
 | Grafana 대시보드 | http://10.0.11.168:30300 | admin/admin123 |
 | 애플리케이션 | http://10.0.11.168:31304 | - |
-| Argo CD | 클러스터 내부 | admin/초기비밀번호 |
+| Argo CD | Cluster 내부 | admin/초기비밀번호 |
 
 **Argo CD 초기 비밀번호 확인**:
 ```bash
@@ -134,7 +134,7 @@ kubectl get hpa -n titanium-prod
 
 **Pod 로그 조회**:
 ```bash
-# 특정 Pod 로그 (istio-proxy 포함 시 컨테이너 지정 필요)
+# 특정 Pod 로그 (istio-proxy 포함 시 Container 지정 필요)
 kubectl logs -n titanium-prod <pod-name> -c <container-name>
 
 # 실시간 로그 스트리밍
@@ -153,7 +153,7 @@ kubectl logs -n titanium-prod <pod-name> -c <container-name> --timestamps
 3. 데이터소스: Loki 선택
 4. LogQL 쿼리 작성:
 ```logql
-# 특정 네임스페이스 로그
+# 특정 Namespace 로그
 {namespace="titanium-prod"}
 
 # 특정 Pod 로그
@@ -253,7 +253,7 @@ kubectl apply -f k8s-manifests/overlays/solid-cloud/hpa.yaml
 2. Dashboards → Browse
 3. 원하는 대시보드 선택
 4. 시간 범위 선택 (우측 상단)
-5. 변수 선택 (서비스, 네임스페이스 등)
+5. 변수 선택 (서비스, Namespace 등)
 
 ### Prometheus 쿼리
 
@@ -613,7 +613,7 @@ kubectl describe networkpolicy <policy-name> -n titanium-prod
 
 **Trivy 스캔 (로컬)**:
 ```bash
-# 컨테이너 이미지 스캔
+# Container 이미지 스캔
 trivy image idongju/api-gateway:latest
 
 # 심각도 HIGH 이상만 표시
@@ -699,7 +699,7 @@ kubectl get secrets -n titanium-prod -o yaml > secrets-backup.yaml
 ### 3. 재해 복구 절차
 
 **전체 시스템 복구**:
-1. Kubernetes 클러스터 재생성 (Terraform)
+1. Kubernetes Cluster 재생성 (Terraform)
 2. Namespace 및 기본 리소스 생성
 3. Secrets 복원
 4. PostgreSQL 복원
@@ -726,7 +726,7 @@ kubectl exec -it -n titanium-prod postgres-0 -c postgres -- \
 - [ ] 전체 Pod 상태 확인 (Running 상태인지)
 - [ ] Grafana 대시보드에서 주요 메트릭 확인
 - [ ] 최근 24시간 알림 확인
-- [ ] CI/CD 파이프라인 성공 여부 확인
+- [ ] CI/CD Pipeline 성공 여부 확인
 
 ### 주간 점검
 - [ ] 리소스 사용률 트렌드 분석

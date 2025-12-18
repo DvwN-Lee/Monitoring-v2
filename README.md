@@ -1,6 +1,50 @@
 # Cloud-Native 마이크로서비스 플랫폼 v2.0
 
-로컬 환경(Minikube)에서 운영되던 마이크로서비스 블로그 플랫폼을 클라우드 네이티브 아키텍처로 재구축한 프로젝트입니다. Terraform을 이용한 인프라 자동화, GitOps 기반의 CI/CD 파이프라인, 그리고 Istio 서비스 메시를 통한 관측성과 보안 강화를 목표로 합니다.
+로컬 환경(Minikube)에서 운영되던 마이크로서비스 블로그 플랫폼을 클라우드 네이티브 아키텍처로 재구축한 프로젝트입니다. Terraform을 이용한 인프라 자동화, GitOps 기반의 CI/CD Pipeline, 그리고 Istio 서비스 메시를 통한 관측성과 보안 강화를 목표로 합니다.
+
+---
+
+## Quick Start
+
+### 필수 도구
+- **Docker**: Container image 빌드
+- **Kubernetes CLI (kubectl)**: Cluster 관리
+- **Minikube** (로컬) 또는 **Solid Cloud 접근 권한** (클라우드)
+- **Terraform** (클라우드 배포 시)
+
+### 3단계 빠른 시작
+
+**1. 저장소 Clone**
+```bash
+git clone https://github.com/DvwN-Lee/Monitoring-v2.git
+cd Monitoring-v2
+```
+
+**2. 환경 선택 및 배포**
+
+로컬 환경 (Minikube):
+```bash
+# Minikube Cluster 시작
+minikube start --cpus 4 --memory 8192
+
+# Kustomize로 배포
+kubectl apply -k k8s-manifests/overlays/minikube
+```
+
+클라우드 환경 (Solid Cloud):
+```bash
+# Terraform으로 인프라 생성
+cd terraform/environments/solid-cloud
+terraform init && terraform apply
+```
+
+**3. 서비스 접근**
+- **Blog Application**: `http://<node-ip>:31304/blog/`
+- **Grafana 대시보드**: `http://<node-ip>:31300` (admin/admin)
+- **Kiali 서비스 메시**: `http://<node-ip>:31164`
+- **ArgoCD**: `http://<node-ip>:30080`
+
+상세한 배포 가이드는 [시작하기 문서](./docs/00-getting-started/GETTING_STARTED.md)를 참고하세요.
 
 ---
 
@@ -9,13 +53,13 @@
 ### v1.0의 한계
 - 로컬 환경(Minikube)에서만 동작
 - 수동으로 인프라를 구성하고 관리 (IaC 미적용)
-- CI/CD 파이프라인이 없어 배포를 수동으로 진행
+- CI/CD Pipeline이 없어 배포를 수동으로 진행
 - 파일 기반 DB(SQLite) 사용으로 확장 불가능
 
 ### v2.0에서 개선한 점
 - **Solid Cloud 기반 실제 클라우드 환경 구축**
 - **Terraform으로 인프라를 코드로 관리 (IaC)**
-- **GitHub Actions + Argo CD로 자동화된 배포 파이프라인**
+- **GitHub Actions + Argo CD로 자동화된 배포 Pipeline**
 - **PostgreSQL로 전환하여 데이터 정합성 및 확장성 확보**
 - **Prometheus + Grafana + Loki로 시스템 모니터링 구축**
 - **Istio를 통한 서비스 간 보안 통신(mTLS) 적용**
@@ -24,8 +68,8 @@
 
 ## 주요 기능
 
--   **Infrastructure as Code (IaC)**: Terraform을 사용하여 Kubernetes 클러스터 내 필수 리소스(네임스페이스, PostgreSQL 배포 등)를 코드로 관리합니다. 참고: 현재 terraform/modules의 네트워크 및 클러스터 모듈은 기본 구조를 보여주는 템플릿이며, 실제 클라우드 환경에 맞게 구체화가 필요합니다.
--   **GitOps CI/CD 파이프라인**: GitHub에 코드를 Push하면 자동으로 빌드, 테스트, 보안 스캔을 거쳐 Solid Cloud에 배포됩니다.
+-   **Infrastructure as Code (IaC)**: Terraform을 사용하여 Kubernetes Cluster 내 필수 리소스(Namespace, PostgreSQL 배포 등)를 코드로 관리합니다. 참고: 현재 terraform/modules의 네트워크 및 Cluster 모듈은 기본 구조를 보여주는 템플릿이며, 실제 클라우드 환경에 맞게 구체화가 필요합니다.
+-   **GitOps CI/CD Pipeline**: GitHub에 코드를 Push하면 자동으로 빌드, 테스트, 보안 스캔을 거쳐 Solid Cloud에 배포됩니다.
 -   **마이크로서비스 아키텍처**: Go와 Python(FastAPI)을 활용한 폴리글랏 MSA 구조로 각 서비스를 독립적으로 개발하고 배포합니다.
 -   **관측성 (Observability)**: Prometheus, Grafana, Loki를 도입하여 시스템의 메트릭과 로그를 실시간으로 모니터링합니다.
 -   **서비스 메시**: Istio를 적용하여 서비스 간 통신을 자동으로 암호화하고 트래픽을 세밀하게 제어합니다.
@@ -38,12 +82,12 @@
 
 ## 아키텍처
 
-프로젝트의 전체 아키텍처, 서비스 간 통신 흐름, CI/CD 파이프라인, 마이크로서비스 구조 등 상세한 설계 내용은 다음 문서를 참고하세요:
+프로젝트의 전체 아키텍처, 서비스 간 통신 흐름, CI/CD Pipeline, 마이크로서비스 구조 등 상세한 설계 내용은 다음 문서를 참고하세요:
 
 **[전체 시스템 아키텍처 문서 보기](./docs/02-architecture/architecture.md)**
 
 주요 내용:
-- 전체 시스템 아키텍처 다이어그램 (CI/CD, Kubernetes 클러스터, 모니터링)
+- 전체 시스템 아키텍처 다이어그램 (CI/CD, Kubernetes Cluster, 모니터링)
 - 마이크로서비스 구조 및 각 서비스 설명
 - 서비스 간 통신 흐름 (Sequence Diagram)
 - 네트워크 및 보안 구조
@@ -116,12 +160,12 @@ titanium-prod namespace의 서비스 메시 구조를 시각화한 화면입니�
 
 ### 옵션 1: 로컬 개발 환경 (Minikube + Skaffold)
 
-빠른 개발 및 테스트를 위한 로컬 쿠버네티스 환경입니다.
+빠른 개발 및 테스트를 위한 로컬 Kubernetes 환경입니다.
 
 **요구사항:** `Minikube`, `Skaffold`, `kubectl`
 
 ```bash
-# 1. Minikube 클러스터 시작
+# 1. Minikube Cluster 시작
 minikube start
 
 # 2. Skaffold 개발 모드 실행
@@ -149,8 +193,9 @@ cp .env.k8s.example .env.k8s
 # - K8S_TOKEN: Service Account Token
 # - K8S_CA_CERT: CA Certificate (Base64 인코딩)
 
-# 2. Solid Cloud 환경으로 전환
-./scripts/switch-to-cloud.sh
+# 2. Kubernetes context 설정 확인
+kubectl config get-contexts
+kubectl config use-context <solid-cloud-context-name>
 
 # 3. Terraform으로 인프라 생성
 cd terraform/environments/solid-cloud
@@ -169,7 +214,7 @@ kubectl get svc -n titanium-prod
 **Token 발급 방법:**
 
 ```bash
-# Service Account 생성 (기존 클러스터 접근 가능한 경우)
+# Service Account 생성 (기존 Cluster 접근 가능한 경우)
 kubectl create serviceaccount monitoring-sa -n default
 kubectl create clusterrolebinding monitoring-sa-admin \
   --clusterrole=cluster-admin \
@@ -197,7 +242,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 - **[시스템 아키텍처](./docs/02-architecture/architecture.md)**: 전체 시스템의 상세 설계 문서
   - 전체 시스템 아키텍처 (Mermaid 다이어그램)
   - 서비스 간 통신 흐름 (Sequence Diagram)
-  - CI/CD 파이프라인 상세 설계
+  - CI/CD Pipeline 상세 설계
   - 네트워크 구조 및 보안 설계
 - **[운영 가이드](./docs/04-operations/guides/operations-guide.md)**: 시스템 운영, 모니터링, 장애 대응 Runbook
 - **[프로젝트 회고](./docs/08-retrospective/project-retrospective.md)**: 프로젝트 성과 및 회고
@@ -259,7 +304,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 - [x] 환경 전환 및 배포 스크립트 작성
 - [x] 통합 테스트 스크립트 작성
 
-### Week 2 완료 (10/7 ~ 10/13): CI/CD 파이프라인 구축
+### Week 2 완료 (10/7 ~ 10/13): CI/CD Pipeline 구축
 - [x] GitHub Actions CI 워크플로우 작성 (빌드, 테스트, Trivy 스캔)
 - [x] Docker 이미지 자동 빌드 및 Push
 - [x] GitOps 저장소 구성 (Kustomize 기반)
@@ -304,7 +349,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 ### 완료된 핵심 기능
 - **Must-Have 요구사항**: 100% 완료
   - Terraform 인프라 자동화
-  - CI/CD 파이프라인 (GitHub Actions + Argo CD)
+  - CI/CD Pipeline (GitHub Actions + Argo CD)
   - Prometheus + Grafana 모니터링
   - PostgreSQL 데이터 영속성
 

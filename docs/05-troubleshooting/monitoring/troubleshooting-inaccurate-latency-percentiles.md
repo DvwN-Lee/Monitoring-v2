@@ -244,7 +244,7 @@ curl http://localhost:8001/metrics | grep http_request_duration_seconds_bucket
 # ...
 ```
 
-### 2. 클러스터 배포
+### 2. Cluster 배포
 
 ```bash
 # 이미지 빌드 및 푸시

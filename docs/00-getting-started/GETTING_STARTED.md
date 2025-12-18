@@ -46,8 +46,8 @@
 
 | 도구 | 설명 | 버전 |
 |:---|:---|:---|
-| `kubectl` | Kubernetes 클러스터 관리 CLI | 최신 안정 버전 |
-| `minikube` | 로컬 Kubernetes 클러스터 | 최신 안정 버전 |
+| `kubectl` | Kubernetes Cluster 관리 CLI | 최신 안정 버전 |
+| `minikube` | 로컬 Kubernetes Cluster | 최신 안정 버전 |
 | `skaffold` | 개발 워크플로우 자동화 도구 | 최신 안정 버전 |
 | `terraform` | 인프라 프로비저닝 (선택사항) | 최신 안정 버전 |
 
@@ -71,9 +71,9 @@ skaffold version
 
 ---
 
-## Step 2: Minikube 클러스터 시작
+## Step 2: Minikube Cluster 시작
 
-### 클러스터 생성
+### Cluster 생성
 
 권장 리소스 설정으로 Minikube를 시작합니다:
 
@@ -89,7 +89,7 @@ minikube start --cpus=4 --memory=8192 --disk-size=20g
 # Minikube 상태
 minikube status
 
-# Kubernetes 노드 확인
+# Kubernetes Node 확인
 kubectl get nodes
 ```
 
@@ -99,7 +99,7 @@ NAME       STATUS   ROLES           AGE   VERSION
 minikube   Ready    control-plane   1m    v1.29.7
 ```
 
-노드 상태가 `Ready`이면 클러스터가 정상적으로 시작된 것입니다.
+Node 상태가 `Ready`이면 Cluster가 정상적으로 시작된 것입니다.
 
 ---
 
@@ -119,7 +119,7 @@ Skaffold는 다음 작업을 자동으로 수행합니다:
 
 1. **빌드**: 각 마이크로서비스의 Docker 이미지를 빌드
 2. **푸시**: Minikube 내부 레지스트리로 이미지 푸시
-3. **배포**: Kustomize로 Kubernetes 매니페스트를 생성하고 클러스터에 적용
+3. **배포**: Kustomize로 Kubernetes 매니페스트를 생성하고 Cluster에 적용
 4. **감시**: 코드 변경 감지 시 자동 재빌드 및 재배포 (Hot Reload)
 
 ### 배포 진행 상황 확인
@@ -234,7 +234,7 @@ Ctrl + C
 
 **해결**:
 ```bash
-# 기존 클러스터 삭제 후 재시작
+# 기존 Cluster 삭제 후 재시작
 minikube delete
 minikube start --cpus=4 --memory=8192
 ```
@@ -299,7 +299,7 @@ kubectl port-forward svc/<service-name> <local-port>:<service-port>
 
 ### 개발 시작하기
 - [로컬 개발 가이드](../03-implementation/)
-- [CI/CD 파이프라인](../02-architecture/architecture.md#4-cicd-파이프라인)
+- [CI/CD Pipeline](../02-architecture/architecture.md#4-cicd-Pipeline)
 
 ### 문제 발생 시
 - [트러블슈팅 가이드 인덱스](../05-troubleshooting/README.md)

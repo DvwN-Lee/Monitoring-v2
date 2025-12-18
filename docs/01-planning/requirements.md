@@ -21,13 +21,13 @@
 
 ### 1.2. 프로젝트 범위
 - **포함 범위**
-  - Solid Cloud Kubernetes 클러스터에 마이크로서비스 배포
+  - Solid Cloud Kubernetes Cluster에 마이크로서비스 배포
   - Terraform을 통한 인프라 자동화 (IaC)
-  - GitOps 기반 CI/CD 파이프라인 구축
+  - GitOps 기반 CI/CD Pipeline 구축
   - 서비스 메시 및 모니터링 시스템 도입
   
 - **제외 범위**
-  - 멀티 클러스터/멀티 리전 구성
+  - 멀티 Cluster/멀티 리전 구성
   - Blue/Green, Canary 등 고급 배포 전략
   - 새로운 비즈니스 기능 추가
 
@@ -44,7 +44,7 @@
 ### 2.2. 주요 문제점
 1. **실제 클라우드 경험 부족**: 로컬 환경에서만 동작하여 실전 운영 경험이 없음
 2. **인프라 관리의 한계**: 수동 설정으로 인한 재현성 부족
-3. **자동화 부재**: CI/CD 파이프라인이 없어 배포가 비효율적
+3. **자동화 부재**: CI/CD Pipeline이 없어 배포가 비효율적
 4. **확장성 제약**: SQLite 사용으로 서비스 확장 불가능
 5. **모니터링 부재**: 시스템 상태를 파악하기 어려움
 
@@ -55,14 +55,14 @@
 ### 3.1. 필수 요구사항 (Must-Have)
 
 #### FR-M-1: IaC 기반 인프라 구축
-- Terraform으로 Solid Cloud의 네트워크, 스토리지, Kubernetes 클러스터를 자동으로 생성
+- Terraform으로 Solid Cloud의 네트워크, 스토리지, Kubernetes Cluster를 자동으로 생성
 - 인프라 변경 사항이 코드로 관리되어 Git으로 버전 관리 가능
 
-#### FR-M-2: 자동화된 CI/CD 파이프라인
+#### FR-M-2: 자동화된 CI/CD Pipeline
 - GitHub에 코드 Push 시 자동으로 다음 단계 수행:
   1. 코드 린트 및 단위 테스트
   2. 보안 취약점 스캔
-  3. 컨테이너 이미지 빌드 및 레지스트리에 Push
+  3. Container 이미지 빌드 및 레지스트리에 Push
   4. Argo CD를 통한 자동 배포
 
 #### FR-M-3: PostgreSQL로 데이터베이스 전환
@@ -148,7 +148,7 @@
 
 ### 6.1. 기능적 성공 기준
 - 모든 필수 요구사항(Must-Have) 구현 완료
-- CI/CD 파이프라인이 정상적으로 동작
+- CI/CD Pipeline이 정상적으로 동작
 - Solid Cloud에서 안정적으로 서비스 운영
 
 ### 6.2. 기술적 성공 기준
@@ -172,4 +172,4 @@
 ### 7.2. 프로젝트 종료 후 개선 사항
 - Canary 배포 전략 도입
 - Service Mesh 고급 기능 활용
-- 멀티 클러스터 구성 시도
+- 멀티 Cluster 구성 시도

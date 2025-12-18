@@ -43,9 +43,9 @@ Service가 Endpoint를 자동으로 생성하고 관리하기 위해서는 몇 �
 
 2.  **Pod가 `Ready` 상태가 아님**: Service는 기본적으로 `Ready` 상태에 있는 Pod들만 Endpoint 목록에 추가합니다. 만약 Pod가 `CrashLoopBackOff`, `ImagePullBackOff` 상태에 있거나, Readiness Probe에 실패하여 `Ready` 상태가 아니라면, Service의 `selector`와 Pod의 `label`이 일치하더라도 Endpoint에 포함되지 않습니다.
 
-3.  **Service와 Pod의 네임스페이스 불일치**: Service와 Pod는 반드시 같은 네임스페이스에 존재해야 합니다. 서로 다른 네임스페이스에 있는 Pod는 Service에 연결될 수 없습니다.
+3.  **Service와 Pod의 Namespace 불일치**: Service와 Pod는 반드시 같은 Namespace에 존재해야 합니다. 서로 다른 Namespace에 있는 Pod는 Service에 연결될 수 없습니다.
 
-4.  **`targetPort` 설정 오류**: Service의 `targetPort`가 Pod의 컨테이너가 실제로 리스닝하고 있는 `containerPort`와 일치하지 않는 경우. 이 경우 Endpoint는 생성될 수 있지만, 트래픽이 전달되지 않아 결국 연결 실패로 이어집니다.
+4.  **`targetPort` 설정 오류**: Service의 `targetPort`가 Pod의 Container가 실제로 리스닝하고 있는 `containerPort`와 일치하지 않는 경우. 이 경우 Endpoint는 생성될 수 있지만, 트래픽이 전달되지 않아 결국 연결 실패로 이어집니다.
 
 ## 4. 해결 방법
 
@@ -110,7 +110,7 @@ NAME                              READY   STATUS    RESTARTS   AGE
 user-service-6c8f7d4f9c-abcde     1/1     Running   0          1h
 ```
 
-`READY` 컬럼이 `1/1`과 같이 컨테이너 수와 일치하고 `STATUS`가 `Running`이면 정상입니다. 만약 `0/1`이거나 `CrashLoopBackOff` 등의 상태라면, 해당 Pod의 문제를 먼저 해결해야 합니다. (관련 트러블슈팅 가이드 참조)
+`READY` 컬럼이 `1/1`과 같이 Container 수와 일치하고 `STATUS`가 `Running`이면 정상입니다. 만약 `0/1`이거나 `CrashLoopBackOff` 등의 상태라면, 해당 Pod의 문제를 먼저 해결해야 합니다. (관련 트러블슈팅 가이드 참조)
 
 #### 3단계: `targetPort` 확인
 
@@ -131,7 +131,7 @@ NAME           ENDPOINTS                         AGE
 user-service   10.244.1.5:8080,10.244.2.7:8080   5m
 ```
 
-Endpoint가 생성된 것을 확인한 후, 클러스터 내 다른 Pod에서 `curl http://user-service`를 실행하여 연결이 잘 되는지 최종 검증합니다.
+Endpoint가 생성된 것을 확인한 후, Cluster 내 다른 Pod에서 `curl http://user-service`를 실행하여 연결이 잘 되는지 최종 검증합니다.
 
 ## 5. 교훈
 

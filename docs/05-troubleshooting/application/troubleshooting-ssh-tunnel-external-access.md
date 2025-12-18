@@ -8,7 +8,7 @@ author: Dongju Lee
 
 ## 1. 문제 상황
 
-Phase 1+2 검증을 위해 로컬 머신에서 Solid Cloud 클러스터에 배포된 서비스에 API 요청을 보내려 했으나, Connection Timeout 오류가 발생하여 접속할 수 없었습니다.
+Phase 1+2 검증을 위해 로컬 머신에서 Solid Cloud Cluster에 배포된 서비스에 API 요청을 보내려 했으나, Connection Timeout 오류가 발생하여 접속할 수 없었습니다.
 
 ```bash
 $ curl -X POST http://10.0.1.70:32491/api/users \

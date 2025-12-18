@@ -8,7 +8,7 @@ author: Dongju Lee
 
 ## 1. 문제 상황
 
-GitHub Actions CI 워크플로우에서 `docker/login-action`을 사용하여 Docker Hub에 로그인하는 단계에서 인증 오류가 발생했습니다. 이로 인해 새로 빌드한 Docker 이미지를 Docker Hub 리포지토리로 푸시(push)하지 못하고 CI 파이프라인이 실패했습니다.
+GitHub Actions CI 워크플로우에서 `docker/login-action`을 사용하여 Docker Hub에 로그인하는 단계에서 인증 오류가 발생했습니다. 이로 인해 새로 빌드한 Docker 이미지를 Docker Hub 리포지토리로 푸시(push)하지 못하고 CI Pipeline이 실패했습니다.
 
 ## 2. 증상
 
@@ -156,5 +156,5 @@ Docker Hub Access Token의 권한이 적절하게 설정되어 있는지 확인�
 
 ## 관련 문서
 
-- [시스템 아키텍처 - CI/CD 파이프라인](../../02-architecture/architecture.md#4-cicd-파이프라인)
+- [시스템 아키텍처 - CI/CD Pipeline](../../02-architecture/architecture.md#4-cicd-Pipeline)
 - [Secret 관리 가이드](../../04-operations/guides/SECRET_MANAGEMENT.md)

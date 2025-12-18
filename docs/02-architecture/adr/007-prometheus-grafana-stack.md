@@ -50,7 +50,7 @@ CNCF Graduated 프로젝트인 Prometheus와 오픈소스 시각화 도구 Grafa
 단순히 Prometheus와 Grafana를 설치하는 대신 **kube-prometheus-stack** Helm 차트를 선택했습니다:
 - Prometheus Operator, Grafana, AlertManager를 한 번에 배포
 - Node Exporter, Kube State Metrics 등 필수 exporter 자동 포함
-- Kubernetes 클러스터 모니터링을 위한 기본 대시보드와 알림 규칙 제공
+- Kubernetes Cluster 모니터링을 위한 기본 대시보드와 알림 규칙 제공
 - CRD 기반 설정으로 선언적 관리 가능
 
 ## 결과 (Consequences)

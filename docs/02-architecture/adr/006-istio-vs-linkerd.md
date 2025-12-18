@@ -23,7 +23,7 @@ CNCF 생태계의 두 주요 Service Mesh인 Istio와 Linkerd를 비교 분석�
 |:---|:---|:---|:---|
 | **기능 범위** | **포괄적** (트래픽 관리, 보안, 관측성, 정책) | 경량화된 핵심 기능 중심 | Ingress Gateway, VirtualService, DestinationRule 등 세밀한 트래픽 제어 기능이 필요함. |
 | **관측성** | **Kiali, Jaeger, Grafana 통합** | Linkerd Dashboard 제공 | Kiali를 통한 서비스 메시 시각화가 데모와 운영에 효과적임. |
-| **보안** | **mTLS STRICT 모드 지원** | mTLS 자동 적용 | 네임스페이스 단위로 mTLS 정책을 세밀하게 제어 가능함. |
+| **보안** | **mTLS STRICT 모드 지원** | mTLS 자동 적용 | Namespace 단위로 mTLS 정책을 세밀하게 제어 가능함. |
 | **트래픽 관리** | **강력함** (카나리, A/B 테스트, 미러링) | 기본적인 로드밸런싱 | VirtualService를 통한 정교한 라우팅 규칙 설정 가능. |
 | **커뮤니티** | **매우 활발함** (Google, IBM 지원) | 활발함 | 더 많은 레퍼런스와 엔터프라이즈 지원 사례가 있음. |
 | **리소스 사용량** | 상대적으로 높음 | **경량** (Rust 기반) | 학습 목적 프로젝트이므로 리소스보다 기능성을 우선시함. |
@@ -41,7 +41,7 @@ CNCF 생태계의 두 주요 Service Mesh인 Istio와 Linkerd를 비교 분석�
 - Kiali를 통해 서비스 메시의 트래픽 패턴과 mTLS 상태를 시각적으로 모니터링 가능
 - VirtualService를 통한 정교한 라우팅 규칙 설정 (헤더 기반, 가중치 기반)
 - Prometheus와의 완벽한 통합으로 풍부한 메트릭 수집 (요청 수, 지연시간, 에러율)
-- 네임스페이스 단위 mTLS STRICT 모드 적용으로 서비스 간 통신 보안 강화
+- Namespace 단위 mTLS STRICT 모드 적용으로 서비스 간 통신 보안 강화
 - Istio IngressGateway를 통한 외부 트래픽 통합 관리
 - 실무에서 가장 많이 사용되는 Service Mesh 경험 획득
 

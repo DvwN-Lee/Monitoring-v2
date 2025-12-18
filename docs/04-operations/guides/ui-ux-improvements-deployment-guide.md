@@ -48,7 +48,7 @@ UI/UX 테스트 결과를 바탕으로 다음 4가지 주요 개선사항을 구
 
 **추가된 ARIA 속성**:
 - 카테고리 탭: `role="tablist"`, `role="tab"`, `aria-selected`, `aria-controls`
-- 게시물 컨테이너: `role="tabpanel"`
+- 게시물 Container: `role="tabpanel"`
 - 페이지네이션: `aria-label="페이지 네비게이션"`, `aria-label="이전/다음 페이지"`
 - 모달: `role="dialog"`, `aria-modal="true"`, `aria-labelledby`
 - 폼 입력: `aria-required="true"`
@@ -79,11 +79,11 @@ UI/UX 테스트 결과를 바탕으로 다음 4가지 주요 개선사항을 구
 # Docker 빌드 권한
 docker info
 
-# Kubernetes 클러스터 접근 확인
+# Kubernetes Cluster 접근 확인
 kubectl cluster-info
 kubectl config current-context  # solid-cloud 여야 함
 
-# 네임스페이스 확인
+# Namespace 확인
 kubectl get ns titanium-prod
 ```
 

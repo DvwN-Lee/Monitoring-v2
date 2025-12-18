@@ -10,7 +10,7 @@
 
 **Kubernetes 버전**: v1.29.7
 
-이 프로젝트는 로컬 개발 환경(Minikube + SQLite)에서 동작하던 마이크로서비스를 클라우드 환경(Solid Cloud + PostgreSQL)으로 전환하고, 완전 자동화된 CI/CD 파이프라인, 서비스 메시, 그리고 포괄적인 관측성 시스템을 구축하여 엔터프라이즈급 마이크로서비스 플랫폼을 완성했습니다.
+이 프로젝트는 로컬 개발 환경(Minikube + SQLite)에서 동작하던 마이크로서비스를 클라우드 환경(Solid Cloud + PostgreSQL)으로 전환하고, 완전 자동화된 CI/CD Pipeline, 서비스 메시, 그리고 포괄적인 관측성 시스템을 구축하여 엔터프라이즈급 마이크로서비스 플랫폼을 완성했습니다.
 
 **전체 완료율**:
 - Must-Have 요구사항: 100%
@@ -23,13 +23,13 @@
 
 **기간**: 2025-10-27 ~ 2025-10-28
 
-**목표**: Terraform으로 Kubernetes 클러스터를 구축하고 PostgreSQL로 DB 전환
+**목표**: Terraform으로 Kubernetes Cluster를 구축하고 PostgreSQL로 DB 전환
 
 ### 주요 성과
 
 **완료된 작업**:
 - Terraform 기반 Infrastructure as Code (IaC) 구축
-- Kubernetes 클러스터 구성 (Control Plane 1개, Worker 3개)
+- Kubernetes Cluster 구성 (Control Plane 1개, Worker 3개)
 - SQLite → PostgreSQL 데이터베이스 마이그레이션
 - Kustomize 기반 환경 분리 (Local/Cloud overlays)
 - 배포 및 테스트 자동화 스크립트 작성
@@ -53,7 +53,7 @@
 ```
 terraform/modules/
 ├── network/         # VPC, Subnet 구성
-├── kubernetes/      # 클러스터 및 Namespace
+├── kubernetes/      # Cluster 및 Namespace
 └── database/        # PostgreSQL StatefulSet
 ```
 
@@ -67,12 +67,12 @@ k8s-manifests/overlays/
 **데이터베이스 마이그레이션**:
 - user-service: SQLite → PostgreSQL (asyncpg)
 - blog-service: SQLite → PostgreSQL (asyncpg)
-- 스키마: users, posts 테이블 + 인덱스
+- Schema: users, posts 테이블 + 인덱스
 
 ### 검증 결과
 
 - Terraform apply 성공 (3분 소요)
-- Kubernetes 클러스터 4노드 Ready
+- Kubernetes Cluster 4Node Ready
 - PostgreSQL Running (10Gi PVC Bound)
 - 데이터베이스 연결 및 CRUD 정상 동작
 
@@ -93,14 +93,14 @@ k8s-manifests/overlays/
 
 ### 주요 성과
 
-**CI 파이프라인 구축**:
-- GitHub Actions 기반 자동 빌드 파이프라인
+**CI Pipeline 구축**:
+- GitHub Actions 기반 자동 빌드 Pipeline
 - 변경된 서비스만 자동 감지 및 빌드
 - 멀티 플랫폼 Docker 이미지 빌드 (linux/amd64, linux/arm64)
 - Trivy 보안 스캔 통합
 - Docker Hub 자동 푸시
 
-**CD 파이프라인 구축**:
+**CD Pipeline 구축**:
 - Argo CD GitOps 도구 설치 및 구성
 - kustomization.yaml 이미지 태그 자동 업데이트
 - 자동 동기화 및 배포 (3분 주기)
@@ -138,8 +138,8 @@ Kubernetes Cluster
 ### Argo CD 구성
 
 **syncPolicy 설정**:
-- `prune: true`: Git에서 삭제된 리소스를 클러스터에서도 삭제
-- `selfHeal: true`: 클러스터의 리소스가 변경되면 자동으로 Git 상태로 복구
+- `prune: true`: Git에서 삭제된 리소스를 Cluster에서도 삭제
+- `selfHeal: true`: Cluster의 리소스가 변경되면 자동으로 Git 상태로 복구
 - `allowEmpty: false`: 빈 커밋 무시
 
 ---
@@ -155,7 +155,7 @@ Kubernetes Cluster
 **1. Prometheus 기반 메트릭 수집**:
 - Prometheus Operator 설치 및 구성
 - ServiceMonitor 생성 (각 마이크로서비스별)
-- 모든 네임스페이스에서 메트릭 수집 설정
+- 모든 Namespace에서 메트릭 수집 설정
 - Custom Rules: CPU/메모리 사용량 알림 규칙
 
 **2. Grafana 시각화**:
@@ -169,7 +169,7 @@ Kubernetes Cluster
 
 **3. Loki 중앙 로깅 시스템**:
 - Loki: 로그 저장소 (7일 보존 기간)
-- Promtail: DaemonSet으로 모든 노드에서 로그 수집
+- Promtail: DaemonSet으로 모든 Node에서 로그 수집
 - JSON 파싱: 애플리케이션의 JSON 형식 로그 자동 파싱
 - Grafana 통합: LogQL을 통한 로그 조회 및 분석
 
@@ -265,7 +265,7 @@ Kubernetes Cluster
 **Pod 현황**:
 - 총 12개 Pod (api-gateway:2, auth:2, blog:2, user:2, redis:1, load-generator:2, postgresql:1)
 - 모든 애플리케이션 Pod: 2/2 Running
-  - 1: 애플리케이션 컨테이너
+  - 1: 애플리케이션 Container
   - 1: Istio sidecar (Envoy proxy)
 
 **Istio 리소스**:
@@ -323,7 +323,7 @@ Kubernetes Cluster
 - **Saturation**: CPU 사용률 **0.5-2.7%** 수준으로 최적화
 
 **2. 보안 검증**:
-- Trivy 보안 스캔: CI 파이프라인 통합 완료
+- Trivy 보안 스캔: CI Pipeline 통합 완료
 - Secrets 관리: Kubernetes Secrets 사용
 - RBAC 설정: ServiceAccount, Role, RoleBinding 구성
 - NetworkPolicy: Calico CNI 기반 네트워크 격리
@@ -359,7 +359,7 @@ Kubernetes Cluster
 
 **근거**:
 - 직관적인 UI로 배포 상태 시각화 용이
-- 멀티 클러스터 관리 기능 제공
+- 멀티 Cluster 관리 기능 제공
 - 대규모 커뮤니티 및 활발한 개발
 - Kubernetes 네이티브 설치 방식
 
@@ -410,11 +410,11 @@ Kubernetes Cluster
 | 카테고리 | 기술 | 버전 | 용도 |
 |---------|------|------|------|
 | **인프라** | Terraform | - | IaC (Infrastructure as Code) |
-| | Kubernetes | v1.29.7 | 컨테이너 오케스트레이션 |
+| | Kubernetes | v1.29.7 | Container 오케스트레이션 |
 | | Calico | - | CNI 및 NetworkPolicy |
-| **CI/CD** | GitHub Actions | - | CI/CD 파이프라인 |
+| **CI/CD** | GitHub Actions | - | CI/CD Pipeline |
 | | Argo CD | v2.8.4 | GitOps 배포 자동화 |
-| | Docker | - | 컨테이너 이미지 빌드 |
+| | Docker | - | Container 이미지 빌드 |
 | | Trivy | - | 보안 스캔 |
 | **모니터링** | Prometheus | - | 메트릭 수집 및 저장 |
 | | Grafana | - | 시각화 대시보드 |
@@ -429,7 +429,7 @@ Kubernetes Cluster
 
 ## 구현 성과
 
-### 1. 완전 자동화된 CI/CD 파이프라인
+### 1. 완전 자동화된 CI/CD Pipeline
 
 **달성 내용**:
 - Git Push → 자동 빌드 → 자동 배포 전체 플로우 구축
@@ -531,7 +531,7 @@ Kubernetes Cluster
 | 주차 | 기간 | 목표 | 완료율 |
 |------|------|------|--------|
 | Week 1 | 9/30 - 10/6 | 인프라 기반 구축 | 100% |
-| Week 2 | 10/7 - 10/13 | CI/CD 파이프라인 구축 | 100% |
+| Week 2 | 10/7 - 10/13 | CI/CD Pipeline 구축 | 100% |
 | Week 3 | 10/14 - 10/20 | 관측성 시스템 구축 | 100% |
 | Week 4 | 10/21 - 10/27 | 서비스 메시 및 보안 | 100% |
 | Week 5 | 10/28 - 11/3 | 테스트 및 최적화 | 100% |
@@ -549,7 +549,7 @@ Kubernetes Cluster
 
 **현재 시스템 상태**:
 - 안정적으로 운영 중
-- 완전 자동화된 CI/CD 파이프라인
+- 완전 자동화된 CI/CD Pipeline
 - 서비스 간 통신 100% 암호화 (mTLS)
 - 실시간 모니터링 및 로깅 시스템 구축
 - 고가용성 및 자동 확장 구현

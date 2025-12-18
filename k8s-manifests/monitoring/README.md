@@ -1,6 +1,6 @@
 # Monitoring Stack Configuration
 
-이 디렉터리는 Kubernetes 클러스터에 배포되는 모니터링 스택(Prometheus, Grafana, Loki)의 설정 파일들을 포함합니다.
+이 디렉터리는 Kubernetes Cluster에 배포되는 모니터링 스택(Prometheus, Grafana, Loki)의 설정 파일들을 포함합니다.
 
 ## 개요
 
@@ -63,7 +63,7 @@ prometheus:
 
 ![Loki Logs](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/loki-logs.png)
 
-**역할**: 컨테이너 로그를 수집하고 저장하는 로그 집계 시스템
+**역할**: Container 로그를 수집하고 저장하는 로그 집계 시스템
 
 **설정 파일**:
 - `loki-stack-values.yaml`: Loki 서버 및 Promtail 에이전트 설정
@@ -83,8 +83,8 @@ loki:
 ```
 
 **Promtail**:
-- 각 Kubernetes 노드에서 DaemonSet으로 실행
-- `/var/log/pods`에서 컨테이너 로그 수집
+- 각 Kubernetes Node에서 DaemonSet으로 실행
+- `/var/log/pods`에서 Container 로그 수집
 - Loki 서버로 전송
 
 ## 배포 방법
@@ -178,8 +178,8 @@ spec:
 - `http_requests_in_flight`: 현재 처리 중인 요청 수
 
 **인프라 메트릭**:
-- `container_cpu_usage_seconds_total`: 컨테이너 CPU 사용량
-- `container_memory_usage_bytes`: 컨테이너 메모리 사용량
+- `container_cpu_usage_seconds_total`: Container CPU 사용량
+- `container_memory_usage_bytes`: Container 메모리 사용량
 - `kube_pod_status_phase`: Pod 상태
 
 **Istio 메트릭**:
@@ -192,7 +192,7 @@ spec:
 Loki에서 로그를 조회하기 위한 LogQL 쿼리 예시입니다.
 
 ```logql
-# titanium-prod 네임스페이스의 모든 로그
+# titanium-prod Namespace의 모든 로그
 {namespace="titanium-prod"}
 
 # 특정 서비스의 로그

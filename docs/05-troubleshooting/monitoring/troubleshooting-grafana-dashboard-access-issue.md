@@ -8,17 +8,17 @@ author: Dongju Lee
 
 ## 1. 문제 상황
 
-Solid Cloud 클러스터 환경에 배포된 Grafana Pod는 `Running` 상태로 정상 동작하는 것으로 보이나, 웹 브라우저를 통해 Grafana 대시보드에 접속할 수 없는 문제가 발생했습니다.
+Solid Cloud Cluster 환경에 배포된 Grafana Pod는 `Running` 상태로 정상 동작하는 것으로 보이나, 웹 브라우저를 통해 Grafana 대시보드에 접속할 수 없는 문제가 발생했습니다.
 
 ## 2. 증상
 
 - **브라우저 접속 실패**: Grafana URL로 접속 시 '연결 시간 초과(Connection Timed Out)' 오류가 발생하며 페이지가 열리지 않습니다.
 - **Port-forward 실패**: `kubectl port-forward` 명령어를 사용하여 로컬에서 Pod로 직접 접근을 시도했으나, 연결이 수립되지 않고 실패했습니다.
-- **Curl 테스트 실패**: 클러스터 내부의 다른 Pod에서 `curl` 명령어를 이용해 Grafana Service로 요청을 보냈으나, 응답을 받지 못했습니다.
+- **Curl 테스트 실패**: Cluster 내부의 다른 Pod에서 `curl` 명령어를 이용해 Grafana Service로 요청을 보냈으나, 응답을 받지 못했습니다.
 
 ## 3. 원인 분석
 
-초기 분석 결과, Pod 자체의 문제보다는 클러스터 네트워크 설정과 관련된 문제일 가능성이 높다고 판단했습니다. 주요 원인으로 다음 네 가지를 추정했습니다.
+초기 분석 결과, Pod 자체의 문제보다는 Cluster 네트워크 설정과 관련된 문제일 가능성이 높다고 판단했습니다. 주요 원인으로 다음 네 가지를 추정했습니다.
 
 1.  **Service 타입 설정 오류**: Grafana Service가 외부에서 접근할 수 없는 `ClusterIP` 타입으로 설정되었을 가능성. 외부 노출을 위해서는 `NodePort` 또는 `LoadBalancer` 타입이 필요합니다.
 2.  **Ingress 설정 누락 또는 오류**: `ClusterIP` 타입의 Service를 외부로 노출하기 위한 Ingress 리소스가 없거나, 규칙이 잘못 설정되었을 가능성.
@@ -46,7 +46,7 @@ grafana-service         ClusterIP   10.100.200.30   <none>        3000/TCP   2h
 ...
 ```
 
-**분석**: Service 타입이 `ClusterIP`로 설정되어 있어 클러스터 외부에서 직접 접근할 수 없는 상태였습니다. 이것이 문제의 핵심 원인 중 하나로 추정되었습니다.
+**분석**: Service 타입이 `ClusterIP`로 설정되어 있어 Cluster 외부에서 직접 접근할 수 없는 상태였습니다. 이것이 문제의 핵심 원인 중 하나로 추정되었습니다.
 
 ### 2단계: `port-forward`를 이용한 Pod 직접 연결 테스트
 
@@ -118,7 +118,7 @@ spec:
   - Ingress
   ingress:
   - from:
-    - namespaceSelector: {} # 모든 네임스페이스에서 오는 트래픽 허용
+    - namespaceSelector: {} # 모든 Namespace에서 오는 트래픽 허용
     ports:
     - protocol: TCP
       port: 3000

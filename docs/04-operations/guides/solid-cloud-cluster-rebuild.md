@@ -1,14 +1,14 @@
-# Solid Cloud 클러스터 데이터 백업 및 재구축 가이드
+# Solid Cloud Cluster 데이터 백업 및 재구축 가이드
 
 ## 개요
 
-Solid Cloud 쿠버네티스 클러스터를 안전하게 백업하고, 인스턴스를 삭제한 후 새로 재구축하는 전체 시나리오입니다.
+Solid Cloud Kubernetes Cluster를 안전하게 백업하고, 인스턴스를 삭제한 후 새로 재구축하는 전체 시나리오입니다.
 
-**목표**: 데이터 무손실, 다운타임 최소화, 안전한 클러스터 재구축
+**목표**: 데이터 무손실, 다운타임 최소화, 안전한 Cluster 재구축
 
 **적용 시나리오**:
 - Solid Cloud 인스턴스 성능 문제로 재생성 필요
-- 클러스터 버전 업그레이드를 위한 재구축
+- Cluster 버전 업그레이드를 위한 재구축
 - 리소스 재할당 및 최적화
 
 ## 현재 인프라 구조 (2025-01-24 기준)
@@ -58,7 +58,7 @@ titanium-prod namespace:
 
 #### Kubernetes 권한
 
-- [ ] 클러스터 관리자 권한 (cluster-admin)
+- [ ] Cluster 관리자 권한 (cluster-admin)
 - [ ] StatefulSet, PVC 생성/삭제 권한
 - [ ] Secret, ConfigMap 읽기/쓰기 권한
 - [ ] Namespace 생성/삭제 권한
@@ -76,7 +76,7 @@ kubectl config view --minify
 
 #### Terraform 권한
 
-- [ ] Solid Cloud API 토큰 (클러스터 생성/삭제)
+- [ ] Solid Cloud API 토큰 (Cluster 생성/삭제)
 - [ ] terraform state 읽기/쓰기 권한
 - [ ] VPC, 네트워크 리소스 생성 권한
 
@@ -107,8 +107,8 @@ command -v psql || echo "postgresql-client 설치 필요"
 | 작업 | 예상 시간 | 디스크 사용량 | 네트워크 사용량 |
 |------|----------|-------------|---------------|
 | 백업 | 30분~1시간 | 10~20GB | 5~10GB 다운로드 |
-| 클러스터 삭제 | 10~15분 | - | - |
-| 클러스터 생성 | 10~15분 | - | - |
+| Cluster 삭제 | 10~15분 | - | - |
+| Cluster 생성 | 10~15분 | - | - |
 | 인프라 재구축 | 10~15분 | - | 1~2GB |
 | 데이터 복구 | 30분~1시간 | 10~20GB | 5~10GB 업로드 |
 | **총계** | **2~3시간** | **20~40GB** | **15~25GB** |
@@ -219,10 +219,10 @@ kubectl exec -n $NAMESPACE $PG_POD -- pg_dump -U postgres -d titanium -t posts >
   $BACKUP_DIR/posts-$BACKUP_DATE.sql
 ```
 
-#### 방법 C: 스키마와 데이터 분리 백업
+#### 방법 C: Schema와 데이터 분리 백업
 
 ```bash
-# 스키마만 백업 (테이블 구조)
+# Schema만 백업 (테이블 구조)
 kubectl exec -n $NAMESPACE $PG_POD -- pg_dump -U postgres -d titanium --schema-only > \
   $BACKUP_DIR/titanium-schema-$BACKUP_DATE.sql
 
@@ -289,7 +289,7 @@ kubectl get all,pvc,configmap,secret,gateway,virtualservice,servicemonitor \
 ```bash
 cd $BACKUP_DIR
 
-# SQL 파일 문법 검증 (PostgreSQL 컨테이너 내부)
+# SQL 파일 문법 검증 (PostgreSQL Container 내부)
 kubectl exec -n $NAMESPACE $PG_POD -- psql -U postgres -d template1 -f - < \
   titanium-full-$BACKUP_DATE.sql --set ON_ERROR_STOP=on --dry-run 2>&1 | head -20
 
@@ -373,7 +373,7 @@ cp backup-postgresql-$BACKUP_DATE.tar.gz /Volumes/ExternalDisk/
 
 ---
 
-## Phase 3: 클러스터 제거
+## Phase 3: Cluster 제거
 
 ### 3.1 최종 확인 체크리스트
 
@@ -397,7 +397,7 @@ EOF
 read CONFIRM
 
 if [ "$CONFIRM" != "yes" ]; then
-  echo "클러스터 삭제 취소됨"
+  echo "Cluster 삭제 취소됨"
   exit 1
 fi
 ```
@@ -432,24 +432,24 @@ kubectl delete namespace monitoring
 kubectl delete namespace istio-system
 ```
 
-### 3.4 Solid Cloud 클러스터 삭제
+### 3.4 Solid Cloud Cluster 삭제
 
 ```bash
-# Solid Cloud 콘솔에서 클러스터 삭제
+# Solid Cloud 콘솔에서 Cluster 삭제
 # 또는 CLI 사용:
 # solid-cloud cluster delete <cluster-name>
 ```
 
 ---
 
-## Phase 4: 클러스터 재구축
+## Phase 4: Cluster 재구축
 
-### 4.1 새 클러스터 생성
+### 4.1 새 Cluster 생성
 
 ```bash
-# Solid Cloud에서 새 클러스터 생성
-# - 노드 수: 기존과 동일 (3-4개)
-# - 노드 타입: 기존과 동일
+# Solid Cloud에서 새 Cluster 생성
+# - Node 수: 기존과 동일 (3-4개)
+# - Node 타입: 기존과 동일
 # - Kubernetes 버전: v1.29.7
 
 # kubeconfig 다운로드
@@ -465,7 +465,7 @@ kubectl get nodes
 ```bash
 cd ~/Desktop/Git/Monitoring-v2/terraform/environments/solid-cloud
 
-# Terraform 초기화 (새 클러스터)
+# Terraform 초기화 (새 Cluster)
 terraform init
 
 # kubeconfig 경로 설정
@@ -739,7 +739,7 @@ cat >> ~/Desktop/Git/Monitoring-v2/CHANGELOG.md <<EOF
 ## $(date +%Y-%m-%d) - Solid Cloud Cluster Rebuild
 
 ### Summary
-- Solid Cloud 클러스터 재구축 완료
+- Solid Cloud Cluster 재구축 완료
 - PostgreSQL 데이터 전체 복구 성공
 
 ### Backup Details
@@ -888,8 +888,8 @@ kubectl top pods -n $NAMESPACE
 ```
 
 **롤백 조건**:
-- 노드 CPU 사용률 > 90% 지속
-- 노드 메모리 사용률 > 95% 지속
+- Node CPU 사용률 > 90% 지속
+- Node 메모리 사용률 > 95% 지속
 - PVC 용량 부족 (사용률 > 90%)
 
 ### 복구 중 문제 발생 시
@@ -1019,7 +1019,7 @@ kubectl patch statefulset postgresql -n $NAMESPACE -p '
 - [ ] 오프사이트 백업 완료
 
 ### Rebuild
-- [ ] 새 클러스터 생성
+- [ ] 새 Cluster 생성
 - [ ] Terraform apply 성공
 - [ ] PostgreSQL StatefulSet Running
 - [ ] PVC Bound 확인

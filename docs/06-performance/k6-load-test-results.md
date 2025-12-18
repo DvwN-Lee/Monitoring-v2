@@ -100,10 +100,10 @@ prod-user-service: 2/2 Running (2개 유지)
 
 ## 테스트 환경
 
-- **클러스터**: Solid Cloud Kubernetes
-- **노드 IP**: 10.0.11.168
+- **Cluster**: Solid Cloud Kubernetes
+- **Node IP**: 10.0.11.168
 - **Ingress Gateway**: Istio (NodePort: 31304)
-- **테스트 위치**: 로컬에서 클러스터로 직접 요청
+- **테스트 위치**: 로컬에서 Cluster로 직접 요청
 
 ## 결론
 
