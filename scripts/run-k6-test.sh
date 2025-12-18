@@ -17,13 +17,13 @@ NC='\033[0m' # No Color
 # 테스트 타입 (기본값: quick)
 TEST_TYPE=${1:-quick}
 
-# 클러스터 정보 확인
-echo -e "${BLUE}[INFO]${NC} 클러스터 정보 확인 중..."
+# Cluster 정보 확인
+echo -e "${BLUE}[INFO]${NC} Cluster 정보 확인 중..."
 
-# 노드 IP 가져오기
+# Node IP 가져오기
 NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
 if [ -z "$NODE_IP" ]; then
-    echo -e "${RED}[ERROR]${NC} 노드 IP를 가져올 수 없습니다."
+    echo -e "${RED}[ERROR]${NC} Node IP를 가져올 수 없습니다."
     exit 1
 fi
 
@@ -36,8 +36,8 @@ fi
 
 BASE_URL="http://${NODE_IP}:${NODEPORT}"
 
-echo -e "${GREEN}[✓]${NC} 클러스터 접속 정보:"
-echo -e "  - 노드 IP: ${NODE_IP}"
+echo -e "${GREEN}[✓]${NC} Cluster 접속 정보:"
+echo -e "  - Node IP: ${NODE_IP}"
 echo -e "  - NodePort: ${NODEPORT}"
 echo -e "  - BASE_URL: ${BASE_URL}"
 echo ""

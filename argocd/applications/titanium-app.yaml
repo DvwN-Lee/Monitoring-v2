@@ -19,11 +19,11 @@ spec:
     # Kustomize 매니페스트 경로
     path: k8s-manifests/overlays/solid-cloud
 
-  # 배포 대상 클러스터 정보
+  # 배포 대상 Cluster 정보
   destination:
-    # 현재 클러스터에 배포
+    # 현재 Cluster에 배포
     server: https://kubernetes.default.svc
-    # 배포할 네임스페이스
+    # 배포할 Namespace
     namespace: titanium-prod
 
   # 동기화 정책
@@ -39,7 +39,7 @@ spec:
 
     # 동기화 옵션
     syncOptions:
-      # 네임스페이스가 없으면 자동 생성
+      # Namespace가 없으면 자동 생성
       - CreateNamespace=true
       # PruneLast: 다른 리소스 삭제 후 마지막에 리소스 정리
       - PruneLast=true

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Level 4: Kubernetes Resources Test
-# Kubernetes 클러스터의 기본 리소스 상태를 검증합니다
+# Kubernetes Cluster의 기본 리소스 상태를 검증합니다
 
 set -e
 

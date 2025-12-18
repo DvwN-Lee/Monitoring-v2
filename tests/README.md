@@ -1,22 +1,22 @@
 # Top-Down 전체 서비스 테스트 시스템
 
-Monitoring-v2 프로젝트의 모든 서비스를 Top-Down 방식으로 검증하는 종합 테스트 시스템입니다.
+Monitoring-v2 프로젝트의 모든 Service를 Top-Down 방식으로 검증하는 종합 테스트 시스템입니다.
 
 ## 테스트 레벨 구조
 
 ```
 Level 1: E2E (사용자 시나리오)           - 전체 사용자 여정 검증
     ↓
-Level 2: Integration (서비스 간 통신)    - Istio 라우팅, mTLS
+Level 2: Integration (Service 간 통신)    - Istio 라우팅, mTLS
     ↓
-Level 3: Individual Service (개별 API)   - 각 서비스 Endpoint
+Level 3: Individual Service (개별 API)   - 각 Service Endpoint
     ↓
 Level 4: Infrastructure (인프라 상태)    - Kubernetes, Istio, 모니터링
 ```
 
 **실행 순서**: Level 4 → Level 3 → Level 2 → Level 1
 
-인프라가 정상이어야 서비스가 작동하고, 서비스가 정상이어야 통합 및 E2E 테스트가 의미 있습니다.
+인프라가 정상이어야 Service가 작동하고, Service가 정상이어야 통합 및 E2E 테스트가 의미 있습니다.
 
 ---
 
@@ -120,7 +120,7 @@ Argo CD GitOps 상태 검증
 ### api-gateway-test.sh
 - `/health` - Health Check
 - `/metrics` - Prometheus 메트릭
-- `/stats` - 서비스 상태
+- `/stats` - Service Status
 
 ### auth-service-test.sh
 - `/health` - Health Check

@@ -53,7 +53,7 @@ alertmanager:
     type: NodePort
     nodePort: 30093
 
-# Node Exporter 활성화 (노드 메트릭 수집)
+# Node Exporter 활성화 (Node 메트릭 수집)
 nodeExporter:
   enabled: true
 

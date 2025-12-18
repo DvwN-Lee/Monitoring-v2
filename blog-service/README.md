@@ -3,9 +3,9 @@
 ![Blog Service](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/blog-service.png)
 
 ## 1. 개요
-- **블로그 기능 제공 서비스**: `blog-service`는 블로그 게시물(Post)의 CRUD(생성, 조회, 수정, 삭제) 기능을 담당하는 마이크로서비스로, Python의 **FastAPI**를 사용하여 개발됨
+- **블로그 기능 제공 서비스**: `blog-service`는 블로그 게시물(Post)의 CRUD(생성, 조회, 수정, 삭제) 기능을 담당하는 Microservice로, Python의 **FastAPI**를 사용하여 개발됨
 
-- **SPA 프론트엔드 내장**: 이 서비스는 게시물 관리를 위한 API뿐만 아니라, 사용자가 직접 상호작용할 수 있는 SPA(Single Page Application) 형태의 웹 UI를 함께 제공함. UI는 `templates`와 `static` 폴더에 저장된 HTML, CSS, JavaScript 파일로 구성됨
+- **SPA 프론트엔드 내장**: 이 Service는 게시물 관리를 위한 API뿐만 아니라, 사용자가 직접 상호작용할 수 있는 SPA(Single Page Application) 형태의 웹 UI를 함께 제공함. UI는 `templates`와 `static` 폴더에 저장된 HTML, CSS, JavaScript 파일로 구성됨
 
 - **독립적인 데이터 관리**: 게시물 데이터는 서비스 내부에 있는 **SQLite** 데이터베이스 파일(`blog.db`)에 영속적으로 저장 및 관리됨
 
@@ -50,9 +50,9 @@
 
 ## 6. Container화 (`Dockerfile`)
 - **베이스 이미지**: `python:3.11-slim`을 사용하여 경량화된 이미지를 생성
-- **정적 파일 포함**: `templates`와 `static` 디렉터리를 Container 이미지 안으로 복사하여, 서비스가 직접 웹 UI를 서빙할 수 있도록 함
+- **정적 파일 포함**: `templates`와 `static` 디렉터리를 Container 이미지 안으로 복사하여, Service가 직접 웹 UI를 서빙할 수 있도록 함
 - **애플리케이션 실행**: `uvicorn` ASGI 서버를 사용하여 `8005` 포트에서 FastAPI 앱을 실행
 
 ## 7. 설정
-- `AUTH_SERVICE_URL`: JWT 토큰 검증을 위해 호출할 인증 서비스의 주소
+- `AUTH_SERVICE_URL`: JWT 토큰 검증을 위해 호출할 Auth Service의 주소
 - `BLOG_DATABASE_PATH`: SQLite 데이터베이스 파일이 저장될 경로 (기본값: `/app/blog.db`)

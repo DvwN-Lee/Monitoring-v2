@@ -162,7 +162,7 @@ async def handle_health():
 
 @app.get("/stats")
 async def handle_stats():
-    """서비스의 간단한 통계를 반환합니다."""
+    """Service의 간단한 통계를 반환합니다."""
     stats_data = {
         "auth": {
             "service_status": "online",

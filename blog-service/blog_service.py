@@ -301,7 +301,7 @@ async def delete_post(post_id: int, request: Request, username: str = Depends(re
 
 @app.get("/health")
 async def handle_health():
-    """쿠버네티스를 위한 헬스 체크 엔드포인트"""
+    """Kubernetes를 위한 헬스 체크 엔드포인트"""
     return {"status": "ok", "service": "blog-service"}
 
 @app.get("/stats")

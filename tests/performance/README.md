@@ -17,7 +17,7 @@ k6를 사용한 Titanium 프로젝트 성능 테스트 스크립트입니다.
 **모니터링 스택 검증**:
 - Prometheus 메트릭 수집 확인
 - Grafana 대시보드 데이터 시각화
-- Istio 서비스 메시 성능 영향 측정
+- Istio Service Mesh 성능 영향 측정
 
 ### 테스트 범위
 
@@ -39,7 +39,7 @@ k6를 사용한 Titanium 프로젝트 성능 테스트 스크립트입니다.
 graph TB
     subgraph TestPyramid["테스트 피라미드"]
         E2E["E2E 테스트<br/>애플리케이션 사용자 시나리오"]
-        Integration["통합 테스트<br/>서비스 간 연동"]
+        Integration["통합 테스트<br/>Service 간 연동"]
         Unit["단위 테스트<br/>개별 함수/모듈"]
         K6["k6 부하 테스트<br/>인프라 성능 (현재 테스트)"]
     end

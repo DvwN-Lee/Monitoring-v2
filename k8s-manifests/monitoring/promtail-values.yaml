@@ -30,7 +30,7 @@ config:
             source: timestamp
 
       relabel_configs:
-        # titanium-prod와 monitoring 네임스페이스만 수집
+        # titanium-prod와 monitoring Namespace만 수집
         - action: keep
           regex: (titanium-prod|monitoring)
           source_labels:
@@ -80,7 +80,7 @@ resources:
     cpu: 100m
     memory: 128Mi
 
-# 모든 노드에 배포
+# 모든 Node에 배포
 tolerations:
   - effect: NoSchedule
     operator: Exists

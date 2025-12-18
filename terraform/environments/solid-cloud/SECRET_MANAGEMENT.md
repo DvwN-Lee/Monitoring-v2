@@ -71,7 +71,7 @@ terraform apply
 
 ### 장점
 
-- CI/CD 파이프라인에서 사용하기 좋음
+- CI/CD Pipeline에서 사용하기 좋음
 - GitHub Actions, GitLab CI 등과 통합 용이
 
 ---
