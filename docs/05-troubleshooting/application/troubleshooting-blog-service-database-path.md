@@ -8,7 +8,7 @@ author: Dongju Lee
 
 ## 1. 문제 상황
 
-Phase 1+2 개선사항 배포 후, blog-service Pod가 `CrashLoopBackOff` 상태에 빠져 서비스가 정상적으로 시작되지 않는 문제가 발생했습니다.
+Phase 1+2 개선사항 배포 후, blog-service Pod가 `CrashLoopBackOff` 상태에 빠져 Service가 정상적으로 시작되지 않는 문제가 발생했습니다.
 
 ```bash
 $ kubectl get pods -n titanium-prod

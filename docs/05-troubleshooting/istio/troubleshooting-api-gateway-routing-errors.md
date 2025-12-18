@@ -36,7 +36,7 @@ INFO: 127.0.0.7:41234 - "PATCH /api/posts/5 HTTP/1.1" 405 Method Not Allowed
 ### 발생 상황
 - 프론트엔드에서 API 호출 시 404 또는 405 에러 발생
 - 브라우저 콘솔에서 에러 확인 가능
-- 백엔드 서비스 로그에는 요청이 도달하지 않음
+- Backend Service 로그에는 요청이 도달하지 않음
 - API Gateway 또는 Istio Ingress Gateway 로그에만 기록됨
 
 ### 영향 범위
@@ -49,7 +49,7 @@ INFO: 127.0.0.7:41234 - "PATCH /api/posts/5 HTTP/1.1" 405 Method Not Allowed
 
 ### 근본 원인
 
-마이크로서비스 아키텍처에서 클라이언트가 사용하는 API 경로와 API Gateway가 처리하는 경로가 일치하지 않아 발생하는 문제입니다.
+Microservice 아키텍처에서 클라이언트가 사용하는 API 경로와 API Gateway가 처리하는 경로가 일치하지 않아 발생하는 문제입니다.
 
 ### 시나리오별 분석
 
@@ -385,7 +385,7 @@ paths:
 ## 관련 문서
 
 - [시스템 아키텍처 - 전체 시스템](../../02-architecture/architecture.md#2-전체-시스템-아키텍처)
-- [시스템 아키텍처 - 마이크로서비스 구조](../../02-architecture/architecture.md#3-마이크로서비스-구조)
+- [시스템 아키텍처 - Microservice 구조](../../02-architecture/architecture.md#3-Microservice-구조)
 - [운영 가이드](../../04-operations/guides/operations-guide.md)
 - [Istio와 Go Reverse Proxy 라우팅 충돌](troubleshooting-istio-routing-with-go-reverseproxy.md)
 - [서비스 엔드포인트 누락](../kubernetes/troubleshooting-service-endpoint-missing.md)
@@ -395,7 +395,7 @@ paths:
 
 ### 경로 설계 Best Practice
 
-1. **일관성**: 모든 서비스가 동일한 경로 규칙 사용
+1. **일관성**: 모든 Service가 동일한 경로 규칙 사용
 2. **명확성**: `/api/v1/`, `/blog/api/` 등 명확한 prefix 사용
 3. **문서화**: OpenAPI, Swagger 등으로 계약 명시
 

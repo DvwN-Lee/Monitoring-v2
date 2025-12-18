@@ -1,4 +1,4 @@
-# Cloud-Native 마이크로서비스 플랫폼 요구사항 명세서
+# Cloud-Native Microservice 플랫폼 요구사항 명세서
 
 **문서 버전**: 2.0  
 **작성일**: 2025년 10월 13일
@@ -17,14 +17,14 @@
 ## 1. 프로젝트 개요
 
 ### 1.1. 프로젝트 목적
-로컬 환경에서 개발된 마이크로서비스 블로그 플랫폼(v1.0)을 CloudStack 기반 Solid Cloud의 클라우드 네이티브 환경으로 전환하여, 실제 클라우드 운영 경험을 쌓고 현대적인 DevOps 기술 스택을 적용하는 것을 목적으로 합니다.
+로컬 환경에서 개발된 Microservice 블로그 플랫폼(v1.0)을 CloudStack 기반 Solid Cloud의 클라우드 네이티브 환경으로 전환하여, 실제 클라우드 운영 경험을 쌓고 현대적인 DevOps 기술 스택을 적용하는 것을 목적으로 합니다.
 
 ### 1.2. 프로젝트 범위
 - **포함 범위**
-  - Solid Cloud Kubernetes Cluster에 마이크로서비스 배포
+  - Solid Cloud Kubernetes Cluster에 Microservice 배포
   - Terraform을 통한 인프라 자동화 (IaC)
   - GitOps 기반 CI/CD Pipeline 구축
-  - 서비스 메시 및 모니터링 시스템 도입
+  - Service Mesh 및 모니터링 시스템 도입
   
 - **제외 범위**
   - 멀티 Cluster/멀티 리전 구성
@@ -36,7 +36,7 @@
 ## 2. 현재 상태 및 문제점
 
 ### 2.1. v1.0 (로컬 환경)
-- Minikube/Kind 환경에서 동작하는 6개의 마이크로서비스
+- Minikube/Kind 환경에서 동작하는 6개의 Microservice
 - Kustomize로 매니페스트 관리
 - Skaffold를 이용한 로컬 개발 환경 구축
 - SQLite와 Redis를 데이터 저장소로 사용
@@ -68,7 +68,7 @@
 #### FR-M-3: PostgreSQL로 데이터베이스 전환
 - SQLite를 PostgreSQL로 교체하여 데이터 영속성 보장
 - 여러 Pod가 동시에 안전하게 데이터 접근 가능
-- 서비스 수평 확장(HPA) 지원
+- Service 수평 확장(HPA) 지원
 
 #### FR-M-4: 기본 모니터링 시스템
 - Prometheus로 주요 메트릭 수집
@@ -82,12 +82,12 @@
 
 ### 3.2. 권장 요구사항 (Should-Have)
 
-#### FR-S-1: 서비스 간 통신 보안
-- Istio를 사용하여 서비스 간 통신을 mTLS로 암호화
+#### FR-S-1: Service 간 통신 보안
+- Istio를 사용하여 Service 간 통신을 mTLS로 암호화
 - 애플리케이션 코드 수정 없이 자동 적용
 
 #### FR-S-2: 중앙화된 로그 관리
-- Loki를 통해 모든 서비스의 로그를 중앙에서 수집
+- Loki를 통해 모든 Service의 로그를 중앙에서 수집
 - Grafana에서 로그 검색 및 분석
 
 #### FR-S-3: API 요청 제한
@@ -97,7 +97,7 @@
 ### 3.3. 선택 요구사항 (Could-Have)
 
 #### FR-C-1: 분산 추적
-- Jaeger 도입으로 서비스 간 호출 흐름 추적
+- Jaeger 도입으로 Service 간 호출 흐름 추적
 
 #### FR-C-2: 자동 확장
 - CPU/메모리 사용량에 따른 Pod 자동 증감 (HPA)
@@ -122,7 +122,7 @@
 ### NFR-4: 보안
 1. Trivy 스캔으로 HIGH/CRITICAL 취약점 0개
 2. HTTPS를 통한 외부 트래픽 암호화
-3. Istio mTLS로 내부 서비스 간 통신 암호화
+3. Istio mTLS로 내부 Service 간 통신 암호화
 
 ### NFR-5: 개발 효율성
 - Git Push 후 5분 이내 자동 배포 완료

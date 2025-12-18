@@ -1,4 +1,4 @@
-# Cloud-Native 마이크로서비스 플랫폼 시스템 설계서
+# Cloud-Native Microservice 플랫폼 시스템 설계서
 
 **문서 버전**: 2.0  
 **작성일**: 2025년 10월 13일
@@ -54,7 +54,7 @@
 - **Terraform 코드**: `terraform/` 디렉토리
 - **Kubernetes 매니페스트**: `k8s-manifests/` 디렉토리
 - **CI/CD 스크립트**: `.github/workflows/` 디렉토리
-- **서비스 소스 코드**: 각 서비스 디렉토리의 README
+- **서비스 소스 코드**: 각 Service 디렉토리의 README
 
 ---
 
@@ -171,7 +171,7 @@ graph TB
    - 실제 이미지 Pull은 Kubernetes Node의 Kubelet이 수행
 
 3. **Service Mesh (Istio)**
-   - 모든 서비스 간 통신을 mTLS로 자동 암호화
+   - 모든 Service 간 통신을 mTLS로 자동 암호화
    - 트래픽 라우팅 및 로드 밸런싱
    - 메트릭 수집 및 관측성 제공
 
@@ -180,16 +180,16 @@ graph TB
    - Grafana: 시각화 및 대시보드
    - Loki: 중앙 로그 수집 및 조회
 
-### 2.2. 실제 서비스 메시 토폴로지 (Kiali)
+### 2.2. 실제 Service Mesh 토폴로지 (Kiali)
 
-위의 mermaid 다이어그램은 설계상의 아키텍처를 보여주며, 아래 Kiali 스크린샷은 실제로 동작하는 시스템의 서비스 간 상호작용과 트래픽 흐름을 실시간으로 시각화합니다.
+위의 mermaid 다이어그램은 설계상의 아키텍처를 보여주며, 아래 Kiali 스크린샷은 실제로 동작하는 시스템의 Service 간 상호작용과 트래픽 흐름을 실시간으로 시각화합니다.
 
 ![Kiali Service Mesh Topology](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/kiali-service-graph-full.png)
 
 **Kiali를 통해 확인 가능한 정보:**
-- 서비스 간 실시간 트래픽 흐름 및 요청 수
+- Service 간 실시간 트래픽 흐름 및 요청 수
 - mTLS STRICT 모드로 암호화된 통신 상태
-- 각 서비스의 응답 시간 및 에러율
+- 각 Service의 응답 시간 및 에러율
 - Istio Ingress Gateway를 통한 외부 트래픽 진입 경로
 - Load Generator가 생성하는 지속적인 테스트 트래픽
 
@@ -204,8 +204,8 @@ graph TB
 
 #### 서비스 통신
 - **외부 → Cluster**: Istio Ingress Gateway (NodePort)
-- **서비스 간**: Istio Service Mesh (mTLS 암호화)
-- **DB 접근**: 각 서비스 → PostgreSQL Service
+- **Service 간**: Istio Service Mesh (mTLS 암호화)
+- **DB 접근**: 각 Service → PostgreSQL Service
 
 ---
 
@@ -220,7 +220,7 @@ graph TB
 
 ---
 
-## 3. 마이크로서비스 구조
+## 3. Microservice 구조
 
 ### 3.1. 서비스 목록
 
@@ -244,7 +244,7 @@ graph TB
   - 목적: Grafana 대시보드의 실시간 메트릭 시각화 및 모니터링 시스템 검증
   - 기술: curl 기반 Container (Istio sidecar 주입)
 
-### 3.4. 서비스 간 통신 흐름
+### 3.4. Service 간 통신 흐름
 
 #### 사용자 요청 처리 흐름
 
@@ -304,10 +304,10 @@ sequenceDiagram
 ```
 
 **주요 특징:**
-- **mTLS 암호화**: Istio Service Mesh를 통해 모든 서비스 간 통신이 자동으로 암호화됩니다.
+- **mTLS 암호화**: Istio Service Mesh를 통해 모든 Service 간 통신이 자동으로 암호화됩니다.
 - **중앙 인증**: Auth Service에서 JWT 토큰을 검증하여 인증을 중앙화합니다.
 - **캐시 레이어**: User Service는 Redis를 활용하여 자주 조회되는 데이터를 캐싱합니다.
-- **데이터베이스 접근**: 각 서비스는 필요한 경우에만 PostgreSQL에 접근합니다.
+- **데이터베이스 접근**: 각 Service는 필요한 경우에만 PostgreSQL에 접근합니다.
 
 ---
 
@@ -474,7 +474,7 @@ flowchart TD
 **주요 대시보드**:
 - Golden Signals (Latency, Traffic, Errors, Saturation)
 - Kubernetes Cluster 상태
-- 서비스별 상세 메트릭
+- Service별 상세 메트릭
 
 ### 5.2. Loki + Promtail (로그)
 
@@ -492,7 +492,7 @@ flowchart TD
 
 ### 6.1. Istio mTLS
 
-- 서비스 간 모든 통신을 자동으로 암호화
+- Service 간 모든 통신을 자동으로 암호화
 - 애플리케이션 코드 수정 없이 적용
 - `PeerAuthentication` 정책: STRICT 모드
 
@@ -517,7 +517,7 @@ flowchart TD
 **구성**:
 - Kubernetes Cluster: 3 Node
 - Namespace: 기능별로 분리
-- 리소스 제한: 각 서비스별 CPU/메모리 제한 설정
+- 리소스 제한: 각 Service별 CPU/메모리 제한 설정
 
 ### 7.2. AWS 전환 고려사항
 

@@ -30,7 +30,7 @@ app.add_middleware(
 
 ## 2. Istio mTLS (Mutual TLS)
 
-서비스 간 통신 암호화를 위해 Istio Service Mesh의 mTLS를 강화했습니다.
+Service 간 통신 암호화를 위해 Istio Service Mesh의 mTLS를 강화했습니다.
 
 ### 2.1. 설정 상태
 - **Mode:** `STRICT` (권장)

@@ -15,7 +15,7 @@ upstream connect error or disconnect/reset before headers
 ```
 
 ### 발생 상황
-- Istio 서비스 메시 도입 후 서비스 간 통신이 간헐적으로 실패
+- Istio Service Mesh 도입 후 Service 간 통신이 간헐적으로 실패
 - mTLS가 일부 요청에만 적용됨 (일관성 없음)
 - Istio Ingress Gateway를 통한 접근이 불안정함
 - VirtualService, DestinationRule 설정은 정상으로 보임
@@ -146,7 +146,7 @@ spec:
     targetPort: http
 ```
 
-### 해결 방안 2: 모든 서비스에 적용
+### 해결 방안 2: 모든 Service에 적용
 
 **user-service-service.yaml**:
 ```yaml
@@ -201,7 +201,7 @@ spec:
 
 ### 해결 방안 3: 여러 포트를 사용하는 서비스
 
-하나의 서비스에 여러 프로토콜이 있는 경우:
+하나의 Service에 여러 프로토콜이 있는 경우:
 
 ```yaml
 apiVersion: v1
@@ -329,7 +329,7 @@ istioctl authn tls-check <pod-name> -n titanium-prod
 
 ### 1. Service 템플릿 작성
 
-모든 새로운 서비스에 사용할 표준 템플릿:
+모든 새로운 Service에 사용할 표준 템플릿:
 
 ```yaml
 # templates/service-template.yaml
@@ -480,7 +480,7 @@ ports:
 ```yaml
 # 명확하고 의미 있는 이름
 - name: http-web      # 웹 트래픽
-- name: grpc-api      # API 서비스
+- name: grpc-api      # API Service
 - name: http-metrics  # Prometheus
 ```
 

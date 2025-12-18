@@ -82,7 +82,7 @@ author: Dongju Lee
   ```bash
   kubectl get pods -n titanium-prod
   ```
-- [ ] **성공 기준**: 모든 서비스 Pod이 `2/2 Running`
+- [ ] **성공 기준**: 모든 Service Pod이 `2/2 Running`
 - [ ] **결과 기록**:
   - [ ] api-gateway: _____개 Pod (2/2 Running)
   - [ ] auth-service: _____개 Pod (2/2 Running)
@@ -90,7 +90,7 @@ author: Dongju Lee
   - [ ] user-service: _____개 Pod (2/2 Running)
 - [ ] **예상 시간**: 2분
 
-### 2-2. 각 서비스의 시작 로그 확인
+### 2-2. 각 Service의 시작 로그 확인
 - [ ] **테스트 수행**
   ```bash
   kubectl logs -n titanium-prod -l app=prod-user-service -c user-service | tail -n 20
@@ -98,7 +98,7 @@ author: Dongju Lee
   kubectl logs -n titanium-prod -l app=prod-blog-service -c blog-service | tail -n 20
   kubectl logs -n titanium-prod -l app=prod-api-gateway -c api-gateway | tail -n 20
   ```
-- [ ] **성공 기준**: FastAPI 서비스는 "Application startup complete", 심각한 오류 없음
+- [ ] **성공 기준**: FastAPI Service는 "Application startup complete", 심각한 오류 없음
 - [ ] **결과 기록**:
   - [ ] user-service: 정상 시작
   - [ ] auth-service: 정상 시작
@@ -108,7 +108,7 @@ author: Dongju Lee
 
 ---
 
-## Phase 3: 서비스 간 통신 및 라우팅 검증 (Critical)
+## Phase 3: Service 간 통신 및 라우팅 검증 (Critical)
 
 ### 3-1. Istio Ingress Gateway 외부 IP 확인
 - [ ] **테스트 수행**
@@ -149,7 +149,7 @@ author: Dongju Lee
 
 ---
 
-## Phase 4: 서비스 메시 (Istio) 고급 기능 검증 (Important)
+## Phase 4: Service Mesh (Istio) 고급 기능 검증 (Important)
 
 ### 4-1. mTLS STRICT 모드 적용 확인
 - [ ] **테스트 수행**
@@ -239,7 +239,7 @@ author: Dongju Lee
   - Grafana (http://localhost:3000)
   - Explore 메뉴 -> 데이터 소스 `Loki`
   - Log browser: `{app="prod-user-service"}`
-- [ ] **성공 기준**: 각 서비스의 로그가 실시간 표시
+- [ ] **성공 기준**: 각 Service의 로그가 실시간 표시
 - [ ] **결과 기록**: _____ 개 서비스 로그 수집 확인
 - [ ] **예상 시간**: 5분
 
@@ -373,7 +373,7 @@ author: Dongju Lee
 - Phase 7 (통합 시나리오): _____ / _____
 
 ### Important 항목 결과
-- Phase 4 (서비스 메시): _____ / _____
+- Phase 4 (Service Mesh): _____ / _____
 - Phase 5 (관측성): _____ / _____
 - Phase 6 (CI/CD): _____ / _____
 

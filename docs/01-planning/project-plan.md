@@ -1,4 +1,4 @@
-# Cloud-Native 마이크로서비스 플랫폼 프로젝트 계획서
+# Cloud-Native Microservice 플랫폼 프로젝트 계획서
 
 **문서 버전**: 2.0  
 **작성일**: 2025년 10월 13일
@@ -17,7 +17,7 @@
 ## 1. 프로젝트 개요
 
 ### 1.1. 프로젝트 정보
-- **프로젝트명**: Cloud-Native 마이크로서비스 플랫폼 v2.0
+- **프로젝트명**: Cloud-Native Microservice 플랫폼 v2.0
 - **개발자**: [이름]
 - **소속**: 단국대학교 컴퓨터공학과
 - **프로젝트 유형**: 졸업 프로젝트
@@ -113,7 +113,7 @@ Prometheus, Grafana, Loki를 설치하여 시스템 모니터링 환경 구축
    - ServiceMonitor CRD 설정
 
 2. **애플리케이션 메트릭 수집**
-   - 각 서비스에 `/metrics` 엔드포인트 추가
+   - 각 Service에 `/metrics` 엔드포인트 추가
    - Prometheus로 메트릭 수집 확인
    - 커스텀 메트릭 정의 (요청 수, 응답 시간 등)
 
@@ -131,7 +131,7 @@ Prometheus, Grafana, Loki를 설치하여 시스템 모니터링 환경 구축
    - 주요 알림 규칙 정의 (예: 높은 리소스 사용률, Pod 재시작 등)
 
 #### 완료 기준
-- [ ] Grafana에서 모든 서비스의 메트릭 확인 가능
+- [ ] Grafana에서 모든 Service의 메트릭 확인 가능
 - [ ] 대시보드에서 시스템 상태를 한눈에 파악
 - [ ] 테스트 알림이 정상 발송됨
 
@@ -146,14 +146,14 @@ Prometheus, Grafana, Loki를 설치하여 시스템 모니터링 환경 구축
 
 **Priority 1: Loki 중앙 로깅 시스템**
 - Loki 및 Promtail 설치
-- 모든 서비스 로그 수집 설정
+- 모든 Service 로그 수집 설정
 - Grafana에서 로그 조회 및 검색 테스트
 
-**Priority 2: Istio 서비스 메시**
+**Priority 2: Istio Service Mesh**
 - Istio 설치
-- 서비스에 Sidecar 자동 주입 설정
+- Service에 Sidecar 자동 주입 설정
 - mTLS STRICT 모드 활성화
-- 서비스 간 암호화 통신 확인
+- Service 간 암호화 통신 확인
 
 **Priority 3: Rate Limiting (시간 여유 시)**
 - API Gateway에 Token Bucket 알고리즘 구현
@@ -161,7 +161,7 @@ Prometheus, Grafana, Loki를 설치하여 시스템 모니터링 환경 구축
 
 #### 완료 기준
 - [ ] Loki를 통한 로그 수집 및 Grafana 조회 가능
-- [ ] Istio mTLS가 활성화되고 서비스 간 암호화 확인
+- [ ] Istio mTLS가 활성화되고 Service 간 암호화 확인
 - [ ] (선택) Rate Limiting 동작 확인
 
 ---
@@ -277,7 +277,7 @@ Prometheus, Grafana, Loki를 설치하여 시스템 모니터링 환경 구축
 - [ ] GitHub Actions CI Pipeline 동작
 - [ ] Argo CD GitOps 배포 자동화
 - [ ] Prometheus + Grafana 모니터링 대시보드
-- [ ] 모든 서비스 정상 동작 확인
+- [ ] 모든 Service 정상 동작 확인
 
 ### Should-Have (권장)
 - [ ] Loki 중앙 로깅 시스템

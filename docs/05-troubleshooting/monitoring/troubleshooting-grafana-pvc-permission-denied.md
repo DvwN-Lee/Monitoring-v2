@@ -257,7 +257,7 @@ commonPodSecurityContext: &podSecurityContext
   runAsUser: 1000
   runAsGroup: 1000
 
-# 각 서비스에서 사용
+# 각 Service에서 사용
 grafana:
   podSecurityContext: *podSecurityContext
 ```

@@ -7,7 +7,7 @@ author: Dongju Lee
 # [Troubleshooting] Istio EnvoyFilter Rate Limiting 미작동 문제 해결
 
 ## 문제 상황
-EnvoyFilter를 사용하여 Rate Limiting을 설정했으나, 실제 서비스에 적용되지 않고 모든 요청이 정상 처리됩니다.
+EnvoyFilter를 사용하여 Rate Limiting을 설정했으나, 실제 Service에 적용되지 않고 모든 요청이 정상 처리됩니다.
 
 ## 증상
 - 대량의 요청을 서비스로 보냈을 때, 429 Too Many Requests 응답이 반환되지 않고 모든 요청이 200 OK로 처리됩니다.

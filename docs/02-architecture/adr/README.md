@@ -1,6 +1,6 @@
 # 기술 결정 기록 (Architecture Decision Records)
 
-이 디렉토리에는 "Cloud-Native 마이크로서비스 플랫폼" 프로젝트의 중요한 아키텍처 결정을 기록한 문서들이 포함되어 있습니다.
+이 디렉토리에는 "Cloud-Native Microservice 플랫폼" 프로젝트의 중요한 아키텍처 결정을 기록한 문서들이 포함되어 있습니다.
 
 ## ADR 목록
 

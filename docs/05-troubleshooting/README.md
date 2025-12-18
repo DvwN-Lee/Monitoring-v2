@@ -7,7 +7,7 @@
 | 문제 | 증상 | 관련 컴포넌트 | 심각도 | 문서 |
 |------|------|--------------|--------|------|
 | DATABASE_PATH 환경변수 누락 | blog-service Pod CrashLoopBackOff | blog-service, ConfigMap | High | [문서](application/troubleshooting-blog-service-database-path.md) |
-| INTERNAL_API_SECRET 누락 | 서비스 간 401 인증 실패 | auth-service, Secret | High | [문서](application/troubleshooting-auth-service-internal-api-secret.md) |
+| INTERNAL_API_SECRET 누락 | Service 간 401 인증 실패 | auth-service, Secret | High | [문서](application/troubleshooting-auth-service-internal-api-secret.md) |
 | CRUD 500 Error | 게시물 작성/수정/삭제 실패 (500) | blog-service, Database | Critical | [문서](application/troubleshooting-blog-service-crud-errors.md) |
 | 외부 접속 불가 | Connection Timeout | SSH Tunnel, Bastion | Medium | [문서](application/troubleshooting-ssh-tunnel-external-access.md) |
 
@@ -33,8 +33,8 @@
 | 문제 | 증상 | 관련 컴포넌트 | 심각도 | 문서 |
 |------|------|--------------|--------|------|
 | API Gateway 라우팅 오류 | 외부 요청이 예상된 서비스로 라우팅되지 않거나 5xx 오류가 발생합니다 | Istio Gateway, VirtualService | Critical | [문서](istio/troubleshooting-api-gateway-routing-errors.md) |
-| Istio 인증서 유효성 문제 | 서비스 간 mTLS 통신 실패, 인증서 관련 오류가 발생합니다 | Istio, Citadel | High | [문서](istio/troubleshooting-istio-certificate-invalid.md) |
-| mTLS 통신 오류 | 서비스 메시 내에서 암호화된 통신이 실패합니다 | Istio, mTLS | High | [문서](istio/troubleshooting-istio-mtls-communication.md) |
+| Istio 인증서 유효성 문제 | Service 간 mTLS 통신 실패, 인증서 관련 오류가 발생합니다 | Istio, Citadel | High | [문서](istio/troubleshooting-istio-certificate-invalid.md) |
+| mTLS 통신 오류 | Service Mesh 내에서 암호화된 통신이 실패합니다 | Istio, mTLS | High | [문서](istio/troubleshooting-istio-mtls-communication.md) |
 | 프로토콜 자동 감지 실패 | Istio가 트래픽 프로토콜을 잘못 해석하여 요청이 실패합니다 | Istio, Service | Medium | [문서](istio/troubleshooting-istio-protocol-selection.md) |
 | 속도 제한(Rate Limit) 미적용 | 설정한 속도 제한 규칙이 동작하지 않아 트래픽 제어에 실패합니다 | Istio, EnvoyFilter | Medium | [문서](istio/troubleshooting-istio-rate-limiting.md) |
 | Go Reverse Proxy와 라우팅 충돌 | Go로 구현된 리버스 프록시와 Istio 라우팅 규칙 간 충돌이 발생합니다 | Istio, Go | High | [문서](istio/troubleshooting-istio-routing-with-go-reverseproxy.md) |
@@ -45,7 +45,7 @@
 | 문제 | 증상 | 관련 컴포넌트 | 심각도 | 문서 |
 |------|------|--------------|--------|------|
 | ImagePullBackOff | Pod가 Container 이미지를 레지스트리에서 가져오지 못합니다 | Kubernetes, Container Registry | High | [문서](kubernetes/troubleshooting-imagepullbackoff.md) |
-| NodePort 서비스 접근 실패 | 외부에서 NodePort를 통해 서비스에 접근할 수 없습니다 | Kubernetes, NodePort Service | Medium | [문서](kubernetes/troubleshooting-nodeport-access-failure.md) |
+| NodePort Service 접근 실패 | 외부에서 NodePort를 통해 Service에 접근할 수 없습니다 | Kubernetes, NodePort Service | Medium | [문서](kubernetes/troubleshooting-nodeport-access-failure.md) |
 | CrashLoopBackOff | Pod 내 Container가 시작 직후 비정상 종료를 반복합니다 | Kubernetes, Application | High | [문서](kubernetes/troubleshooting-pod-crashloopbackoff.md) |
 | ResourceQuota 초과 | Namespace의 리소스 할당량 초과로 새 리소스 생성이 실패합니다 | Kubernetes, ResourceQuota | Medium | [문서](kubernetes/troubleshooting-resourcequota-exceeded.md) |
 | 서비스 엔드포인트 누락 | Service가 Pod에 연결되지 않아 엔드포인트가 없습니다 | Kubernetes, Service, Endpoints | High | [문서](kubernetes/troubleshooting-service-endpoint-missing.md) |
@@ -57,13 +57,13 @@
 | Alertmanager 알림 실패 | Prometheus 알림이 슬랙, 이메일 등으로 전송되지 않습니다 | Alertmanager, Prometheus | High | [문서](monitoring/troubleshooting-alertmanager-notification-failure.md) |
 | Grafana 대시보드 접근 불가 | 사용자가 Grafana 대시보드를 보거나 접근할 수 없습니다 | Grafana, Authentication | Medium | [문서](monitoring/troubleshooting-grafana-dashboard-access-issue.md) |
 | Grafana PVC 권한 거부 | Grafana Pod가 PVC에 접근하지 못해 데이터 저장/로딩에 실패합니다 | Grafana, Kubernetes PVC | High | [문서](monitoring/troubleshooting-grafana-pvc-permission-denied.md) |
-| 인증 서비스 높은 지연 시간 | 인증 관련 API 요청의 응답 시간이 비정상적으로 높습니다 | Auth Service, Monitoring | High | [문서](monitoring/troubleshooting-high-latency-on-auth-service.md) |
+| Auth Service 높은 지연 시간 | 인증 관련 API 요청의 응답 시간이 비정상적으로 높습니다 | Auth Service, Monitoring | High | [문서](monitoring/troubleshooting-high-latency-on-auth-service.md) |
 | HPA 메트릭 수집 실패 | HPA가 스케일링에 필요한 메트릭을 수집하지 못합니다 | Kubernetes HPA, Metrics Server | High | [문서](monitoring/troubleshooting-hpa-metrics-failure.md) |
 | 부정확한 Latency 백분위수 | 모니터링 시스템에서 집계된 지연 시간 백분위수 값이 실제와 다릅니다 | Prometheus, App Metrics | Medium | [문서](monitoring/troubleshooting-inaccurate-latency-percentiles.md) |
 | Kiali 그래프 빈 화면 | Kiali UI에서 트래픽 그래프가 표시되지 않습니다 | Kiali, Prometheus | Medium | [문서](monitoring/troubleshooting-kiali-empty-graph.md) |
 | Loki 로그 수집 실패 | Log agent가 로그를 수집하여 Loki로 전송하지 못합니다 | Loki, Promtail | High | [문서](monitoring/troubleshooting-loki-log-collection-failure.md) |
 | Metrics Server 실패 | `kubectl top`, HPA 등이 메트릭 부족으로 작동하지 않습니다 | Kubernetes, Metrics Server | High | [문서](monitoring/troubleshooting-metrics-server-failure.md) |
-| Prometheus 메트릭 수집 실패 | Prometheus가 타겟 서비스의 메트릭을 수집(scrape)하지 못합니다 | Prometheus, Service Discovery | High | [문서](monitoring/troubleshooting-prometheus-metric-collection-failure.md) |
+| Prometheus 메트릭 수집 실패 | Prometheus가 타겟 Service의 메트릭을 수집(scrape)하지 못합니다 | Prometheus, Service Discovery | High | [문서](monitoring/troubleshooting-prometheus-metric-collection-failure.md) |
 | Prometheus Pod 'Pending' | 리소스 부족 등으로 Prometheus Pod가 스케줄링되지 못합니다 | Prometheus, K8s Scheduler | High | [문서](monitoring/troubleshooting-prometheus-pending-pods.md) |
 
 ---

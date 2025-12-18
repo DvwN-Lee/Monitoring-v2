@@ -315,7 +315,7 @@ secrets/
 - [ ] 프로덕션 환경의 Secret은 강력한 값 사용
 - [ ] Secret 접근 권한은 최소 권한으로 설정
 - [ ] Secret 회전 계획 수립
-- [ ] Secret 변경 시 관련 서비스 재시작
+- [ ] Secret 변경 시 관련 Service 재시작
 - [ ] Secret 관련 감사 로그 활성화
 
 ## 문제 해결

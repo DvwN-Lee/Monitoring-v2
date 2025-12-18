@@ -34,7 +34,7 @@ blog-service P99 Latency: 99.0ms (고정)
 
 ### 근본 원인
 
-Python 서비스에서 사용하는 Prometheus 히스토그램의 버킷(bucket) 개수가 너무 적고 범위가 좁아서, 대부분의 요청이 마지막 버킷에 집계되어 `histogram_quantile` 함수가 정확한 백분위수를 계산할 수 없습니다.
+Python Service에서 사용하는 Prometheus 히스토그램의 버킷(bucket) 개수가 너무 적고 범위가 좁아서, 대부분의 요청이 마지막 버킷에 집계되어 `histogram_quantile` 함수가 정확한 백분위수를 계산할 수 없습니다.
 
 ### 기술적 배경
 
@@ -106,7 +106,7 @@ prometheus.NewHistogramVec(
 
 ### 해결 방안 1: 히스토그램 버킷 확장 (권장)
 
-Python 서비스의 버킷을 14개로 확장하여 0.1ms ~ 10초 범위를 세밀하게 커버합니다.
+Python Service의 버킷을 14개로 확장하여 0.1ms ~ 10초 범위를 세밀하게 커버합니다.
 
 #### 수정 전
 ```python
@@ -146,7 +146,7 @@ instrumentator = Instrumentator(
 instrumentator.instrument(app).expose(app)
 ```
 
-#### 모든 Python 서비스에 적용
+#### 모든 Python Service에 적용
 
 **auth-service/main.py**:
 ```python
@@ -170,7 +170,7 @@ instrumentator.instrument(app).expose(app)
 
 ### 해결 방안 2: 버킷 범위 커스터마이징
 
-서비스별 응답 시간 특성에 맞게 버킷 조정:
+Service별 응답 시간 특성에 맞게 버킷 조정:
 
 ```python
 # 빠른 서비스 (대부분 10ms 이하)
@@ -185,7 +185,7 @@ SLOW_SERVICE_BUCKETS = (0.1, 0.5, 1.0, 2.5, 5.0, 10.0, 20.0, 30.0)
 
 ### 해결 방안 3: 공통 설정 모듈화
 
-모든 서비스에서 재사용 가능한 공통 모듈 생성:
+모든 Service에서 재사용 가능한 공통 모듈 생성:
 
 ```python
 # common/metrics.py
@@ -338,7 +338,7 @@ k6 run load_test.js
 
 ## Prometheus 히스토그램 버킷 표준
 
-### 기본 버킷 (모든 서비스 공통)
+### 기본 버킷 (모든 Service 공통)
 (0.001, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 10.0)
 
 - 0.1ms ~ 10초 범위
@@ -346,7 +346,7 @@ k6 run load_test.js
 - P50, P95, P99, P99.9 모두 정확히 계산 가능
 
 ### 버킷 선택 가이드
-1. 서비스의 예상 응답 시간 파악
+1. Service의 예상 응답 시간 파악
 2. P99가 속할 버킷 포함
 3. 최소 10개 이상 버킷 사용
 4. 로그 스케일로 분포 (0.001, 0.01, 0.1, 1, 10)
@@ -380,7 +380,7 @@ def test_bucket_count():
 # .github/workflows/ci.yml
 - name: Validate Prometheus Metrics
   run: |
-    # 각 서비스 시작
+    # 각 Service 시작
     python3 user-service/user_service.py &
     sleep 5
 

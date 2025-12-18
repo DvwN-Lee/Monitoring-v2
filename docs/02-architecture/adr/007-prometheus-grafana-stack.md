@@ -7,7 +7,7 @@
 
 ## 상황 (Context)
 
-마이크로서비스 환경에서 시스템의 건강 상태를 지속적으로 모니터링하고, Golden Signals(Latency, Traffic, Errors, Saturation)를 추적하기 위한 메트릭 수집 및 시각화 솔루션이 필요했습니다. Kubernetes 네이티브 환경에 최적화되고, Istio Service Mesh와 원활하게 통합될 수 있는 도구를 찾고 있었습니다.
+Microservice 환경에서 시스템의 건강 상태를 지속적으로 모니터링하고, Golden Signals(Latency, Traffic, Errors, Saturation)를 추적하기 위한 메트릭 수집 및 시각화 솔루션이 필요했습니다. Kubernetes 네이티브 환경에 최적화되고, Istio Service Mesh와 원활하게 통합될 수 있는 도구를 찾고 있었습니다.
 
 ## 결정 (Decision)
 

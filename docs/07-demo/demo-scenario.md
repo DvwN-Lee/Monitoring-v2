@@ -2,7 +2,7 @@
 
 ## 데모 개요
 
-이 문서는 Cloud-Native 마이크로서비스 플랫폼 v2.0의 핵심 기능을 시연하기 위한 시나리오를 정의합니다. 전체 시스템의 안정성과 관측 가능성을 효과적으로 보여주는 것을 목표로 합니다.
+이 문서는 Cloud-Native Microservice 플랫폼 v2.0의 핵심 기능을 시연하기 위한 시나리오를 정의합니다. 전체 시스템의 안정성과 관측 가능성을 효과적으로 보여주는 것을 목표로 합니다.
 
 **예상 소요 시간**: 20-25분
 
@@ -11,7 +11,7 @@
 ## 주요 시연 기능
 
 - **CI/CD 자동화**: Git Push → GitHub Actions → Argo CD를 통한 5분 내 자동 배포
-- **서비스 메시**: Istio를 통한 서비스 간 통신 시각화 및 mTLS STRICT 보안
+- **Service Mesh**: Istio를 통한 Service 간 통신 시각화 및 mTLS STRICT 보안
 - **실시간 모니터링**: Prometheus + Grafana를 통한 Golden Signals 추적
 - **로그 집계**: Loki를 활용한 중앙화된 로그 관리 및 추적
 - **고가용성**: 자동 복구 및 스케일링
@@ -27,7 +27,7 @@ graph TD
     Start([데모 시작]) --> Step1[1. 시스템 개요<br/>3분]
     Step1 --> |Kiali 그래프| Step2[2. CI/CD Pipeline<br/>5분]
     Step2 --> |Git Push → 자동 배포| Step3[3. 모니터링 시스템<br/>7분]
-    Step3 --> |Grafana + Kiali| Step4[4. 보안 & 서비스 메시<br/>3분]
+    Step3 --> |Grafana + Kiali| Step4[4. 보안 & Service Mesh<br/>3분]
     Step4 --> |mTLS 확인| Decision{시간 여유?}
     Decision --> |Yes| Step5[5. 에러 처리 & 복구<br/>5분]
     Decision --> |No| End([데모 종료<br/>20분])
@@ -45,7 +45,7 @@ graph TD
 ```
 
 ### 1. 시스템 개요 확인 (3분)
-- Kiali 서비스 그래프를 통해 현재 배포된 마이크로서비스 토폴로지 확인
+- Kiali 서비스 그래프를 통해 현재 배포된 Microservice 토폴로지 확인
 - 프로젝트 배경 및 v1.0 대비 개선사항 설명
 - 기술 스택 소개 (Terraform, GitOps, Istio, Prometheus)
 
@@ -57,11 +57,11 @@ graph TD
 
 ### 3. 모니터링 시스템 시연 (7분)
 - **Grafana Golden Signals**: Latency, Traffic, Errors, Saturation 실시간 확인
-- **Kiali**: 서비스 간 트래픽 흐름 및 mTLS 상태 시각화
+- **Kiali**: Service 간 트래픽 흐름 및 mTLS 상태 시각화
 - **부하 테스트**: 트래픽 급증 시뮬레이션 후 메트릭 변화 관찰
 - **Loki 로그**: 특정 서비스 로그 조회 및 필터링
 
-### 4. 보안 및 서비스 메시 (3분)
+### 4. 보안 및 Service Mesh (3분)
 - Istio mTLS STRICT 모드 확인
 - GitHub Actions의 Trivy 보안 스캔 결과 검토
 
@@ -77,7 +77,7 @@ graph TD
 
 ### 환경 요구사항
 - Kubernetes Cluster 실행 중
-- 모든 서비스가 titanium-prod, istio-system, monitoring Namespace에 배포됨
+- 모든 Service가 titanium-prod, istio-system, monitoring Namespace에 배포됨
 - Load Generator 배포로 지속적인 메트릭 생성
 
 ### 접속 정보

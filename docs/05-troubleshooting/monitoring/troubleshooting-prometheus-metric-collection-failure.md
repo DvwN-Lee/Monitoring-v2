@@ -16,9 +16,9 @@ Prometheus가 배포된 애플리케이션의 메트릭을 수집하지 못하�
 ## 원인 분석
 Prometheus가 애플리케이션 메트릭을 수집하지 못하는 주요 원인은 다음과 같습니다.
 
-1.  **ServiceMonitor 리소스 누락 또는 잘못된 레이블**: Prometheus Operator는 `ServiceMonitor` 리소스를 통해 어떤 서비스에서 메트릭을 수집할지 파악합니다. 이 리소스가 없거나, Prometheus가 찾을 수 없는 잘못된 레이블을 가지고 있을 수 있습니다.
-2.  **ServiceMonitor의 `selector`가 Service와 불일치**: `ServiceMonitor`의 `selector` 필드가 메트릭을 노출하는 `Service`의 레이블과 정확히 일치하지 않으면 Prometheus는 해당 서비스를 찾을 수 없습니다.
-3.  **Namespace `selector` 오류**: `ServiceMonitor`가 특정 Namespace의 서비스를 감시하도록 설정되어 있는데, 실제 서비스가 다른 Namespace에 있거나, `ServiceMonitor`의 Namespace `selector` 설정이 잘못되었을 수 있습니다.
+1.  **ServiceMonitor 리소스 누락 또는 잘못된 레이블**: Prometheus Operator는 `ServiceMonitor` 리소스를 통해 어떤 Service에서 메트릭을 수집할지 파악합니다. 이 리소스가 없거나, Prometheus가 찾을 수 없는 잘못된 레이블을 가지고 있을 수 있습니다.
+2.  **ServiceMonitor의 `selector`가 Service와 불일치**: `ServiceMonitor`의 `selector` 필드가 메트릭을 노출하는 `Service`의 레이블과 정확히 일치하지 않으면 Prometheus는 해당 Service를 찾을 수 없습니다.
+3.  **Namespace `selector` 오류**: `ServiceMonitor`가 특정 Namespace의 Service를 감시하도록 설정되어 있는데, 실제 Service가 다른 Namespace에 있거나, `ServiceMonitor`의 Namespace `selector` 설정이 잘못되었을 수 있습니다.
 4.  **애플리케이션의 `/metrics` 엔드포인트 미구현 또는 오류**: 애플리케이션 자체가 `/metrics` 엔드포인트를 통해 메트릭을 노출하지 않거나, 엔드포인트에 접근 시 오류가 발생할 수 있습니다.
 5.  **Prometheus Operator의 `serviceMonitorSelector` 설정 문제**: Prometheus 인스턴스를 배포하는 `Prometheus` 커스텀 리소스(CR)의 `serviceMonitorSelector`가 `ServiceMonitor` 리소스를 제대로 선택하지 못할 수 있습니다. Solid Cloud Cluster 환경에서는 이 부분이 이미 잘 설정되어 있을 가능성이 높지만, 확인이 필요할 수 있습니다.
 
@@ -79,7 +79,7 @@ Prometheus가 애플리케이션 메트릭을 수집하지 못하는 주요 원�
 
 ## 교훈
 - **ServiceMonitor 레이블 관리**: `ServiceMonitor`의 `selector`와 `Service`의 `labels`는 항상 일관성 있게 관리해야 합니다.
-- **Namespace `selector` 설정**: `ServiceMonitor`의 `namespaceSelector` 설정을 주의 깊게 확인하여 올바른 Namespace의 서비스를 감시하도록 합니다.
+- **Namespace `selector` 설정**: `ServiceMonitor`의 `namespaceSelector` 설정을 주의 깊게 확인하여 올바른 Namespace의 Service를 감시하도록 합니다.
 - **`/metrics` 엔드포인트 사전 테스트**: 애플리케이션 배포 전 또는 문제 발생 시 `/metrics` 엔드포인트가 정상적으로 동작하는지 미리 테스트하는 습관을 들입니다.
 - **Prometheus Operator 설정 이해**: Solid Cloud 환경에서는 Prometheus Operator가 `ServiceMonitor`를 관리하므로, `Prometheus` CR의 `serviceMonitorSelector` 설정이 어떻게 동작하는지 이해하는 것이 중요합니다.
 

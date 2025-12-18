@@ -142,7 +142,7 @@ author: Dongju Lee
 
 **예상 결과:**
 - Istio 메트릭이 정상적으로 수집됨
-- 각 서비스별 요청 수 표시
+- 각 Service별 요청 수 표시
 - 레이블 필터링 정상 동작
 
 **확인 포인트:**
@@ -163,7 +163,7 @@ author: Dongju Lee
 - 마지막 스크래핑 시간이 최신
 
 **확인 포인트:**
-- titanium-dev, titanium-staging, titanium-prod의 모든 서비스 포함
+- titanium-dev, titanium-staging, titanium-prod의 모든 Service 포함
 - 각 타겟의 labels/scrape 정보 정확성
 - 에러 메시지 없음
 
@@ -227,7 +227,7 @@ author: Dongju Lee
 4. 그래프 레이아웃 변경 (Dagre → Kiali)
 
 **예상 결과:**
-- 서비스 간 트래픽 흐름이 시각화됨
+- Service 간 트래픽 흐름이 시각화됨
 - 화살표에 요청률(req/s) 표시
 - 애니메이션이 실시간 트래픽을 표현
 
@@ -306,7 +306,7 @@ author: Dongju Lee
 - 최신 로그 시간 (현재 시간과 1분 이내 차이)
 - 로그 포맷 (JSON 또는 plain text)
 
-### 4.3 서비스별 로그 필터링
+### 4.3 Service별 로그 필터링
 
 **테스트 단계:**
 1. LogQL 쿼리 입력: `{namespace="titanium-prod", app="prod-blog"}`
@@ -314,7 +314,7 @@ author: Dongju Lee
 3. 로그 레벨 필터링: `{namespace="titanium-prod", app="prod-blog"} |= "error"`
 
 **예상 결과:**
-- prod-blog 서비스의 로그만 표시
+- prod-blog Service의 로그만 표시
 - error 키워드가 포함된 로그만 필터링됨
 - 로그 볼륨 그래프에 시계열 데이터 표시
 
@@ -401,7 +401,7 @@ author: Dongju Lee
 #### 1.1. 핵심 기능 검증 목록
 - [ ] Grafana 접속 및 기본 대시보드 확인
 - [ ] Kubernetes Cluster 전체 현황 대시보드 검증
-- [ ] 마이크로서비스별 상세 성능 대시보드 검증
+- [ ] Microservice별 상세 성능 대시보드 검증
 - [ ] Loki 데이터소스를 이용한 로그 쿼리 검증
 
 #### 1.2. 상세 테스트 단계 및 예상 결과
@@ -420,7 +420,7 @@ author: Dongju Lee
 
 **시나리오 2: `user-service` 성능 대시보드 검증**
 1.  **단계 1**: 'Dashboards' -> 'Browse' 메뉴로 이동합니다.
-2.  **단계 2**: 'Istio / Istio Service Dashboard' 또는 유사한 이름의 서비스 메시 대시보드를 클릭합니다.
+2.  **단계 2**: 'Istio / Istio Service Dashboard' 또는 유사한 이름의 Service Mesh 대시보드를 클릭합니다.
 3.  **단계 3**: 대시보드 상단의 'Namespace' 드롭다운에서 `dev`를 선택합니다.
 4.  **단계 4**: 'Service' 드롭다운에서 `user-service.dev.svc.cluster.local`을 선택합니다.
 5.  **단계 5**: 'Client/Server Request Volume', 'Success Rate', 'Request Duration' 패널들을 확인합니다.
@@ -454,7 +454,7 @@ author: Dongju Lee
 #### 2.1. 핵심 기능 검증 목록
 - [ ] Prometheus 접속 및 UI 확인
 - [ ] PromQL 쿼리를 통한 메트릭 조회
-- [ ] 서비스 디스커버리 타겟 상태 확인 (`/targets`)
+- [ ] Service Discovery 타겟 상태 확인 (`/targets`)
 
 #### 2.2. 상세 테스트 단계 및 예상 결과
 
@@ -467,11 +467,11 @@ author: Dongju Lee
     - 쿼리 결과로 하나 이상의 시계열 데이터가 반환되며, 값은 `1` (up) 이어야 합니다.
     - `instance`, `job` 등의 라벨이 올바르게 표시됩니다.
 6.  **주요 확인 포인트**:
-    - Prometheus가 Kubernetes API와 통신하여 서비스 디스커버리를 수행하는지 여부.
+    - Prometheus가 Kubernetes API와 통신하여 Service Discovery를 수행하는지 여부.
 
 **시나리오 2: 서비스 모니터링 타겟 상태 검증**
 1.  **단계 1**: Prometheus UI 상단 메뉴에서 'Status' -> 'Targets'를 클릭합니다.
-2.  **단계 2**: 타겟 목록에서 `serviceMonitor/dev/api-gateway/0`, `serviceMonitor/staging/user-service/0` 등과 같이 마이크로서비스별로 생성된 타겟들을 찾습니다.
+2.  **단계 2**: 타겟 목록에서 `serviceMonitor/dev/api-gateway/0`, `serviceMonitor/staging/user-service/0` 등과 같이 Microservice별로 생성된 타겟들을 찾습니다.
 3.  **단계 3**: 각 타겟의 'State'가 'UP'인지 확인합니다.
 4.  **예상 결과**:
     - `api-gateway`, `auth-service`, `user-service`, `blog-service`에 대한 모든 타겟의 상태가 'UP'으로 표시됩니다.
@@ -501,10 +501,10 @@ author: Dongju Lee
 4.  **단계 4**: 'Display' 드롭다운 메뉴에서 'Traffic Animation'과 'Response Time' 엣지 라벨을 활성화합니다.
 5.  **예상 결과**:
     - `prod` Namespace의 서비스들(`api-gateway`, `auth-service` 등)과 외부 트래픽(ingress) 간의 관계가 그래프로 시각화됩니다.
-    - 서비스 간 연결선(edge) 위로 트래픽 흐름을 나타내는 애니메이션이 표시됩니다.
+    - Service 간 연결선(edge) 위로 트래픽 흐름을 나타내는 애니메이션이 표시됩니다.
     - 각 연결선에는 95th percentile 응답 시간이 표시됩니다.
 6.  **주요 확인 포인트**:
-    - Istio Proxy(Envoy)가 각 서비스 Pod에 정상적으로 주입(injection)되었는지 확인.
+    - Istio Proxy(Envoy)가 각 Service Pod에 정상적으로 주입(injection)되었는지 확인.
     - Prometheus의 `istio_*` 메트릭을 Kiali가 올바르게 수집하여 그래프를 생성하는지 확인.
 
 **시나리오 2: `blog-service` 상세 정보 및 트래픽 검증**
@@ -598,13 +598,13 @@ author: Dongju Lee
 Loaded cached credentials.
 네, 알겠습니다. Chrome DevTools Protocol(CDP)을 활용한 자동화 테스트에 적합하도록, 제공해주신 프로젝트 정보를 바탕으로 상세한 UI/UX 테스트 시나리오를 작성해 드리겠습니다.
 
-다음은 블로그 서비스와 모니터링 대시보드 UI에 대한 포괄적인 테스트 시나리오입니다.
+다음은 Blog Service와 모니터링 대시보드 UI에 대한 포괄적인 테스트 시나리오입니다.
 
 ***
 
 ## Chrome DevTools Protocol 기반 UI/UX 자동화 테스트 시나리오
 
-### 1. 블로그 서비스 UI (Blog Service UI)
+### 1. Blog Service UI (Blog Service UI)
 
 - **Target URL:** `http://10.0.11.168:31304/blog/`
 - **주요 기술:** Python FastAPI (Jinja2 템플릿), JavaScript (Fetch API), Bootstrap
@@ -703,7 +703,7 @@ Loaded cached credentials.
 **시나리오 1: 대시보드 초기 로딩 및 실시간 데이터 확인**
 1.  **[Navigate]** 대시보드 페이지 접속
 2.  **[Verify]** 페이지가 3초 이내에 로드되고, 모든 차트와 패널의 레이아웃이 깨지지 않는지 확인.
-3.  **[Verify]** '서비스별 상태' 패널에 `api-gateway`, `auth-service`, `blog-service` 등이 'Healthy' 또는 녹색 상태로 표시되는지 확인.
+3.  **[Verify]** 'Service별 상태' 패널에 `api-gateway`, `auth-service`, `blog-service` 등이 'Healthy' 또는 녹색 상태로 표시되는지 확인.
 4.  **[Verify]** '처리량(RPS)' 및 '응답시간' 차트에 데이터가 렌더링되는지 확인.
 5.  **[Wait]** 15초 대기 (Grafana 등 대시보드의 일반적인 refresh 주기).
 6.  **[Verify]** 차트 데이터가 자동으로 업데이트되는지 확인 (이전 스냅샷과 비교).
@@ -721,7 +721,7 @@ Loaded cached credentials.
 -   **차트 (`<canvas>` 또는 `<svg>`):** 라인/바 차트의 데이터 포인트.
 -   **툴팁:** 차트 호버 시 나타나는 정보 창.
 -   **시간 범위 선택기:** '지난 5분', '지난 1시간' 등.
--   **상태 표시기:** 서비스별 상태를 나타내는 아이콘 또는 텍스트 (예: 녹색 점).
+-   **상태 표시기:** Service별 상태를 나타내는 아이콘 또는 텍스트 (예: 녹색 점).
 
 #### 2.3. 예상 결과 및 검증 포인트
 

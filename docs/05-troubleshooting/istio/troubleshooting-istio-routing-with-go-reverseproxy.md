@@ -4,7 +4,7 @@ last_updated: 2025-11-15
 author: Dongju Lee
 ---
 
-# Istio 서비스 메시 환경에서 Go ReverseProxy 라우팅 문제 해결
+# Istio Service Mesh 환경에서 Go ReverseProxy 라우팅 문제 해결
 
 ## 문제 현상
 
@@ -15,18 +15,18 @@ upstream connect error or disconnect/reset before headers. reset reason: connect
 ```
 
 ### 발생 상황
-- Istio 서비스 메시 환경에서 Go로 구현된 API Gateway를 통해 다른 마이크로서비스 호출 시 503 에러 발생
+- Istio Service Mesh 환경에서 Go로 구현된 API Gateway를 통해 다른 Microservice 호출 시 503 에러 발생
 - 특히 `/blog/api/login`, `/blog/api/register` 등의 엔드포인트 호출 실패
 - 직접 서비스 엔드포인트를 호출하면 정상 작동
 
 ### 영향 범위
-- 모든 API Gateway를 통한 백엔드 서비스 호출 실패
+- 모든 API Gateway를 통한 Backend Service 호출 실패
 - 사용자 인증, 데이터 조회 등 핵심 기능 장애
 
 ## 원인 분석
 
 ### 근본 원인
-Go의 `httputil.NewSingleHostReverseProxy()` 함수는 내부적으로 업스트림 서비스의 호스트 이름을 IP 주소로 변환합니다. Istio는 서비스 이름(FQDN)을 기반으로 트래픽을 라우팅하고 mTLS를 적용하는데, IP 주소로 변환된 요청은 Istio가 올바르게 인식하지 못해 503 에러가 발생합니다.
+Go의 `httputil.NewSingleHostReverseProxy()` 함수는 내부적으로 업스트림 Service의 호스트 이름을 IP 주소로 변환합니다. Istio는 서비스 이름(FQDN)을 기반으로 트래픽을 라우팅하고 mTLS를 적용하는데, IP 주소로 변환된 요청은 Istio가 올바르게 인식하지 못해 503 에러가 발생합니다.
 
 ### 기술적 배경
 
@@ -74,9 +74,9 @@ userProxy := &httputil.ReverseProxy{
 }
 ```
 
-### 2. 전체 서비스에 적용
+### 2. 전체 Service에 적용
 
-모든 백엔드 서비스(user-service, auth-service, blog-service)에 동일한 패턴 적용:
+모든 Backend Service(user-service, auth-service, blog-service)에 동일한 패턴 적용:
 
 ```go
 authProxy := &httputil.ReverseProxy{
@@ -202,7 +202,7 @@ func TestReverseProxyWithHostHeader(t *testing.T) {
 
 ## 관련 문서
 
-- [시스템 아키텍처 - 마이크로서비스 구조](../../02-architecture/architecture.md#3-마이크로서비스-구조)
+- [시스템 아키텍처 - Microservice 구조](../../02-architecture/architecture.md#3-Microservice-구조)
 - [운영 가이드](../../04-operations/guides/operations-guide.md)
 - [API Gateway 라우팅 오류](troubleshooting-api-gateway-routing-errors.md)
 
@@ -227,5 +227,5 @@ istioctl proxy-config routes <api-gateway-pod> -n titanium-prod
 ```
 
 ## 관련 커밋
-- `8849bdb`: fix: Istio 서비스 메시 환경에서 api-gateway 라우팅 문제 해결
+- `8849bdb`: fix: Istio Service Mesh 환경에서 api-gateway 라우팅 문제 해결
 - `48da645`: fix: ReverseProxy가 호스트 이름을 IP로 해석하지 않도록 수정

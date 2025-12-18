@@ -1,6 +1,6 @@
 # 문서 탐색 가이드
 
-Cloud-Native 마이크로서비스 플랫폼 v2.0 프로젝트의 전체 문서 구조와 탐색 방법을 안내합니다.
+Cloud-Native Microservice 플랫폼 v2.0 프로젝트의 전체 문서 구조와 탐색 방법을 안내합니다.
 
 ---
 
@@ -156,7 +156,7 @@ docs/
 | [README.md](05-troubleshooting/README.md) | 트러블슈팅 가이드 메인 페이지 (모든 문제 해결 사례 인덱스) |
 | [argocd/](05-troubleshooting/argocd/) | Argo CD 관련 문제 해결 |
 | [ci-cd/](05-troubleshooting/ci-cd/) | CI/CD Pipeline 관련 문제 해결 |
-| [istio/](05-troubleshooting/istio/) | Istio 서비스 메시 관련 문제 해결 |
+| [istio/](05-troubleshooting/istio/) | Istio Service Mesh 관련 문제 해결 |
 | [kubernetes/](05-troubleshooting/kubernetes/) | Kubernetes 관련 문제 해결 |
 | [monitoring/](05-troubleshooting/monitoring/) | Prometheus, Grafana, Loki 등 모니터링 관련 문제 해결 |
 
@@ -201,7 +201,7 @@ k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 1. 프로젝트 소개 (3분)
 2. CI/CD Pipeline 시연 (5분)
 3. 모니터링 시스템 (5분)
-4. 보안 및 서비스 메시 (3분)
+4. 보안 및 Service Mesh (3분)
 5. 에러 시나리오 및 모니터링 (5분)
 6. 고가용성 및 자동 복구 (4분)
 

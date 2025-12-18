@@ -7,10 +7,10 @@ author: Dongju Lee
 # [Troubleshooting] Istio mTLS 인증서 유효성 문제 해결
 
 ## 문제 상황
-Istio mTLS 통신 시 인증서 검증 실패로 인해 서비스 간 연결이 불가능합니다.
+Istio mTLS 통신 시 인증서 검증 실패로 인해 Service 간 연결이 불가능합니다.
 
 ## 증상
-- 서비스 간 통신 시 `TLS handshake failed`, `certificate validation failed`와 같은 에러 메시지가 발생합니다.
+- Service 간 통신 시 `TLS handshake failed`, `certificate validation failed`와 같은 에러 메시지가 발생합니다.
 - `kubectl logs <pod-name> -c istio-proxy` 명령으로 istio-proxy Container의 로그를 확인하면 인증서 관련 오류나 TLS 핸드셰이크 실패 메시지가 반복적으로 나타납니다.
 - `istioctl proxy-config secret <pod-name>` 명령으로 확인 시 인증서가 만료되었거나 유효하지 않다고 표시될 수 있습니다.
 
@@ -39,12 +39,12 @@ kubectl rollout restart deployment <deployment-name> -n <namespace>
 Cluster Node들의 시스템 시간이 정확하게 동기화되어 있는지 확인합니다. NTP(Network Time Protocol) 서버를 통해 시간이 동기화되도록 설정되어 있는지 확인하고, 필요한 경우 `ntpdate` 또는 `chrony`와 같은 도구를 사용하여 시간을 동기화합니다. 시간 불일치는 인증서 유효성 검증 실패의 흔한 원인 중 하나입니다.
 
 ## 검증
-- 해결 방법 적용 후, 해당 Pod를 재시작하거나 새로운 Pod를 배포하여 서비스 간 통신이 정상적으로 이루어지는지 확인합니다.
+- 해결 방법 적용 후, 해당 Pod를 재시작하거나 새로운 Pod를 배포하여 Service 간 통신이 정상적으로 이루어지는지 확인합니다.
 - `istioctl proxy-config secret <pod-name>` 명령으로 인증서의 `notAfter` 시간이 현재 시간보다 미래인지 확인하여 인증서가 유효한지 검증합니다.
 - `kubectl logs <pod-name> -c istio-proxy` 명령으로 istio-proxy 로그에 더 이상 인증서 관련 오류 메시지가 발생하지 않는지 확인합니다.
 
 ## 교훈
-Istio mTLS 환경에서 인증서 유효성 문제는 서비스 메시의 보안과 안정성에 직접적인 영향을 미칩니다. 인증서 만료, istiod와의 통신 문제, 시스템 시간 불일치 등 다양한 원인이 있을 수 있으므로, `istioctl` 도구와 로그를 활용하여 체계적으로 문제를 진단하는 것이 중요합니다. 특히, Cluster 내 모든 구성 요소의 시간 동기화는 mTLS 환경에서 매우 중요하게 관리되어야 할 부분입니다.
+Istio mTLS 환경에서 인증서 유효성 문제는 Service Mesh의 보안과 안정성에 직접적인 영향을 미칩니다. 인증서 만료, istiod와의 통신 문제, 시스템 시간 불일치 등 다양한 원인이 있을 수 있으므로, `istioctl` 도구와 로그를 활용하여 체계적으로 문제를 진단하는 것이 중요합니다. 특히, Cluster 내 모든 구성 요소의 시간 동기화는 mTLS 환경에서 매우 중요하게 관리되어야 할 부분입니다.
 
 ## 관련 문서
 

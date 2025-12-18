@@ -10,7 +10,7 @@ author: Dongju Lee
 
 **테스트 일시**: 2025-11-13
 **테스트 방법**: Chrome DevTools Protocol (CDP) 자동화
-**테스트 대상**: Grafana Golden Signals 대시보드, Kiali 서비스 메시 대시보드
+**테스트 대상**: Grafana Golden Signals 대시보드, Kiali Service Mesh 대시보드
 **Cluster**: titanium-prod (Kubernetes + Istio)
 
 ## 1. Grafana Golden Signals 대시보드 테스트
@@ -67,11 +67,11 @@ author: Dongju Lee
 ### 1.4. 캡처 스크린샷
 - `/tmp/grafana_golden_signals_test.png`: 전체 대시보드 뷰 (4개 패널 모두 포함)
 
-## 2. Kiali 서비스 메시 대시보드 테스트
+## 2. Kiali Service Mesh 대시보드 테스트
 
 ### 2.1. 테스트 목표
-- Istio 서비스 메시 토폴로지 시각화 검증
-- 서비스 간 트래픽 흐름 및 성공률 확인
+- Istio Service Mesh 토폴로지 시각화 검증
+- Service 간 트래픽 흐름 및 성공률 확인
 - Istio 설정 (VirtualService, DestinationRule, PeerAuthentication) 검증
 - mTLS STRICT 모드 적용 확인
 
@@ -79,12 +79,12 @@ author: Dongju Lee
 
 #### Graph View 검증
 - titanium-prod namespace 선택: 정상
-- 서비스 메시 토폴로지 시각화: 정상
+- Service Mesh 토폴로지 시각화: 정상
 - 메트릭 측정:
   - HTTP RPS: 3.78 req/s
   - Success Rate: 100.00%
   - Error Rate: 0.00%
-- 평가: 완벽한 서비스 간 통신 상태
+- 평가: 완벽한 Service 간 통신 상태
 
 #### Applications View 검증
 - 총 7개 애플리케이션 확인:
@@ -106,16 +106,16 @@ author: Dongju Lee
   - prod-default-mtls (STRICT 모드)
   - prod-postgresql-mtls-disable
   - prod-redis-mtls-disable
-  - 기타 서비스별 설정
+  - 기타 Service별 설정
 - **VirtualService** (1개):
   - prod-titanium-vs (API 라우팅 규칙)
 - **Gateway** (1개):
   - titanium-gateway (Ingress 설정)
 
 **mTLS 검증 결과**:
-- titanium-prod namespace의 모든 서비스가 STRICT mTLS 모드로 통신
+- titanium-prod namespace의 모든 Service가 STRICT mTLS 모드로 통신
 - PostgreSQL, Redis는 명시적으로 mTLS 비활성화 (정상)
-- 서비스 간 암호화 통신 100% 적용
+- Service 간 암호화 통신 100% 적용
 
 #### Services View 검증
 - 총 8개 서비스 확인:
@@ -127,7 +127,7 @@ author: Dongju Lee
   6. prod-redis-service (DestinationRule, Gateway, PeerAuthentication)
   7. prod-user-service (Gateway, PeerAuthentication)
   8. redis (외부 접근용)
-- 모든 서비스에 Istio 설정이 정상적으로 적용됨
+- 모든 Service에 Istio 설정이 정상적으로 적용됨
 - 서비스 상태: 모두 정상 작동 중
 
 #### Workloads View 검증
@@ -152,7 +152,7 @@ Graph View에서는 3개 애플리케이션과 2개 서비스만 표시되었으
 **Kiali Graph View의 필터링 동작**:
 - Graph View는 **선택된 시간 창(Time Window) 내에 활성 트래픽이 있는 서비스만** 표시합니다
 - 기본 시간 창: "Last 1 minute"
-- 트래픽이 없는 서비스는 자동으로 그래프에서 숨겨집니다
+- 트래픽이 없는 Service는 자동으로 그래프에서 숨겨집니다
 
 #### 검증 결과
 | 뷰 | 표시된 서비스 수 | 실제 존재하는 서비스 수 | 차이 원인 |
@@ -162,9 +162,9 @@ Graph View에서는 3개 애플리케이션과 2개 서비스만 표시되었으
 | Workloads View | 8개 워크로드 | 8개 워크로드 | 전체 표시 |
 
 **결론**:
-- 서비스가 "사라진" 것이 아니라, Graph View가 활성 트래픽 기준으로 필터링하여 표시하는 정상 동작입니다
-- 모든 서비스와 워크로드는 정상적으로 존재하며 실행 중입니다
-- 더 많은 서비스를 Graph View에서 보려면:
+- Service가 "사라진" 것이 아니라, Graph View가 활성 트래픽 기준으로 필터링하여 표시하는 정상 동작입니다
+- 모든 Service와 워크로드는 정상적으로 존재하며 실행 중입니다
+- 더 많은 Service를 Graph View에서 보려면:
   1. 시간 창을 "Last 10 minutes" 또는 "Last 1 hour"로 확대
   2. "Display idle nodes" 옵션 활성화 (트래픽 없는 Node도 표시)
 
@@ -180,10 +180,10 @@ Graph View에서는 3개 애플리케이션과 2개 서비스만 표시되었으
 ### 3.1. 성공 사항
 1. Grafana Golden Signals 대시보드 완전 정상 작동
 2. Phase 1 성능 개선 효과 정량적 검증 완료 (P99 99.5% 개선)
-3. Kiali 서비스 메시 가시성 확보
+3. Kiali Service Mesh 가시성 확보
 4. Istio mTLS STRICT 모드 정상 적용 확인
-5. 모든 서비스 간 통신 100% 성공률 달성
-6. Kiali Graph View 동작 방식 검증 및 모든 서비스/워크로드 정상 확인
+5. 모든 Service 간 통신 100% 성공률 달성
+6. Kiali Graph View 동작 방식 검증 및 모든 Service/워크로드 정상 확인
 
 ### 3.2. 개선 필요 사항
 없음. 모든 시스템이 프로덕션 품질 기준을 충족하고 있습니다.
@@ -192,7 +192,7 @@ Graph View에서는 3개 애플리케이션과 2개 서비스만 표시되었으
 
 ### 4.1. 단기 (1-2주)
 1. **Prometheus 경고 규칙 테스트**: 의도적으로 에러를 발생시켜 알림이 정상 작동하는지 검증
-2. **Loki 로그 수집 검증**: 모든 서비스의 로그가 Loki에 정상 수집되는지 확인
+2. **Loki 로그 수집 검증**: 모든 Service의 로그가 Loki에 정상 수집되는지 확인
 3. **백업 복구 절차 검증**: user-service-backup-cronjob의 실제 동작 테스트
 
 ### 4.2. 중기 (1개월)
@@ -213,7 +213,7 @@ Chrome DevTools Protocol을 활용한 대시보드 자동화 테스트를 통해
 
 2. **Phase 1 성능 개선의 성공**: P99 레이턴시 99.5% 개선, 에러율 100% 제거라는 획기적인 성과를 달성했습니다.
 
-3. **서비스 메시의 안정성**: Istio mTLS STRICT 모드가 정상 작동하며, 모든 서비스 간 통신이 100% 성공률을 보이고 있습니다.
+3. **Service Mesh의 안정성**: Istio mTLS STRICT 모드가 정상 작동하며, 모든 Service 간 통신이 100% 성공률을 보이고 있습니다.
 
 4. **프로덕션 준비 완료**: 현재 시스템은 프로덕션 환경에서 안정적으로 운영할 수 있는 품질 수준에 도달했습니다.
 
@@ -243,7 +243,7 @@ Week 4의 모든 목표가 성공적으로 달성되었으며, 데이터 기반�
 ## 1. 테스트 개요
 
 ### 1.1. 테스트 목적
-Kubernetes 환경에서 Golden Signals 대시보드가 정상적으로 동작하며, 각 서비스의 메트릭이 올바르게 수집 및 표시되는지 검증
+Kubernetes 환경에서 Golden Signals 대시보드가 정상적으로 동작하며, 각 Service의 메트릭이 올바르게 수집 및 표시되는지 검증
 
 ### 1.2. 테스트 환경
 - **Kubernetes Namespace**: titanium-prod
@@ -436,7 +436,7 @@ sum(container_memory_working_set_bytes{namespace="titanium-prod", pod=~"prod-.*"
 
 | 이슈 | 원인 | 해결 방안 |
 |---|---|---|
-| localhost 접속 실패 | NodePort 서비스가 Node IP로만 접근 가능 | 실제 Node IP (10.0.11.169) 사용 |
+| localhost 접속 실패 | NodePort Service가 Node IP로만 접근 가능 | 실제 Node IP (10.0.11.169) 사용 |
 | 대시보드 검색 미동작 | 대시보드 태그 또는 인덱싱 이슈 가능성 | UID를 사용한 직접 URL 접근 |
 | 시간 범위 옵션 클릭 타임아웃 | UI 응답 지연 | ESC 키로 대화상자 닫기 후 재시도 |
 
@@ -452,7 +452,7 @@ sum(container_memory_working_set_bytes{namespace="titanium-prod", pod=~"prod-.*"
    - 클라이언트 요청 패턴 분석 권장
 
 3. **Latency 임계값 검토**
-   - P99 레이턴시 3.71초는 일반적인 웹 서비스 기준으로 높은 편
+   - P99 레이턴시 3.71초는 일반적인 Web Service 기준으로 높은 편
    - 임계값 설정 및 알림 규칙 추가 고려
 
 ## 6. 결론
@@ -492,7 +492,7 @@ Grafana Golden Signals 대시보드는 전반적으로 정상 작동하며, Kube
 ## 1. 테스트 개요
 
 ### 1.1. 테스트 목적
-Istio 서비스 메시 환경에서 Kiali 대시보드가 정상적으로 동작하며, 서비스 토폴로지, 트래픽 흐름, Istio 설정이 올바르게 시각화되는지 검증
+Istio Service Mesh 환경에서 Kiali 대시보드가 정상적으로 동작하며, 서비스 토폴로지, 트래픽 흐름, Istio 설정이 올바르게 시각화되는지 검증
 
 ### 1.2. 테스트 환경
 - **Kubernetes Namespace**: titanium-prod, istio-system
@@ -504,7 +504,7 @@ Istio 서비스 메시 환경에서 Kiali 대시보드가 정상적으로 동작
 
 ### 1.3. 테스트 대상 기능
 1. Overview - Namespace 및 애플리케이션 개요
-2. Graph View - 서비스 메시 토폴로지 시각화
+2. Graph View - Service Mesh 토폴로지 시각화
 3. Applications View - 애플리케이션 목록 및 상태
 4. Istio Config - Istio 리소스 설정 검증
 
@@ -543,14 +543,14 @@ Istio 서비스 메시 환경에서 Kiali 대시보드가 정상적으로 동작
 6. redis
 7. user-service
 
-### 3.2. TC-02: Graph View 서비스 메시 토폴로지
+### 3.2. TC-02: Graph View Service Mesh 토폴로지
 
 **테스트 절차**:
 1. Graph View로 이동
 2. titanium-prod Namespace 선택
 3. Display 옵션에서 Response Time(95th Percentile) 활성화
 4. Traffic Animation 활성화
-5. 서비스 간 트래픽 흐름 확인
+5. Service 간 트래픽 흐름 확인
 
 **결과**: 성공
 
@@ -599,7 +599,7 @@ Graph Summary:
 **주요 관찰 사항**:
 - 모든 애플리케이션에 PeerAuthentication 설정 존재
 - postgresql과 redis는 DestinationRule로 mTLS 비활성화 (데이터베이스 특성상 정상)
-- API 서비스들(api-gateway, blog-service)은 VirtualService로 라우팅 규칙 정의
+- API Service들(api-gateway, blog-service)은 VirtualService로 라우팅 규칙 정의
 
 ### 3.4. TC-04: Istio Config 검증
 
@@ -619,10 +619,10 @@ Graph Summary:
    - 용도: 기본 mTLS 설정
 
 2. **prod-postgresql-service-disable-mtls**
-   - 용도: PostgreSQL 서비스의 mTLS 비활성화
+   - 용도: PostgreSQL Service의 mTLS 비활성화
 
 3. **prod-redis-disable-mtls**
-   - 용도: Redis 서비스의 mTLS 비활성화
+   - 용도: Redis Service의 mTLS 비활성화
 
 #### PeerAuthentication (3개)
 1. **prod-default-mtls**
@@ -660,12 +660,12 @@ spec:
     mode: STRICT
 ```
 - titanium-prod Namespace의 모든 워크로드에 STRICT mTLS 적용
-- 모든 서비스 간 통신이 상호 TLS 인증 필요
+- 모든 Service 간 통신이 상호 TLS 인증 필요
 - Overview 페이지에서 전체 mTLS 활성화 아이콘(full dark) 확인
 
 ### 4.2. mTLS 예외 처리
 **PostgreSQL 및 Redis의 mTLS 비활성화**:
-- 이유: 데이터베이스와 캐시 서비스는 일반적으로 자체 인증 메커니즘 사용
+- 이유: 데이터베이스와 캐시 Service는 일반적으로 자체 인증 메커니즘 사용
 - 구현: PeerAuthentication과 DestinationRule 조합으로 특정 워크로드만 mTLS 비활성화
 - 보안: 네트워크 정책 및 애플리케이션 레벨 인증으로 보완 필요
 
@@ -684,13 +684,13 @@ spec:
    - Pod 상태 및 서비스 엔드포인트 추가 검증 필요
 
 2. **Health Check 기능 검증**
-   - 각 서비스의 Health 상태가 실제 Pod 상태를 정확히 반영하는지 확인
+   - 각 Service의 Health 상태가 실제 Pod 상태를 정확히 반영하는지 확인
    - 의도적 장애 발생 후 Kiali 대시보드 반응 테스트
 
 3. **Traffic Animation 성능 모니터링**
    - 대규모 트래픽 발생 시 Graph View 렌더링 성능 확인
 
-## 6. 서비스 메시 상태 평가
+## 6. Service Mesh 상태 평가
 
 ### 6.1. 강점
 - STRICT mTLS 정책으로 높은 보안 수준 유지
@@ -699,7 +699,7 @@ spec:
 - Istio 설정 간 참조 관계 명확
 
 ### 6.2. 현재 상태
-- 서비스 간 통신: 정상 (Success Rate 100%)
+- Service 간 통신: 정상 (Success Rate 100%)
 - mTLS 적용: 정상 (STRICT 모드 활성화)
 - 트래픽 흐름: 정상 (HTTP RPS 3.78-3.87)
 - Istio 설정 유효성: 정상 (검증 오류 없음)
@@ -708,10 +708,10 @@ spec:
 
 ### 7.1. 테스트 종합 평가
 
-Kiali 대시보드는 Istio 서비스 메시의 상태를 효과적으로 시각화하고 있으며, 주요 기능이 모두 정상 작동합니다.
+Kiali 대시보드는 Istio Service Mesh의 상태를 효과적으로 시각화하고 있으며, 주요 기능이 모두 정상 작동합니다.
 
 **강점**:
-- 서비스 메시 토폴로지 시각화 정상
+- Service Mesh 토폴로지 시각화 정상
 - 실시간 트래픽 메트릭 수집 및 표시
 - Istio 설정 검증 기능 정상
 - mTLS 상태 명확히 표시
@@ -760,7 +760,7 @@ Kiali 대시보드는 Istio 서비스 메시의 상태를 효과적으로 시각
 
 ## 개요
 
-본 리포트는 Kubernetes 기반 마이크로서비스 블로그 플랫폼의 Blog Service UI에 대한 자동화된 UI/UX 테스트 결과를 기록합니다. 포괄적인 테스트 시나리오를 생성하고, Chrome DevTools Protocol(CDP)을 통해 실제 브라우저 환경에서 자동화 테스트를 수행했습니다.
+본 리포트는 Kubernetes 기반 Microservice 블로그 플랫폼의 Blog Service UI에 대한 자동화된 UI/UX 테스트 결과를 기록합니다. 포괄적인 테스트 시나리오를 생성하고, Chrome DevTools Protocol(CDP)을 통해 실제 브라우저 환경에서 자동화 테스트를 수행했습니다.
 
 ### 테스트 목적
 - 주요 사용자 시나리오의 정상 작동 검증
@@ -886,7 +886,7 @@ Status: **PASS**
   - HPA 메트릭 수집 실패 문제 해결
   - Kubernetes Metrics Server 동작 불가 문제 해결
   - Go로 API Gateway 구현하기
-  - FastAPI로 JWT 인증 마이크로서비스 구현하기
+  - FastAPI로 JWT 인증 Microservice 구현하기
   - Kustomize로 환경별 Kubernetes 매니페스트 관리하기
 
 #### 5. 모달 다이얼로그

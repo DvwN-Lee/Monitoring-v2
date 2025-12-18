@@ -8,7 +8,7 @@ author: Dongju Lee
 
 ## 1. 문제 상황
 
-Phase 1 보안 강화 배포 후, auth-service와 다른 서비스 간의 내부 API 통신에서 인증 실패가 발생했습니다. 사용자 로그인 기능이 정상 작동하지 않았습니다.
+Phase 1 보안 강화 배포 후, auth-service와 다른 Service 간의 내부 API 통신에서 인증 실패가 발생했습니다. 사용자 로그인 기능이 정상 작동하지 않았습니다.
 
 ```bash
 # 로그인 API 호출 시 500 Internal Server Error 발생
@@ -31,7 +31,7 @@ ERROR:    Cannot verify internal API request without secret
 INFO:     127.0.0.1:42356 - "POST /internal/verify-user HTTP/1.1" 401 Unauthorized
 ```
 
-### 2.2 서비스 간 통신 실패
+### 2.2 Service 간 통신 실패
 
 API Gateway → auth-service 내부 API 호출 시 401 응답:
 
@@ -48,7 +48,7 @@ ERROR:    Failed to verify user credentials
 
 ### 3.1 근본 원인
 
-Phase 1 보안 강화 작업에서 내부 서비스 간 통신에 인증 메커니즘을 추가했으나, 필요한 Secret 설정이 누락되었습니다.
+Phase 1 보안 강화 작업에서 내부 Service 간 통신에 인증 메커니즘을 추가했으나, 필요한 Secret 설정이 누락되었습니다.
 
 **코드 변경 사항** (`auth-service/auth_service.py`):
 ```python
@@ -72,7 +72,7 @@ async def verify_user_internal(request: Request):
 
 ### 3.3 보안 영향
 
-내부 API 인증 메커니즘은 서비스 간 통신 보안을 위해 필수적입니다:
+내부 API 인증 메커니즘은 Service 간 통신 보안을 위해 필수적입니다:
 - 외부에서 직접 내부 API 호출 방지
 - Service Mesh (Istio) mTLS와 함께 다층 보안 구현
 
@@ -203,7 +203,7 @@ INFO:     127.0.0.1:42356 - "POST /internal/verify-user HTTP/1.1" 200 OK
    ```
 
 2. **Integration Test 추가**
-   - 서비스 간 통신 테스트 케이스 작성
+   - Service 간 통신 테스트 케이스 작성
    - CI Pipeline에 통합 테스트 단계 추가
 
 3. **Monitoring Alert 설정**

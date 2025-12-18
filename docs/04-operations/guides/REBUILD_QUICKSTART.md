@@ -572,10 +572,10 @@ kubectl get gateway,virtualservice -n titanium-prod
 - 나머지 리소스 복구: 10~15분
 - **총 소요 시간: 30분~1시간**
 
-### Q3: 백업 중에 서비스가 중단되나요?
+### Q3: 백업 중에 Service가 중단되나요?
 
-**A**: 아니요. 백업은 운영 중인 Cluster에서 실행되며, 서비스는 계속 운영됩니다.
-- PostgreSQL: `pg_dump`는 읽기 전용 작업으로 서비스에 영향 없음
+**A**: 아니요. 백업은 운영 중인 Cluster에서 실행되며, Service는 계속 운영됩니다.
+- PostgreSQL: `pg_dump`는 읽기 전용 작업으로 Service에 영향 없음
 - Redis: `SAVE` 명령은 짧은 블로킹이 발생하지만 몇 초 이내
 
 ### Q4: 백업을 얼마나 자주 해야 하나요?

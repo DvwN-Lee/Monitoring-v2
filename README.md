@@ -1,6 +1,6 @@
-# Cloud-Native 마이크로서비스 플랫폼 v2.0
+# Cloud-Native Microservice 플랫폼 v2.0
 
-로컬 환경(Minikube)에서 운영되던 마이크로서비스 블로그 플랫폼을 클라우드 네이티브 아키텍처로 재구축한 프로젝트입니다. Terraform을 이용한 인프라 자동화, GitOps 기반의 CI/CD Pipeline, 그리고 Istio 서비스 메시를 통한 관측성과 보안 강화를 목표로 합니다.
+로컬 환경(Minikube)에서 운영되던 Microservice 블로그 플랫폼을 클라우드 네이티브 아키텍처로 재구축한 프로젝트입니다. Terraform을 이용한 인프라 자동화, GitOps 기반의 CI/CD Pipeline, 그리고 Istio Service Mesh를 통한 관측성과 보안 강화를 목표로 합니다.
 
 ---
 
@@ -41,7 +41,7 @@ terraform init && terraform apply
 **3. 서비스 접근**
 - **Blog Application**: `http://<node-ip>:31304/blog/`
 - **Grafana 대시보드**: `http://<node-ip>:31300` (admin/admin)
-- **Kiali 서비스 메시**: `http://<node-ip>:31164`
+- **Kiali Service Mesh**: `http://<node-ip>:31164`
 - **ArgoCD**: `http://<node-ip>:30080`
 
 상세한 배포 가이드는 [시작하기 문서](./docs/00-getting-started/GETTING_STARTED.md)를 참고하세요.
@@ -62,7 +62,7 @@ terraform init && terraform apply
 - **GitHub Actions + Argo CD로 자동화된 배포 Pipeline**
 - **PostgreSQL로 전환하여 데이터 정합성 및 확장성 확보**
 - **Prometheus + Grafana + Loki로 시스템 모니터링 구축**
-- **Istio를 통한 서비스 간 보안 통신(mTLS) 적용**
+- **Istio를 통한 Service 간 보안 통신(mTLS) 적용**
 
 ---
 
@@ -70,9 +70,9 @@ terraform init && terraform apply
 
 -   **Infrastructure as Code (IaC)**: Terraform을 사용하여 Kubernetes Cluster 내 필수 리소스(Namespace, PostgreSQL 배포 등)를 코드로 관리합니다. 참고: 현재 terraform/modules의 네트워크 및 Cluster 모듈은 기본 구조를 보여주는 템플릿이며, 실제 클라우드 환경에 맞게 구체화가 필요합니다.
 -   **GitOps CI/CD Pipeline**: GitHub에 코드를 Push하면 자동으로 빌드, 테스트, 보안 스캔을 거쳐 Solid Cloud에 배포됩니다.
--   **마이크로서비스 아키텍처**: Go와 Python(FastAPI)을 활용한 폴리글랏 MSA 구조로 각 서비스를 독립적으로 개발하고 배포합니다.
+-   **Microservice 아키텍처**: Go와 Python(FastAPI)을 활용한 폴리글랏 MSA 구조로 각 Service를 독립적으로 개발하고 배포합니다.
 -   **관측성 (Observability)**: Prometheus, Grafana, Loki를 도입하여 시스템의 메트릭과 로그를 실시간으로 모니터링합니다.
--   **서비스 메시**: Istio를 적용하여 서비스 간 통신을 자동으로 암호화하고 트래픽을 세밀하게 제어합니다.
+-   **Service Mesh**: Istio를 적용하여 Service 간 통신을 자동으로 암호화하고 트래픽을 세밀하게 제어합니다.
 -   **데이터 영속성**: PostgreSQL과 Redis를 사용하여 안정적인 데이터 저장과 빠른 캐싱을 지원합니다.
 -   **성능 테스트**: k6를 활용한 자동화된 부하 테스트로 시스템 성능과 안정성을 검증합니다.
 -   **Rate Limiting**: slowapi를 활용한 API 요청 제한으로 서비스 안정성을 보장합니다.
@@ -82,14 +82,14 @@ terraform init && terraform apply
 
 ## 아키텍처
 
-프로젝트의 전체 아키텍처, 서비스 간 통신 흐름, CI/CD Pipeline, 마이크로서비스 구조 등 상세한 설계 내용은 다음 문서를 참고하세요:
+프로젝트의 전체 아키텍처, Service 간 통신 흐름, CI/CD Pipeline, Microservice 구조 등 상세한 설계 내용은 다음 문서를 참고하세요:
 
 **[전체 시스템 아키텍처 문서 보기](./docs/02-architecture/architecture.md)**
 
 주요 내용:
 - 전체 시스템 아키텍처 다이어그램 (CI/CD, Kubernetes Cluster, 모니터링)
-- 마이크로서비스 구조 및 각 서비스 설명
-- 서비스 간 통신 흐름 (Sequence Diagram)
+- Microservice 구조 및 각 Service 설명
+- Service 간 통신 흐름 (Sequence Diagram)
 - 네트워크 및 보안 구조
 
 ---
@@ -118,7 +118,7 @@ Istio Service Mesh를 통해 수집된 Golden Signals를 확인할 수 있습니
 
 ![Prometheus Targets](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/prometheus-targets.png)
 
-모든 서비스의 메트릭 수집 상태를 확인할 수 있습니다. user-service, blog-service, redis-service 등 모든 타겟이 UP 상태로 정상 동작 중입니다.
+모든 Service의 메트릭 수집 상태를 확인할 수 있습니다. user-service, blog-service, redis-service 등 모든 타겟이 UP 상태로 정상 동작 중입니다.
 
 **Prometheus 메트릭 쿼리**
 
@@ -130,15 +130,15 @@ PromQL을 통해 Istio 메트릭을 쿼리하고 시각화할 수 있습니다.
 
 ![Loki Logs](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/loki-logs.png)
 
-Loki를 통해 모든 서비스의 로그를 한곳에서 조회하고 검색할 수 있습니다.
+Loki를 통해 모든 Service의 로그를 한곳에서 조회하고 검색할 수 있습니다.
 
-### 서비스 메시
+### Service Mesh
 
 **Kiali Traffic Graph**
 
 ![Kiali Service Graph](https://raw.githubusercontent.com/DvwN-Lee/Monitoring-v2/main/docs/04-operations/screenshots/kiali-service-graph.png)
 
-titanium-prod namespace의 서비스 메시 구조를 시각화한 화면입니다. 6개 애플리케이션과 7개 서비스 간의 통신 흐름 및 mTLS 암호화 상태를 확인할 수 있습니다.
+titanium-prod namespace의 Service Mesh 구조를 시각화한 화면입니다. 6개 애플리케이션과 7개 Service 간의 통신 흐름 및 mTLS 암호화 상태를 확인할 수 있습니다.
 
 ---
 
@@ -241,7 +241,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 - **[시스템 아키텍처](./docs/02-architecture/architecture.md)**: 전체 시스템의 상세 설계 문서
   - 전체 시스템 아키텍처 (Mermaid 다이어그램)
-  - 서비스 간 통신 흐름 (Sequence Diagram)
+  - Service 간 통신 흐름 (Sequence Diagram)
   - CI/CD Pipeline 상세 설계
   - 네트워크 구조 및 보안 설계
 - **[운영 가이드](./docs/04-operations/guides/operations-guide.md)**: 시스템 운영, 모니터링, 장애 대응 Runbook
@@ -297,7 +297,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 ### Week 1 완료 (9/30 ~ 10/6): 인프라 기반 구축
 - [x] 로컬 개발 환경 구축 (Minikube + Skaffold)
-- [x] 마이크로서비스 기본 구조 설계
+- [x] Microservice 기본 구조 설계
 - [x] Solid Cloud 인프라 구축 (Terraform)
 - [x] PostgreSQL 적용 및 데이터 마이그레이션 완료
 - [x] Kustomize Overlays 분리 (local vs solid-cloud)
@@ -323,7 +323,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 ### Week 4 완료 (10/21 ~ 10/27): Should-Have 기능 구현
 - [x] Istio 1.20.1 설치
-- [x] 서비스에 Sidecar 자동 주입 설정
+- [x] Service에 Sidecar 자동 주입 설정
 - [x] mTLS STRICT 모드 활성화
 - [x] Istio 메트릭 수집 (ServiceMonitor/PodMonitor)
 - [x] Kiali 외부 서비스 연동
@@ -372,7 +372,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 ### 접속 정보
 - **Grafana 대시보드**: http://10.0.11.168:30300
-- **Kiali 서비스 메시**: http://10.0.11.168:30164
+- **Kiali Service Mesh**: http://10.0.11.168:30164
 - **Prometheus**: http://10.0.11.168:30090
 - **애플리케이션**: http://10.0.11.168:31304
 
@@ -391,7 +391,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 -   **[k6 부하 테스트 결과 분석](./docs/06-performance/k6-load-test-results.md)**: 부하 테스트 및 최적화 결과
 -   **[k6 부하 테스트 가이드](./tests/performance/README.md)**: k6 성능 테스트 실행 방법
 -   **[k6 테스트 결과 보고서](./docs/06-performance/k6-load-test-results.md)**: 부하 테스트 결과 및 성능 지표
--   **[Istio 트러블슈팅 가이드](./docs/05-troubleshooting/istio/)**: Istio 서비스 메시 문제 해결
+-   **[Istio 트러블슈팅 가이드](./docs/05-troubleshooting/istio/)**: Istio Service Mesh 문제 해결
 
 ---
 

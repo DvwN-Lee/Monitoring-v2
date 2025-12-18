@@ -83,7 +83,7 @@ Phase 1에서 Rate Limiting을 추가했지만, 429 응답 발생 현황을 확�
 - Red (경고): 10 req/s 이상
 
 **Legend Format**: `{{job}} - Rate Limited (429)`
-- 서비스별로 Rate Limiting 발생 현황 구분
+- Service별로 Rate Limiting 발생 현황 구분
 
 #### Dashboard 위치
 
@@ -318,7 +318,7 @@ HighRateLimitHits   2m
 1. **현황 파악**
    ```bash
    # Grafana에서 Rate Limiting 패널 확인
-   # 어느 서비스에서 발생했는지 확인
+   # 어느 Service에서 발생했는지 확인
    ```
 
 2. **로그 확인**
@@ -372,7 +372,7 @@ $ kubectl apply -k k8s-manifests/overlays/solid-cloud
 ### 6.1 분산 추적 (Distributed Tracing)
 
 **Jaeger 또는 Tempo 도입**:
-- 서비스 간 요청 흐름 추적
+- Service 간 요청 흐름 추적
 - Latency 병목 구간 식별
 
 ### 6.2 SLO/SLI 정의
