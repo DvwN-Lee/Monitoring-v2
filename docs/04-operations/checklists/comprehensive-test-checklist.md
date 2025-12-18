@@ -399,7 +399,6 @@ author: Dongju Lee
 - 자동화 스크립트: `scripts/comprehensive-test.sh`
 - Troubleshooting 문서: `docs/05-troubleshooting/`
 - Architecture 문서: `docs/02-architecture/architecture.md`
-- Gemini 테스트 전략 분석: `/tmp/gemini_test_strategy.md`
 
 ## 테스트 환경
 
