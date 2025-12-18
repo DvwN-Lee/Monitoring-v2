@@ -742,7 +742,7 @@ Kiali 대시보드는 Istio 서비스 메시의 상태를 효과적으로 시각
 **작성일**: 2025-11-12
 **테스트 도구**: Chrome DevTools Protocol (CDP) via MCP
 **테스트 대상**: Blog Service UI (http://10.0.11.168:31304/blog/)
-**테스트 방법**: Chrome MCP + Gemini AI 협업
+**테스트 방법**: Chrome DevTools Protocol 자동화
 
 ---
 
@@ -760,7 +760,7 @@ Kiali 대시보드는 Istio 서비스 메시의 상태를 효과적으로 시각
 
 ## 개요
 
-본 리포트는 Kubernetes 기반 마이크로서비스 블로그 플랫폼의 Blog Service UI에 대한 자동화된 UI/UX 테스트 결과를 기록합니다. Gemini AI를 활용하여 포괄적인 테스트 시나리오를 생성하고, Chrome DevTools Protocol(CDP)을 통해 실제 브라우저 환경에서 자동화 테스트를 수행했습니다.
+본 리포트는 Kubernetes 기반 마이크로서비스 블로그 플랫폼의 Blog Service UI에 대한 자동화된 UI/UX 테스트 결과를 기록합니다. 포괄적인 테스트 시나리오를 생성하고, Chrome DevTools Protocol(CDP)을 통해 실제 브라우저 환경에서 자동화 테스트를 수행했습니다.
 
 ### 테스트 목적
 - 주요 사용자 시나리오의 정상 작동 검증
@@ -781,7 +781,6 @@ Kiali 대시보드는 Istio 서비스 메시의 상태를 효과적으로 시각
 
 ### 테스트 도구
 - **Chrome MCP**: Chrome DevTools Protocol 자동화
-- **Gemini AI**: 테스트 시나리오 생성 및 분석
 - **브라우저**: Chrome (CDP 지원)
 
 ### 아키텍처
@@ -795,7 +794,7 @@ Kiali 대시보드는 Istio 서비스 메시의 상태를 효과적으로 시각
 
 ## 테스트 시나리오
 
-Gemini AI가 생성한 테스트 시나리오를 기반으로 다음 항목들을 테스트했습니다:
+자동 생성된 테스트 시나리오를 기반으로 다음 항목들을 테스트했습니다:
 
 ### 1. 비로그인 사용자 시나리오
 - **PASS**: 블로그 메인 페이지 접속
@@ -1066,7 +1065,7 @@ if (res.ok) {
 
 ### 완료된 테스트 (7/7, 100%)
 1. **PASS**: 프로젝트 구조 파악 및 UI 서비스 식별
-2. **PASS**: Gemini와 함께 UI/UX 테스트 시나리오 생성
+2. **PASS**: UI/UX 테스트 시나리오 생성
 3. **PASS**: 애플리케이션 배포 상태 확인 및 접속 URL 확인
 4. **PASS**: Blog Service 기본 네비게이션 테스트 (목록, 상세, 필터링)
 5. **PASS**: 페이지네이션 및 모달 테스트
@@ -1128,7 +1127,7 @@ Blog Service UI는 **전반적으로 안정적이고 사용자 친화적**입니
 ## 참고 자료
 
 ### 테스트 시나리오 파일
-- `/tmp/uiux_test_scenarios.txt`: Gemini가 생성한 전체 테스트 시나리오
+- `/tmp/uiux_test_scenarios.txt`: 자동 생성된 전체 테스트 시나리오
 
 ### 관련 문서
 - [시스템 아키텍처](../../02-architecture/architecture.md)
