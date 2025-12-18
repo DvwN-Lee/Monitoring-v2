@@ -2,12 +2,14 @@ package test
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/retry"
+	"github.com/gruntwork-io/terratest/modules/shell"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -95,19 +97,83 @@ func testInfrastructureOutputs(t *testing.T, opts *terraform.Options) {
 	assert.Contains(t, grafanaURL, "31300", "Grafana URL should contain correct port")
 }
 
-// testK3sClusterAccess는 k3s cluster 접근성을 검증합니다
-func testK3sClusterAccess(t *testing.T, opts *terraform.Options) {
-	// Bootstrap 완료 대기 (최대 10분)
+// fetchKubeconfig retrieves the actual kubeconfig from the k3s master node via SSH
+// It waits for k3s to be ready and returns the path to the local kubeconfig file
+func fetchKubeconfig(t *testing.T, opts *terraform.Options) string {
+	masterIP := terraform.Output(t, opts, "master_external_ip")
+	zone := opts.Vars["zone"].(string)
+	clusterName := opts.Vars["cluster_name"].(string)
+	masterName := fmt.Sprintf("%s-master", clusterName)
+
+	kubeconfigPath := "/tmp/terratest-kubeconfig-gcp"
+
+	t.Logf("Fetching kubeconfig from master node %s...", masterName)
+
 	maxRetries := 60
 	sleepBetweenRetries := 10 * time.Second
 
-	retry.DoWithRetry(t, "Wait for k3s cluster to be ready", maxRetries, sleepBetweenRetries, func() (string, error) {
-		// kubeconfig 경로 설정
-		kubeconfigPath := "~/.kube/config-gcp"
+	retry.DoWithRetry(t, "Fetch kubeconfig from k3s master", maxRetries, sleepBetweenRetries, func() (string, error) {
+		// First check if k3s service is active
+		checkCmd := shell.Command{
+			Command: "gcloud",
+			Args: []string{
+				"compute", "ssh",
+				fmt.Sprintf("ubuntu@%s", masterName),
+				fmt.Sprintf("--zone=%s", zone),
+				"--tunnel-through-iap",
+				"--command=sudo systemctl is-active k3s",
+			},
+		}
 
-		// kubectl get nodes 명령 실행
-		options := k8s.NewKubectlOptions("", kubeconfigPath, "")
+		output, err := shell.RunCommandAndGetOutputE(t, checkCmd)
+		if err != nil || !strings.Contains(output, "active") {
+			return "", fmt.Errorf("k3s service is not active yet")
+		}
 
+		// Fetch kubeconfig and replace 127.0.0.1 with public IP
+		fetchCmd := shell.Command{
+			Command: "bash",
+			Args: []string{"-c", fmt.Sprintf(
+				"gcloud compute ssh ubuntu@%s --zone=%s --tunnel-through-iap --command='sudo cat /etc/rancher/k3s/k3s.yaml' 2>/dev/null | sed 's/127.0.0.1/%s/g' > %s",
+				masterName, zone, masterIP, kubeconfigPath,
+			)},
+		}
+
+		_, err = shell.RunCommandAndGetOutputE(t, fetchCmd)
+		if err != nil {
+			return "", fmt.Errorf("failed to fetch kubeconfig: %w", err)
+		}
+
+		// Verify file was created and has content
+		info, err := os.Stat(kubeconfigPath)
+		if err != nil {
+			return "", fmt.Errorf("kubeconfig file not created: %w", err)
+		}
+
+		if info.Size() < 100 {
+			return "", fmt.Errorf("kubeconfig file is too small (likely incomplete)")
+		}
+
+		t.Logf("Successfully fetched kubeconfig (size: %d bytes)", info.Size())
+		return "Kubeconfig fetched successfully", nil
+	})
+
+	return kubeconfigPath
+}
+
+// testK3sClusterAccess는 k3s cluster 접근성을 검증합니다
+func testK3sClusterAccess(t *testing.T, opts *terraform.Options) {
+	// Fetch actual kubeconfig from master node
+	kubeconfigPath := fetchKubeconfig(t, opts)
+
+	// kubectl get nodes 명령 실행
+	options := k8s.NewKubectlOptions("", kubeconfigPath, "")
+
+	// 노드 검증 (retry 로직 포함)
+	maxRetries := 30
+	sleepBetweenRetries := 10 * time.Second
+
+	retry.DoWithRetry(t, "Verify k3s nodes are ready", maxRetries, sleepBetweenRetries, func() (string, error) {
 		nodes, err := k8s.RunKubectlAndGetOutputE(t, options, "get", "nodes", "--no-headers")
 		if err != nil {
 			return "", fmt.Errorf("failed to get nodes: %w", err)
@@ -126,13 +192,15 @@ func testK3sClusterAccess(t *testing.T, opts *terraform.Options) {
 			}
 		}
 
+		t.Logf("Found %d ready nodes", len(nodeLines))
 		return fmt.Sprintf("Found %d ready nodes", len(nodeLines)), nil
 	})
 }
 
 // testArgoCDApplications는 ArgoCD applications 상태를 검증합니다
 func testArgoCDApplications(t *testing.T, opts *terraform.Options) {
-	kubeconfigPath := "~/.kube/config-gcp"
+	// Use the same kubeconfig path that was created by testK3sClusterAccess
+	kubeconfigPath := "/tmp/terratest-kubeconfig-gcp"
 	options := k8s.NewKubectlOptions("", kubeconfigPath, "argocd")
 
 	// Bootstrap 완료 대기
@@ -168,7 +236,8 @@ func testArgoCDApplications(t *testing.T, opts *terraform.Options) {
 
 // testMonitoringStack는 monitoring stack pods 상태를 검증합니다
 func testMonitoringStack(t *testing.T, opts *terraform.Options) {
-	kubeconfigPath := "~/.kube/config-gcp"
+	// Use the same kubeconfig path that was created by testK3sClusterAccess
+	kubeconfigPath := "/tmp/terratest-kubeconfig-gcp"
 	options := k8s.NewKubectlOptions("", kubeconfigPath, "monitoring")
 
 	// 모든 pods가 Running 상태가 될 때까지 대기 (최대 10분)
@@ -198,7 +267,8 @@ func testMonitoringStack(t *testing.T, opts *terraform.Options) {
 // testGrafanaDatasource는 Grafana datasource 설정을 검증합니다
 // 이 테스트는 방금 수정한 datasource 충돌 문제가 해결되었는지 확인합니다
 func testGrafanaDatasource(t *testing.T, opts *terraform.Options) {
-	kubeconfigPath := "~/.kube/config-gcp"
+	// Use the same kubeconfig path that was created by testK3sClusterAccess
+	kubeconfigPath := "/tmp/terratest-kubeconfig-gcp"
 	options := k8s.NewKubectlOptions("", kubeconfigPath, "monitoring")
 
 	// Grafana pod 이름 가져오기
