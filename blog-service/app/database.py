@@ -161,18 +161,6 @@ class BlogDatabase:
 
         logger.info("SQLite blog database schema initialized")
 
-    async def validate_category_id(self, category_id: int) -> bool:
-        """Validate that category_id exists."""
-        if self.use_postgres:
-            async with self.pool.acquire() as conn:
-                result = await conn.fetchval("SELECT id FROM categories WHERE id = $1", category_id)
-                return result is not None
-        else:
-            async with aiosqlite.connect(DATABASE_PATH) as conn:
-                cursor = await conn.execute("SELECT id FROM categories WHERE id = ?", (category_id,))
-                result = await cursor.fetchone()
-                return result is not None
-
     async def get_or_create_category(self, category_name: str) -> Dict:
         """Get existing category or create new one with random color."""
         if self.use_postgres:
@@ -451,6 +439,18 @@ class BlogDatabase:
                 cursor = await conn.execute("DELETE FROM posts WHERE id = ?", (post_id,))
                 await conn.commit()
                 return cursor.rowcount > 0
+
+    async def get_post_count(self) -> int:
+        """Get total number of posts."""
+        if self.use_postgres:
+            async with self.pool.acquire() as conn:
+                count = await conn.fetchval("SELECT COUNT(*) FROM posts")
+                return count or 0
+        else:
+            async with aiosqlite.connect(DATABASE_PATH) as conn:
+                cursor = await conn.execute("SELECT COUNT(*) FROM posts")
+                row = await cursor.fetchone()
+                return row[0] if row else 0
 
     async def close(self):
         """Close database connection pool."""
