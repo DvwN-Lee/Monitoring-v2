@@ -21,5 +21,5 @@ COPY --from=builder /app/server /server
 # 실행 포트 노출
 EXPOSE 8000
 
-# 컨테이너 실행 명령어
+# Container 실행 명령어
 CMD ["/server"]
