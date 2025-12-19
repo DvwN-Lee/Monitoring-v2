@@ -112,6 +112,7 @@ venv.bak/
 **/.terraform/*
 *.tfstate
 *.tfstate.*
+*.backup
 crash.log
 crash.*.log
 *.tfvars

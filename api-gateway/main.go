@@ -42,10 +42,6 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-func newProxy(target *url.URL) *httputil.ReverseProxy {
-	return httputil.NewSingleHostReverseProxy(target)
-}
-
 // statusRecorder records the status code of the response
 type statusRecorder struct {
 	http.ResponseWriter

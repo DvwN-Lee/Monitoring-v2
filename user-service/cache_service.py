@@ -52,15 +52,6 @@ class CacheService:
         except Exception as e:
             logger.error(f"Redis SET error for user ID {user_id}: {e}")
 
-    async def clear_user(self, user_id):
-        if not self.redis_client:
-            return
-        try:
-            await self.redis_client.delete(f"user:{user_id}")
-            logger.info(f"Cleared cache for user ID: {user_id}")
-        except Exception as e:
-            logger.error(f"Redis DEL error for user ID {user_id}: {e}")
-
     async def ping(self):
         if not self.redis_client:
             return False
