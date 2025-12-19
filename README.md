@@ -273,7 +273,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 ## 개발 계획 및 목표
 
 ### 개발 기간
-- **프로젝트 기간**: 2025년 9월 30일 ~ 12월 19일
+- **프로젝트 기간**: 2025년 9월 30일 ~ 2025년 12월 19일
 - **개발/테스트 환경**: Solid Cloud (CloudStack 기반)
 - **프로젝트 상태**: 완료 (Must-Have 100%, Should-Have 100%)
 
