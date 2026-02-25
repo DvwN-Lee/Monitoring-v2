@@ -176,7 +176,7 @@ kubectl exec -it -n titanium-prod postgres-0 -c postgres -- psql -U postgres
 \l
 
 # 특정 데이터베이스 접속
-\c blog_db
+\c titanium
 
 # 테이블 목록
 \dt
@@ -189,18 +189,18 @@ SELECT * FROM users LIMIT 10;
 ```bash
 # pg_dump를 사용한 백업
 kubectl exec -n titanium-prod postgres-0 -c postgres -- \
-  pg_dump -U postgres blog_db > backup_$(date +%Y%m%d).sql
+  pg_dump -U postgres titanium > backup_$(date +%Y%m%d).sql
 
 # 압축 백업
 kubectl exec -n titanium-prod postgres-0 -c postgres -- \
-  pg_dump -U postgres blog_db | gzip > backup_$(date +%Y%m%d).sql.gz
+  pg_dump -U postgres titanium | gzip > backup_$(date +%Y%m%d).sql.gz
 ```
 
 **데이터베이스 복구**:
 ```bash
 # 백업 파일로부터 복구
 cat backup_20251103.sql | kubectl exec -i -n titanium-prod postgres-0 -c postgres -- \
-  psql -U postgres blog_db
+  psql -U postgres titanium
 ```
 
 ### 4. 스케일링
@@ -437,7 +437,7 @@ kubectl get endpoints -n titanium-prod
 kubectl run -it --rm debug --image=nicolaka/netshoot --restart=Never -- nslookup prod-user-service.titanium-prod.svc.cluster.local
 
 # 서비스 연결 테스트
-kubectl run -it --rm debug --image=nicolaka/netshoot --restart=Never -- curl http://prod-user-service.titanium-prod.svc.cluster.local:5001/health
+kubectl run -it --rm debug --image=nicolaka/netshoot --restart=Never -- curl http://prod-user-service.titanium-prod.svc.cluster.local:8001/health
 ```
 
 **Istio 사이드카 문제**:
@@ -671,7 +671,7 @@ spec:
             command:
             - /bin/sh
             - -c
-            - pg_dump -h postgres.titanium-prod.svc.cluster.local -U postgres blog_db > /backup/backup_$(date +%Y%m%d).sql
+            - pg_dump -h postgres.titanium-prod.svc.cluster.local -U postgres titanium > /backup/backup_$(date +%Y%m%d).sql
             volumeMounts:
             - name: backup
               mountPath: /backup

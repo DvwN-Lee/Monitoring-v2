@@ -51,5 +51,6 @@
 `auth-service`는 아래 환경 변수를 통해 설정을 관리하며, 이 값들은 Kubernetes `ConfigMap` 또는 `docker-compose.yml`을 통해 주입됨
 
 - `USER_SERVICE_URL`: 인증 정보를 검증하기 위해 호출할 User Service의 주소
-- `INTERNAL_API_SECRET`: JWT 서명 및 검증에 사용할 비밀 키
+- `INTERNAL_API_SECRET`: JWT 서명 및 검증에 사용할 비밀 키 (`ALLOWED_ORIGINS`와 함께 환경별로 주입)
+- `ALLOWED_ORIGINS`: CORS 허용 Origin 설정 (기본값: `*`, 프로덕션에서는 명시적 도메인으로 설정)
 - **(서버 포트)**: Service가 실행될 포트는 코드 내에서 `8002`로 지정되어 있음

@@ -2,7 +2,7 @@
 
 ## 1. 개요
 - **사용자 관리 전문 서비스**: `user-service`는 사용자 계정의 생성, 조회, 자격 증명 검증 등 사용자 데이터 관리에 특화된 Microservice임 
-- **다중 데이터 저장소 활용**: 사용자 데이터의 영속성은 **SQLite** 데이터베이스를 통해 보장하며, 자주 조회되는 데이터는 **Redis** 인메모리 캐시에 저장하여 응답 성능을 향상시키는 구조를 가짐 
+- **다중 데이터 저장소 활용**: 사용자 데이터의 영속성은 환경에 따라 **SQLite**(로컬 개발) 또는 **PostgreSQL**(프로덕션, `USE_POSTGRES=true` 설정)로 보장하며, 자주 조회되는 데이터는 **Redis** 인메모리 캐시에 저장하여 응답 성능을 향상시키는 구조를 가짐
 - **백엔드 핵심 서비스**: `auth-service`가 로그인을 처리할 때 사용자의 실제 비밀번호를 확인하는 등, 다른 서비스들이 필요로 하는 핵심 사용자 데이터를 제공하는 역할을 수행함 
 
 ## 2. 핵심 기능 및 책임
@@ -49,6 +49,8 @@
 - **애플리케이션 실행**: `uvicorn`을 사용하여 `8001` 포트에서 FastAPI 애플리케이션을 실행
 
 ## 6. 설정 (`config.py`)
-- `DATABASE_PATH`: SQLite 데이터베이스 파일이 저장될 경로. Container 내부의 `/data/app.db`를 가리키며, 이 경로는 Kubernetes PVC(PersistentVolumeClaim)와 연결되어 데이터 영속성을 보장
+- `USE_POSTGRES`: `true`로 설정하면 PostgreSQL을 사용하고, 기본값(`false`)은 SQLite를 사용
+- `DATABASE_PATH`: SQLite 데이터베이스 파일이 저장될 경로 (`USE_POSTGRES=false`일 때만 사용)
+- `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`: PostgreSQL 연결 설정 (`USE_POSTGRES=true`일 때 사용)
 - `REDIS_HOST`: 접속할 Redis 서버의 호스트 이름
 - `REDIS_PORT`: 접속할 Redis 서버의 포트

@@ -81,8 +81,8 @@ graph TD
 - Load Generator 배포로 지속적인 메트릭 생성
 
 ### 접속 정보
-- **Grafana**: http://10.0.1.70:30300 (admin / prom-operator)
-- **Kiali**: http://10.0.1.70:30164
+- **Grafana**: http://10.0.1.70:30300 (admin / admin123)
+- **Kiali**: http://10.0.1.70:31200
 - **애플리케이션**: http://10.0.1.70:31304
 - **Prometheus**: http://10.0.1.70:30090
 

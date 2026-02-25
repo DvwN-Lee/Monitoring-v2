@@ -222,7 +222,7 @@ author: Dongju Lee
   kubectl port-forward -n monitoring svc/prometheus-grafana 3000:80 &
 
   # 브라우저: http://localhost:3000
-  # 초기 ID/PW: admin/prom-operator
+  # 초기 ID/PW: admin/admin123
   # Dashboards -> Golden Signals
   ```
 - [ ] **성공 기준**: 4개 패널(Latency, Traffic, Errors, Saturation)에 데이터 표시, "No Data" 없음
