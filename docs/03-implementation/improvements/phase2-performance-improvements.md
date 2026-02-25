@@ -192,15 +192,15 @@ def cache(ttl: int = 300):
 ```python
 from cache_service import cache
 
-@app.get("/api/users/{user_id}")
-@cache(ttl=300)  # 5분 캐싱
-async def get_user(user_id: int):
+@app.get("/users/{username}")
+@cache(ttl=3600)  # 1시간 캐싱 (user-service)
+async def get_user(username: str):
     # Database 조회 (Cache Miss 시에만 실행)
-    user = await db.fetch_user(user_id)
+    user = await db.fetch_user(username)
     return user
 
 @app.get("/blog/api/posts")
-@cache(ttl=60)  # 1분 캐싱
+@cache(ttl=60)  # 1분 캐싱 (blog-service)
 async def list_posts():
     posts = await db.fetch_posts()
     return posts
@@ -210,10 +210,10 @@ async def list_posts():
 
 | 데이터 유형 | TTL | 이유 |
 |------------|-----|------|
-| 사용자 프로필 | 300초 (5분) | 자주 변경되지 않음 |
-| 블로그 목록 | 60초 (1분) | 새 게시물 등록 시 빠른 반영 필요 |
-| 카테고리 정보 | 3600초 (1시간) | 거의 변경되지 않음 |
-| 세션 데이터 | 1800초 (30분) | 보안상 짧은 TTL 권장 |
+| 사용자 프로필 | 3600초 (1시간) | 자주 변경되지 않음 (user-service cache_service.py) |
+| 블로그 목록 | 60초 (1분) | 새 게시물 등록 시 빠른 반영 필요 (blog-service) |
+| 단일 게시물 | 300초 (5분) | 게시물 상세 정보 캐싱 (blog-service) |
+| 카테고리 정보 | 600초 (10분) | 거의 변경되지 않음 (blog-service) |
 
 ### 2.4 Cache Invalidation
 

@@ -23,7 +23,7 @@
 다음 두 단계의 개선 작업을 진행하기로 결정했습니다:
 
 **Phase 1 (보안 강화):**
-- API Gateway에 Rate Limiting 적용 (IP 기반, 분당 100 요청 제한)
+- Auth Service에 Rate Limiting 적용 (IP 기반, POST /login: 5회/분, GET /verify: 30회/분)
 - CORS Middleware 추가 (허용 Origin 설정)
 - Database 비밀번호를 Kubernetes Secret으로 관리
 
@@ -39,7 +39,8 @@
 **문제**: API Endpoint가 무제한 요청을 받을 수 있어 리소스 고갈 위험
 
 **해결책**: slowapi 라이브러리를 사용한 IP 기반 Rate Limiting
-- 분당 100 요청으로 제한
+- POST /login: 분당 5 요청으로 제한 (brute-force 방지)
+- GET /verify: 분당 30 요청으로 제한
 - 초과 시 429 (Too Many Requests) 응답
 - Prometheus 메트릭으로 Rate Limiting 발생 횟수 추적
 
@@ -49,7 +50,7 @@
 **문제**: 브라우저에서 다른 도메인의 API 호출 시 CORS 에러 발생
 
 **해결책**: FastAPI CORSMiddleware 적용
-- 허용 Origin: 환경 변수로 관리 (`CORS_ALLOWED_ORIGINS`)
+- 허용 Origin: 환경 변수로 관리 (`ALLOWED_ORIGINS`)
 - 허용 Methods: GET, POST, PUT, DELETE, PATCH
 - 허용 Headers: Content-Type, Authorization
 
@@ -134,8 +135,8 @@ class SessionManager:
 - Cache 로직 추가로 데이터 일관성 관리 복잡도 증가
 
 **운영 오버헤드:**
-- Rate Limiting 임계값 조정 필요 (현재 100 req/min은 임시값)
-- Cache TTL 최적화 필요 (현재 300초는 기본값)
+- Rate Limiting 임계값 조정 필요 (현재 /login: 5 req/min, /verify: 30 req/min)
+- Cache TTL 최적화 필요 (user-service: 3600초, blog 목록: 60초, 단일 포스트: 300초, 카테고리: 600초)
 - Secret Rotation 정책 수립 필요
 
 **의존성 추가:**

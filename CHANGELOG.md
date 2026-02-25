@@ -3,7 +3,7 @@
 ## [2025-12-14] - Phase 1+2 보안/성능 개선 및 카테고리 기능
 
 ### Added
-- Rate Limiting 적용 (slowapi) - API 분당 100 요청 제한
+- Rate Limiting 적용 (slowapi) - POST /login: 5회/분, GET /verify: 30회/분
 - CORS Middleware 추가
 - 카테고리별 랜덤 색상 자동 할당 기능
 - CSS 변수 기반 동적 색상 시스템
@@ -11,9 +11,9 @@
 ### Changed
 - ClientSession Singleton Pattern 적용 (Connection Pool 재사용)
 - Redis Cache TTL 최적화
-  - 사용자 프로필: 5분
-  - 블로그 목록: 1분
-  - 카테고리: 1시간
+  - 사용자 프로필: 1시간 (3600초)
+  - 블로그 목록: 1분 (60초)
+  - 카테고리: 10분 (600초)
 - blog-service LEFT JOIN -> INNER JOIN 변경 (데이터 무결성 강화)
 
 ### Improved

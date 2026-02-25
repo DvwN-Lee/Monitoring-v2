@@ -5,7 +5,8 @@
 - **Kustomize 기반 구성 관리**: Kubernetes 설정을 효율적으로 관리하기 위해 **Kustomize**를 사용함. 이를 통해 공통 설정과 환경별 설정을 분리하여 유지보수성과 재사용성을 높임 
 - **Base + Overlays 구조**:
     - `base/`: 모든 환경(개발, 스테이징, 운영)에서 공통으로 사용되는 핵심 리소스(Deployment, Service 등)의 템플릿을 정의
-    - `overlays/`: `local`과 같은 특정 환경에만 적용될 변경사항이나 추가 설정을 정의
+    - `overlays/local`: 로컬 개발 환경(Minikube)에만 적용될 변경사항이나 추가 설정을 정의
+    - `overlays/solid-cloud`: Solid Cloud 프로덕션 환경에 적용될 변경사항이나 추가 설정을 정의 (namespace: titanium-prod, prefix: prod-)
 
 ## 2. 핵심 기능 및 책임
 - **선언적 인프라 관리**: 모든 애플리케이션 구성 요소를 YAML 파일 코드로 정의하여, 인프라를 버전 관리하고 일관성 있으며 반복 가능한 배포를 가능하게 함
@@ -65,7 +66,17 @@ graph LR
     - `load-balancer-service`의 타입을 `ClusterIP`에서 **`NodePort`**로 변경하여, 로컬 머신의 특정 포트(30700)를 통해 외부에서 직접 접근할 수 있도록 함
     - 모든 `Deployment`의 `imagePullPolicy`를 **`IfNotPresent`**로 변경하여, 이미지가 로컬에 있을 경우 다시 내려받지 않도록 해 개발 속도를 향상시킴
 
-### 3.3. Kustomize 빌드 결과 비교
+### 3.3. `overlays/solid-cloud` 디렉터리 (프로덕션 환경 설정)
+`overlays/solid-cloud/kustomization.yaml` 파일은 `base`의 설정을 상속받아 Solid Cloud 프로덕션 환경에 맞게 변경함.
+
+- **`namePrefix: prod-`**: 모든 리소스의 이름 앞에 `prod-` 접두사를 붙임
+- **`namespace: titanium-prod`**: 모든 리소스를 `titanium-prod` Namespace에 배포
+- **이미지 태그**: Docker Hub의 `main-{sha}` 태그 기반 이미지 사용
+- **`ALLOWED_ORIGINS`**: 프로덕션 도메인(`https://titanium.example.com`)만 허용
+- **Secret Patches**: `secret-patch.yaml`(git 제외 파일)을 통해 PostgreSQL 자격 증명 및 JWT Secret 주입
+- **Service Patches**: Load Balancer 타입으로 외부 접근 허용
+
+### 3.4. Kustomize 빌드 결과 비교
 
 `base`와 `overlays/local`을 빌드했을 때, 설정이 어떻게 변경되는지 비교합니다:
 

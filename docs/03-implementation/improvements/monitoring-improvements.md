@@ -338,21 +338,21 @@ HighRateLimitHits   2m
 
 ### 5.2 Rate Limit 임계값 조정
 
-**현재 설정**: 100 req/min
+**현재 설정**: auth-service `/login` 5/분, `/verify` 30/분
 
-**조정 방법**:
+**조정 방법** (auth-service/main.py):
 ```python
-# api-gateway/main.py
-@app.post("/api/login")
-@limiter.limit("200/minute")  # 100 → 200으로 상향
-async def login(...):
+# auth-service/main.py
+@app.post("/login")
+@limiter.limit("10/minute")  # 5 → 10으로 상향 조정 예시
+async def handle_login(request: Request, credentials: LoginRequest):
     pass
 ```
 
 **재배포**:
 ```bash
-$ docker build -t dongju101/api-gateway:new-tag .
-$ docker push dongju101/api-gateway:new-tag
+$ docker build -t dongju101/auth-service:new-tag .
+$ docker push dongju101/auth-service:new-tag
 
 # Kustomization 업데이트
 $ kubectl apply -k k8s-manifests/overlays/solid-cloud

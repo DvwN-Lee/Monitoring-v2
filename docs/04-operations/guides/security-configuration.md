@@ -74,7 +74,7 @@ resource "cloudstack_firewall" "master" {
   rule {
     protocol  = "tcp"
     cidr_list = var.allowed_ssh_cidrs # Restricted IP List
-    ports     = ["22", "6443", "31300", "31200"]
+    ports     = ["22", "6443", "80", "31300", "31200"]
   }
 }
 ```

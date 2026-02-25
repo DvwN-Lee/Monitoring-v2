@@ -7,7 +7,7 @@
 
 - **SPA 프론트엔드 내장**: 이 Service는 게시물 관리를 위한 API뿐만 아니라, 사용자가 직접 상호작용할 수 있는 SPA(Single Page Application) 형태의 웹 UI를 함께 제공함. UI는 `templates`와 `static` 폴더에 저장된 HTML, CSS, JavaScript 파일로 구성됨
 
-- **독립적인 데이터 관리**: 게시물 데이터는 서비스 내부에 있는 **SQLite** 데이터베이스 파일(`blog.db`)에 영속적으로 저장 및 관리됨
+- **독립적인 데이터 관리**: 게시물 데이터는 환경에 따라 **SQLite**(로컬 개발) 또는 **PostgreSQL**(프로덕션, `USE_POSTGRES=true` 설정)에 영속적으로 저장 및 관리됨
 
 ## 2. 핵심 기능 및 책임
 - **게시물 관리 (Post Management)**: 게시물의 생성, 목록 조회, 상세 조회, 수정, 삭제 기능을 위한 API 엔드포인트를 제공
@@ -26,7 +26,7 @@
 1.  **토큰 추출**: API 요청 헤더에서 `Authorization: Bearer <token>` 형식의 JWT를 추출
 2.  **토큰 검증 요청**: `aiohttp`를 사용하여 `auth-service`의 `/verify` 엔드포인트로 토큰 검증을 비동기적으로 요청
 3.  **사용자 정보 반환**: 토큰이 유효하면, `auth-service`는 토큰에 포함된 사용자 정보(예: `username`)를 반환함. 이 사용자 이름은 게시물 생성 시 `author` 필드를 채우거나, 수정/삭제 시 권한을 확인하는 데 사용됨
-4.  **권한 확인 (인가)**: `PATCH /api/posts/{id}` 및 `DELETE /api/posts/{id}` 엔드포인트에서는 DB에서 게시물 정보를 조회하여, 현재 **로그인된 사용자와 게시물의 작성자(`author`)가 일치하는지**를 추가로 확인. 일치하지 않으면 `403 Forbidden` 에러를 반환하여 권한 없는 수정을 방지
+4.  **권한 확인 (인가)**: `PATCH /blog/api/posts/{id}` 및 `DELETE /blog/api/posts/{id}` 엔드포인트에서는 DB에서 게시물 정보를 조회하여, 현재 **로그인된 사용자와 게시물의 작성자(`author`)가 일치하는지**를 추가로 확인. 일치하지 않으면 `403 Forbidden` 에러를 반환하여 권한 없는 수정을 방지
 
 ### 3.2. 프론트엔드(SPA) 로직 (`app.js`)
 - **클라이언트 사이드 라우팅**: URL 해시(`#`)를 기반으로 페이지 이동 없이 동적으로 뷰(목록, 상세, 글쓰기 등)를 렌더링
@@ -36,17 +36,22 @@
 ## 4. 제공 API 엔드포인트
 |경로|메서드|인증|설명|
 |:---|:---|:--:|:---|
-|`/api/posts`|`GET`|X|전체 게시물 목록을 페이지네이션과 함께 조회|
-|`/api/posts`|`POST`|O|새로운 게시물을 생성. 작성자는 인증된 사용자로 자동 설정|
-|`/api/posts/{id}`|`GET`|X|특정 ID를 가진 게시물의 상세 정보를 조회|
-|`/api/posts/{id}`|`PATCH`|O|게시물 정보를 수정. 작성자 본인만 가능|
-|`/api/posts/{id}`|`DELETE`|O|게시물을 삭제. 작성자 본인만 가능|
+|`/blog/api/posts`|`GET`|X|전체 게시물 목록을 페이지네이션과 함께 조회|
+|`/blog/api/posts`|`POST`|O|새로운 게시물을 생성. 작성자는 인증된 사용자로 자동 설정|
+|`/blog/api/posts/{id}`|`GET`|X|특정 ID를 가진 게시물의 상세 정보를 조회|
+|`/blog/api/posts/{id}`|`PATCH`|O|게시물 정보를 수정. 작성자 본인만 가능|
+|`/blog/api/posts/{id}`|`DELETE`|O|게시물을 삭제. 작성자 본인만 가능|
+|`/blog/api/categories`|`GET`|X|전체 카테고리 목록과 게시물 수를 조회|
 
 ## 5. 웹 인터페이스 엔드포인트
 |경로|메서드|설명|
 |:---|:---|:---|
-|`/blog/*`|`GET`|블로그 SPA (`index.html`)를 렌더링. 클라이언트 사이드 라우팅을 지원|
+|`/`|`GET`|루트 경로에서 블로그 페이지를 렌더링|
+|`/blog/`|`GET`|블로그 루트 경로에서 블로그 페이지를 렌더링|
+|`/blog/{path}`|`GET`|블로그 서브 경로에서 SPA (`index.html`)를 렌더링. 클라이언트 사이드 라우팅을 지원|
 |`/blog/static/*`|`GET`|JavaScript, CSS 등 정적 파일을 제공|
+|`/health`|`GET`|Service의 상태를 확인하는 헬스 체크 엔드포인트|
+|`/stats`|`GET`|`load-balancer`가 모니터링을 위해 사용하는 통계 엔드포인트|
 
 ## 6. Container화 (`Dockerfile`)
 - **베이스 이미지**: `python:3.11-slim`을 사용하여 경량화된 이미지를 생성
@@ -55,4 +60,7 @@
 
 ## 7. 설정
 - `AUTH_SERVICE_URL`: JWT 토큰 검증을 위해 호출할 Auth Service의 주소
-- `BLOG_DATABASE_PATH`: SQLite 데이터베이스 파일이 저장될 경로 (기본값: `/app/blog.db`)
+- `USE_POSTGRES`: `true`로 설정하면 PostgreSQL을 사용하고, 기본값(`false`)은 SQLite를 사용
+- `BLOG_DATABASE_PATH`: SQLite 데이터베이스 파일이 저장될 경로 (`USE_POSTGRES=false`일 때만 사용, 기본값: `/app/blog.db`)
+- `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`: PostgreSQL 연결 설정 (`USE_POSTGRES=true`일 때 사용)
+- `ALLOWED_ORIGINS`: CORS 허용 Origin 설정 (기본값: `*`)

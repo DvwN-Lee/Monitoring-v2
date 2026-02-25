@@ -31,9 +31,8 @@ Phase 1 보안 강화는 API Endpoint의 보안 취약점을 해결하기 위해
 **라이브러리**: slowapi (FastAPI 네이티브 Rate Limiting)
 
 **적용 파일**:
-- `api-gateway/main.py`
-- `auth-service/auth_service.py`
-- `user-service/user_service.py`
+- `auth-service/main.py` (FastAPI slowapi 기반 Rate Limiting)
+- **참고**: `user-service`, `blog-service`는 Rate Limiting 미적용. `api-gateway`는 Go 서비스로 별도 Rate Limiting 적용 없음 (Istio EnvoyFilter로 처리)
 
 **코드 예시**:
 ```python
@@ -47,8 +46,8 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # API Endpoint에 Rate Limit 적용
-@app.post("/api/login")
-@limiter.limit("100/minute")  # 분당 100 요청 제한
+@app.post("/login")
+@limiter.limit("5/minute")  # 분당 5 요청 제한 (Brute Force 방지)
 async def login(request: Request, credentials: LoginRequest):
     # 로그인 로직
     pass
@@ -58,10 +57,8 @@ async def login(request: Request, credentials: LoginRequest):
 
 | Endpoint | Rate Limit | 이유 |
 |----------|------------|------|
-| `/api/login` | 100/분 | Brute Force 공격 방지 |
-| `/verify` | 30/분 | Token 검증 API 남용 방지 |
-| `/api/users` (POST) | 100/분 | 대량 계정 생성 방지 |
-| `/blog/api/posts` (POST) | 100/분 | 스팸 게시물 방지 |
+| `/login` | 5/분 | Brute Force 공격 방지 (auth-service) |
+| `/verify` | 30/분 | Token 검증 API 남용 방지 (auth-service) |
 | 기타 GET 요청 | 제한 없음 | 읽기 요청은 상대적으로 안전 |
 
 ### 1.4 429 응답 처리
@@ -104,7 +101,7 @@ http_requests_total{status="429"}
 from fastapi.middleware.cors import CORSMiddleware
 
 # CORS 설정
-origins = os.getenv("CORS_ALLOWED_ORIGINS", "*").split(",")
+origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 
 app.add_middleware(
     CORSMiddleware,
@@ -122,8 +119,8 @@ app.add_middleware(
 configMapGenerator:
   - name: app-config
     literals:
-      - CORS_ALLOWED_ORIGINS=*  # 개발 환경
-      # - CORS_ALLOWED_ORIGINS=https://titanium.example.com  # 프로덕션
+      - ALLOWED_ORIGINS=*  # 개발 환경
+      # - ALLOWED_ORIGINS=https://titanium.example.com  # 프로덕션
 ```
 
 ### 2.4 보안 권장사항
@@ -131,7 +128,7 @@ configMapGenerator:
 **개발 환경**: `*` (모든 Origin 허용)
 **프로덕션**: 명시적인 도메인 리스트
 ```
-CORS_ALLOWED_ORIGINS=https://titanium.example.com,https://admin.titanium.example.com
+ALLOWED_ORIGINS=https://titanium.example.com,https://admin.titanium.example.com
 ```
 
 ---
