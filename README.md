@@ -269,6 +269,8 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 **각 기술을 선택한 이유는 [ADR 문서](./docs/02-architecture/adr/)를 참고하세요.**
 
+**AI Agent 활용 방식(커스텀 Agent 정의, 멀티 AI 환경 구성, CLI 권한 정책)은 [프로젝트 회고](./docs/08-retrospective/project-retrospective.md) 2.5절 및 4.5절을 참고하세요.**
+
 ---
 
 ## 개발 계획 및 목표
