@@ -160,6 +160,9 @@ node_modules/
 *.test
 vendor/
 
+# Gemini MCP
+.gemini-mcp/
+
 # kubeconfig files with credentials
 kubeconfig
 *.kubeconfig
