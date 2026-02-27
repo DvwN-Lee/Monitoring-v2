@@ -164,7 +164,10 @@ vendor/
 kubeconfig
 *.kubeconfig
 *-kubeconfig.yaml
-/.claude/
+/.claude/*
+!/.claude/agents
+/.claude/agents/*
+!/.claude/agents/code-implementation-expert.md
 
 # k6 performance test results
 tests/performance/*.json
