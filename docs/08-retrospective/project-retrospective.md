@@ -44,6 +44,13 @@ Cloud-Native Microservice 플랫폼 v2.0은 로컬 환경(Minikube)에서 운영
 - **ClientSession Singleton Pattern**: Connection Pool 재사용으로 TCP Handshake Overhead 90% 감소
 - **Redis Cache 최적화**: Cache Hit 시 응답 시간 90% 감소
 
+### 2.5 AI Agent 기반 개발 프로세스
+
+- **커스텀 AI Agent 정의**: `code-implementation-expert.md`를 작성하여 프로젝트 특성에 맞는 AI Agent 역할과 코드 작성 규칙을 명세화
+- **인프라 코드 작성 지원**: Terraform Loki Stack 배포 자동화 등 IaC 코드 작성에 Claude Code를 협업 도구로 활용
+- **멀티 AI 환경 구성**: Gemini MCP 서버(`claude-gemini-collaboration`)를 통합하여 복수 AI 모델을 연결하는 개발 환경 구성
+- **CLI 권한 정책 설계**: kubectl, terraform, git, gh 등 주요 CLI 도구에 대한 허용 범위를 명시적으로 정의하여 AI Agent 실행 범위 관리
+
 ---
 
 ## 3. 아쉬운 점 (What Could Be Improved)
@@ -95,6 +102,13 @@ Cloud-Native Microservice 플랫폼 v2.0은 로컬 환경(Minikube)에서 운영
 - **Connection Pooling**: ClientSession Singleton Pattern으로 Connection 재사용
 - **Cache 전략**: TTL 기반 Redis Cache로 Database 부하 감소
 - **Query 최적화**: LEFT JOIN -> INNER JOIN 변경으로 데이터 무결성 강화
+
+### 4.5 AI Agent 협업 개발 경험
+
+- **커스텀 Agent 설계**: AI Agent의 역할, 모델, 코드 스타일 규칙을 명세하는 방법을 습득하며 AI 시스템 설계 방식 이해
+- **멀티 AI 협업 구성**: MCP(Model Context Protocol) 서버로 복수 AI 모델을 연결하는 통합 환경 구성 방법 학습
+- **AI 생성 코드 검증**: AI 생성 코드와 인프라 설정의 정확성 검증을 통해 코드 리뷰 역량의 중요성 재확인
+- **권한 정책 설계**: AI Agent의 CLI 명령 실행 범위를 명시적으로 정의하는 접근 방식 습득
 
 ---
 
@@ -170,7 +184,7 @@ Cloud-Native Microservice 플랫폼 v2.0 프로젝트는 Terraform IaC, GitOps C
 
 체계적인 문서화와 트러블슈팅 가이드 작성을 통해 프로젝트 진행 과정과 의사결정 근거를 명확히 기록했으며, 이는 향후 유지보수 및 확장에 큰 도움이 될 것입니다.
 
-아쉬운 점으로는 초기 성능 베이스라인 부재, External Secrets Operator 미도입, Distributed Tracing 미구축 등이 있으나, 이는 향후 개선 과제로 남겨두었습니다.
+아쉬운 점으로는 초기 성능 베이스라인 부재, External Secrets Operator 미도입, Distributed Tracing 미구축, AI 도구 활용 기록의 체계적 관리 미비 등이 있으나, 이는 향후 개선 과제로 남겨두었습니다.
 
 이 프로젝트를 통해 Kubernetes 운영, Service Mesh 아키텍처, 관측성 시스템 구축, 성능 최적화 등 클라우드 네이티브 기술 스택에 대한 실전 경험을 쌓을 수 있었습니다.
 
