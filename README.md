@@ -265,6 +265,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 | **Database/Cache**  | `PostgreSQL`, `Redis`                                                                             |
 | **Libraries**       | `asyncpg`, `slowapi`, `alembic`, `sqlalchemy`, `aiohttp`                                          |
 | **Local Dev**       | `Minikube`, `Skaffold`                                                                            |
+| **AI Development** | `Claude Code (AI Agent)`                                                                           |
 
 **각 기술을 선택한 이유는 [ADR 문서](./docs/02-architecture/adr/)를 참고하세요.**
 
