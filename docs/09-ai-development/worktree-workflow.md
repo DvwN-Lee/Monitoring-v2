@@ -165,4 +165,4 @@ Istio 설정, Prometheus 메트릭 튜닝, CI/CD 파이프라인 변경과 같�
 
 - [AI Agent 설계 및 역할 분리](./agent-design.md)
 - [Scrum 리뷰 기록](./scrum-reviews/)
-- [CI/CD 파이프라인 문서](../03-cicd/)
+

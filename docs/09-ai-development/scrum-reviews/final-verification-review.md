@@ -150,7 +150,7 @@
 | 항목 | 값 |
 |------|---|
 | 전체 PR | 27건 (MERGED 23, CLOSED 4) |
-| allow 항목 수 | 154개 |
+| allow 항목 수 | 158개 |
 | deny/ask 항목 수 | 0 |
 | 커스텀 Agent | 1개 (`code-implementation-expert`, model: sonnet) |
 | 활성 MCP 서버 | 1개 (`claude-gemini-collaboration`) |

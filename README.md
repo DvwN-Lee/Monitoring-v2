@@ -74,7 +74,7 @@ terraform init && terraform apply
 
 - **커스텀 Agent 설계**: 프로젝트 특성에 맞는 `code-implementation-expert` Agent를 `.claude/agents/` 디렉토리에 정의하여 코드 구현 품질을 관리했습니다.
 - **Worktree 기반 AI 협업**: Git Worktree로 각 작업을 독립된 디렉토리에 격리하여 AI Agent와 안전하게 협업했습니다. 작업 완료 후 worktree는 정리되었으며, PR 27건이 격리 작업의 간접 증거입니다.
-- **Agent Teams Scrum**: 3개 AI Agent를 병렬로 실행하여 문서와 전략을 다관점으로 교차 검증하는 프로세스를 총 5회 수행했습니다.
+- **Agent Teams Scrum**: 3개 AI Agent를 병렬로 실행하여 문서와 전략을 다관점으로 교차 검증하는 프로세스를 총 6회 수행했습니다.
 - **MCP 프로토콜을 통한 AI 도구 통합**: Claude Code에 Gemini MCP 서버를 통합하여 교차 참조에 활용했습니다.
 
 **상세 내용**: [docs/09-ai-development/](./docs/09-ai-development/)

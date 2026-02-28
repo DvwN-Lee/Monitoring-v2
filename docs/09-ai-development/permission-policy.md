@@ -8,7 +8,7 @@
 
 이 문서는 Monitoring-v2 프로젝트에서 Claude Code AI Agent가 실행할 수 있는 CLI 명령을 allowlist 방식으로 명시적으로 관리한 과정을 기술합니다.
 
-Claude Code는 `.claude/settings.local.json` 파일의 `permissions` 필드를 통해 Agent가 자율적으로 실행 가능한 Bash 명령과 MCP 도구를 제어합니다. 이 프로젝트에서는 deny(거부) 목록 없이 allow(허용) 목록만을 운용하는 allowlist 기반 방식을 채택하였으며, 총 154개 항목이 등록되어 있습니다.
+Claude Code는 `.claude/settings.local.json` 파일의 `permissions` 필드를 통해 Agent가 자율적으로 실행 가능한 Bash 명령과 MCP 도구를 제어합니다. 이 프로젝트에서는 deny(거부) 목록 없이 allow(허용) 목록만을 운용하는 allowlist 기반 방식을 채택하였으며, 총 158개 항목이 등록되어 있습니다.
 
 ---
 
@@ -30,7 +30,7 @@ Claude Code의 `settings.local.json`은 `permissions` 객체 아래 세 개의 �
 
 | 필드 | 역할 | 이 프로젝트의 설정 |
 |------|------|------------------|
-| `allow` | 사용자 승인 없이 Agent가 자율 실행 가능한 명령 목록 | 154개 항목 |
+| `allow` | 사용자 승인 없이 Agent가 자율 실행 가능한 명령 목록 | 158개 항목 |
 | `deny` | Agent가 절대 실행할 수 없는 명령 목록 | 0개 (사용 안 함) |
 | `ask` | 실행 전 사용자 확인을 요구하는 명령 목록 | 0개 (사용 안 함) |
 
@@ -42,7 +42,7 @@ Claude Code의 `settings.local.json`은 `permissions` 객체 아래 세 개의 �
 
 ### 실제 설정 구조
 
-`.claude/settings.local.json`의 `permissions.allow` 배열에 154개 항목이 등록되어 있습니다. 각 항목은 다음 두 가지 형식을 따릅니다.
+`.claude/settings.local.json`의 `permissions.allow` 배열에 158개 항목이 등록되어 있습니다. 각 항목은 다음 두 가지 형식을 따릅니다.
 
 - `Bash(<명령어 패턴>)`: 허용할 Bash 명령과 인자 패턴
 - `mcp__<서버>__<도구명>`: 허용할 MCP 서버 도구
@@ -172,7 +172,7 @@ Claude Code의 `settings.local.json`은 `permissions` 객체 아래 세 개의 �
 
 ### 허용 항목이 많아진 배경
 
-154개 항목은 프로젝트 초기부터 계획된 것이 아니라, 작업을 진행하면서 Claude Code가 승인을 요청할 때마다 해당 명령을 allow 목록에 추가하는 방식으로 점진적으로 누적된 결과입니다. 특히 git log 조회를 위한 세부 명령들이 여러 번 개별 항목으로 추가되면서 항목 수가 증가하였습니다.
+158개 항목은 프로젝트 초기부터 계획된 것이 아니라, 작업을 진행하면서 Claude Code가 승인을 요청할 때마다 해당 명령을 allow 목록에 추가하는 방식으로 점진적으로 누적된 결과입니다. 특히 git log 조회를 위한 세부 명령들이 여러 번 개별 항목으로 추가되면서 항목 수가 증가하였습니다.
 
 ---
 
