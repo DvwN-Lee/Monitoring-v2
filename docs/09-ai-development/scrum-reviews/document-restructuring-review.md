@@ -12,7 +12,7 @@
 Phase 1: 1차 분석 (단일 Agent) ─── 현재 문서 상태 정밀 분석 + 수정 후보 도출
     │
 Phase 2: 2차 분석 (Agent Teams) ── 3개 관점 교차 검증
-    │   ├── Hiring Analyst: 채용 심사자 관점
+    │   ├── Impact Reviewer: 독자 관점 효과 분석
     │   ├── Tech Verifier: 기술 정합성 관점
     │   └── Doc Architect: 문서 구조/품질 관점
     │
@@ -102,9 +102,9 @@ Phase 4: 구현 ─────────────────── 대기
 
 ## Phase 2: 2차 분석 (Agent Teams 교차 검증)
 
-### Agent A: Hiring Analyst (채용 심사자 관점)
+### Agent A: Impact Reviewer (독자 관점 효과 분석)
 
-**평가 기준**: AI Agent Engineer 채용 포트폴리오 효과, 과장 여부, 역효과 가능성
+**평가 기준**: 문서의 독자 관점 효과, 과장 여부, 역효과 가능성
 
 | ID | 판정 | 핵심 사유 |
 |----|------|----------|
@@ -114,13 +114,13 @@ Phase 4: 구현 ─────────────────── 대기
 | R2 | **VETO** | NFR은 시스템 품질 속성. 개발 도구를 여기 넣으면 문서 구조 이해 부족으로 보임 |
 | P1 | APPROVE | 회고의 "잘한 점"이 AI Agent 활용 서술에 가장 적합한 위치. 메타인지 능력을 보여줌 |
 | P2 | MODIFY | "프롬프트 엔지니어링" 언급은 증거 부족으로 위험. 커스텀 Agent 정의, MCP 통합 등 구체적 경험으로 대체 |
-| P3 | APPROVE | 시행착오 솔직한 서술이 채용 심사자에게 신뢰감 제공. 성숙한 개발자 인상 |
+| P3 | APPROVE | 시행착오 솔직한 서술이 독자에게 신뢰감 제공. 성숙한 개발자 인상 |
 | P4 | **VETO** | P95 74.76ms, ADR 10건 옆에 "Agent 1건"은 수치 부풀리기 인상. 다른 지표 신뢰성 희석 |
 | M1 | APPROVE | README는 포트폴리오 첫 진입점. AI 도구를 기술 스택으로 명시하면 즉각적 관련성 어필 |
 | M2 | MODIFY | 시스템 기능 목록에 개발 도구 혼재는 구성 판단력 부족으로 보임. "v2.0 개선한 점" 또는 별도 섹션으로 이동 |
 | M3 | APPROVE | "v2.0에서 개선한 점"에 AI 활용 추가는 자연스럽고 검증 가능. 실질적 활용 능력 증명 |
 
-**전체 요약**: APPROVE 6건, MODIFY 3건, VETO 2건. 회고 문서(P1, P3)와 README(M3)에 AI 활용 추가가 채용에 가장 도움됨. R2와 P4는 역효과 가능성으로 제외 필수. "AI가 모든 것을 했다"가 아닌 "개발자가 AI를 도구로 능숙하게 활용했다"는 주체성 유지가 핵심.
+**전체 요약**: APPROVE 6건, MODIFY 3건, VETO 2건. 회고 문서(P1, P3)와 README(M3)에 AI 활용 추가가 독자 가치 전달에 가장 효과적임. R2와 P4는 역효과 가능성으로 제외 필수. "AI가 모든 것을 했다"가 아닌 "개발자가 AI를 도구로 능숙하게 활용했다"는 주체성 유지가 핵심.
 
 ---
 
@@ -181,7 +181,7 @@ Phase 4: 구현 ─────────────────── 대기
 
 ### 투표 매트릭스
 
-| ID | Hiring Analyst | Tech Verifier | Doc Architect | 합의 결과 |
+| ID | Impact Reviewer | Tech Verifier | Doc Architect | 합의 결과 |
 |----|:-:|:-:|:-:|:--|
 | **A1** | MODIFY | APPROVE | MODIFY | MODIFY 반영 후 구현 |
 | **A2** | APPROVE | APPROVE | MODIFY | MODIFY 반영 후 구현 |
