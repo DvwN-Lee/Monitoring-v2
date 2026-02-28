@@ -81,7 +81,7 @@ Worktree를 활용하여 개발하였으며, 각 작업 완료 후 정리되었�
 
 ## PR 히스토리 (간접 증거)
 
-PR 총 27건이 생성되었으며, MERGED 22건, CLOSED 5건입니다.
+PR 총 27건이 생성되었으며, MERGED 23건, CLOSED 4건입니다.
 GitHub에서 Issue와 PR은 번호를 공유하므로, 최고 번호(#61)가 곧 PR 총수를 의미하지 않습니다.
 
 각 PR이 독립된 브랜치(feature/, docs/, fix/, bugfix/, test/ 등)에서 진행되었다는 사실은, 각 작업이 격리된 환경에서 이루어졌음을 간접적으로 증명합니다.
@@ -140,8 +140,8 @@ GitHub에서 Issue와 PR은 번호를 공유하므로, 최고 번호(#61)가 곧
 | 구분 | 건수 |
 |---|---|
 | 전체 PR | 27건 |
-| MERGED | 22건 |
-| CLOSED (미merge) | 5건 |
+| MERGED | 23건 |
+| CLOSED (미merge) | 4건 |
 
 ---
 

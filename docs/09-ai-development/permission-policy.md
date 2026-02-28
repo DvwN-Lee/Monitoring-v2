@@ -204,7 +204,7 @@ export TF_VAR_postgres_password="dummy"
 
 개별 MCP 도구 허용 항목으로는 `mcp__chrome-devtools__*` 계열 도구 5개가 allow 목록에 등록되어 있습니다. 이는 Chrome DevTools MCP 서버의 도구 중 실제 사용하는 항목만을 개별 허용한 예시입니다.
 
-`WebFetch`는 도메인 제한 형식(`WebFetch(domain:<도메인>)`)으로 허용되어 있어, 허용된 외부 도메인에서만 웹 콘텐츠를 가져올 수 있습니다. 허용된 도메인은 `raw.githubusercontent.com`, `carat.im`, `www.raylogue.com`, `www.wanted.co.kr` 이며, `WebSearch`는 도메인 제한 없이 전체 허용됩니다.
+`WebFetch`는 도메인 제한 형식(`WebFetch(domain:<도메인>)`)으로 허용되어 있어, 허용된 외부 도메인에서만 웹 콘텐츠를 가져올 수 있습니다. 허용 도메인은 작업에 필요한 외부 사이트로 한정되며, `WebSearch`는 도메인 제한 없이 전체 허용됩니다.
 
 ---
 
