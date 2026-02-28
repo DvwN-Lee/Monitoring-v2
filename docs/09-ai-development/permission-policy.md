@@ -214,4 +214,4 @@ export TF_VAR_postgres_password="dummy"
 |------|------|
 | `.claude/settings.local.json` | 실제 권한 설정 파일 (git 추적 제외) |
 | `docs/09-ai-development/agent-design.md` | 커스텀 Agent 설계 문서 |
-| `docs/09-ai-development/mcp-multi-ai.md` | MCP 기반 다중 AI 협업 문서 |
+| `docs/09-ai-development/mcp-multi-ai.md` | MCP 프로토콜을 통한 AI 도구 통합 문서 |
