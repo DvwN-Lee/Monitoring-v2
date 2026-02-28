@@ -66,6 +66,21 @@ terraform init && terraform apply
 
 ---
 
+## AI Agent 활용 개발 프로세스
+
+이 프로젝트는 Kubernetes, Terraform, Istio 등 Cloud-Native 기술 스택을 기반으로, **Claude Code AI Agent를 도구로 활용**하여 개발 프로세스를 구성했습니다. AI Agent가 "만든" 프로젝트가 아니라, AI Agent를 "활용하여 구성한" 프로젝트입니다.
+
+### 핵심 활용 영역
+
+- **커스텀 Agent 설계**: 프로젝트 특성에 맞는 `code-implementation-expert` Agent를 `.claude/agents/` 디렉토리에 정의하여 코드 구현 품질을 관리했습니다.
+- **Worktree 기반 AI 협업**: Git Worktree로 각 작업을 독립된 디렉토리에 격리하여 AI Agent와 안전하게 협업했습니다. 작업 완료 후 worktree는 정리되었으며, PR 27건이 격리 작업의 간접 증거입니다.
+- **Agent Teams Scrum**: 3개 AI Agent를 병렬로 실행하여 문서와 전략을 다관점으로 교차 검증하는 프로세스를 총 3회 수행했습니다.
+- **MCP 프로토콜을 통한 AI 도구 통합**: Claude Code에 Gemini MCP 서버를 통합하여 교차 참조에 활용했습니다.
+
+**상세 내용**: [docs/09-ai-development/](./docs/09-ai-development/)
+
+---
+
 ## 주요 기능
 
 -   **Infrastructure as Code (IaC)**: Terraform을 사용하여 Kubernetes Cluster 내 필수 리소스(Namespace, PostgreSQL 배포 등)를 코드로 관리합니다. 참고: 현재 terraform/modules의 네트워크 및 Cluster 모듈은 기본 구조를 보여주는 템플릿이며, 실제 클라우드 환경에 맞게 구체화가 필요합니다.
@@ -269,7 +284,7 @@ kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authori
 
 **각 기술을 선택한 이유는 [ADR 문서](./docs/02-architecture/adr/)를 참고하세요.**
 
-AI Agent 활용 방식(커스텀 Agent 정의, 멀티 AI 환경 구성, CLI 권한 정책)은 [프로젝트 회고](./docs/08-retrospective/project-retrospective.md) 2.5절 및 4.5절을 참고하세요.
+AI Agent 활용 방식(커스텀 Agent 설계, Worktree 기반 협업, Agent Teams Scrum, MCP 통합)은 **[AI Agent 활용 개발 프로세스](./docs/09-ai-development/)** 문서를 참고하세요.
 
 ---
 
