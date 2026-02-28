@@ -55,6 +55,7 @@ Agent Teams Scrum은 복수의 AI Agent를 병렬로 실행하여 다관점 교�
 | 4차 | Phase 1 완성 문서 최종 검토 | doc-quality-reviewer, fact-checker, portfolio-reviewer | VETO 1건(이다체→합쇼체 수정), 수정 후 NO VETO 합의 | [final-document-review.md](final-document-review.md) |
 | 5차 | 공개 문서 무결성 최종 검토 | content-scanner, fact-verifier, public-reviewer | VETO 4건(비공개 이동, PR 수정, Scrum 횟수, 점수/판정 표현), 전원 해소 | [integrity-review.md](integrity-review.md) |
 | 6차 | 최종 검증 Scrum | doc-quality-reviewer, fact-checker, public-integrity-reviewer | VETO 4건(allow 항목 수, 내부 모순, 점수 표현, Hiring Analyst 잔존), 전원 해소 | [final-verification-review.md](final-verification-review.md) |
+| 7차 | PR 최종 준비 검토 | content-purity-scanner, fact-integrity-checker, doc-quality-reviewer | VETO 3건(allow 항목 수, 깨진 링크, Scrum 횟수), 전원 해소 | [pr-readiness-review.md](pr-readiness-review.md) |
 
 ---
 
@@ -96,6 +97,12 @@ Agent Teams Scrum은 복수의 AI Agent를 병렬로 실행하여 다관점 교�
 - **연관 문서 동기화**: 단일 문서 수정이 연관 문서와 불일치를 만들 수 있습니다. README.md 횟수 변경 시 integrity-review.md 처리 기록도 함께 동기화해야 합니다.
 - **결과**: VETO 4건 해소. allow 항목 수 154개로 수정. 잔존 점수/채용 표현(final-document-review.md, document-restructuring-review.md) 전원 제거 완료.
 
+### 7차 Scrum: PR 최종 준비 검토
+
+- **배운 점**: allowlist 항목 수는 Scrum 간에도 계속 누적됩니다. 이번 Scrum까지 153→154→158로 3회 변경되었으며, 문서 작성 완료 직후가 아닌 최종 검증 시점의 실제 항목 수를 기재해야 합니다.
+- **취업 내용 완전 제거 확인**: 공개 문서 12개 전수 탐색 결과 취업/채용/점수/Claude 귀속 표현 전무 확인. 7차 Scrum을 통해 공개 문서 무결성이 최종 검증되었습니다.
+- **결과**: VETO 3건 해소. allow 항목 수 158개로 갱신. 깨진 링크(`../03-cicd/`) 제거. README.md Scrum 횟수 6회로 동기화.
+
 ---
 
 ## 하위 문서 링크
@@ -108,3 +115,4 @@ Agent Teams Scrum은 복수의 AI Agent를 병렬로 실행하여 다관점 교�
 | [final-document-review.md](final-document-review.md) | 2026-02-28 | 4차 Scrum: Phase 1 완성 문서 최종 다관점 검토 |
 | [integrity-review.md](integrity-review.md) | 2026-02-28 | 5차 Scrum: 공개 문서 무결성 검토 — 취업 특화 내용 분리 및 사실 오류 수정 |
 | [final-verification-review.md](final-verification-review.md) | 2026-03-01 | 6차 Scrum: 최종 검증 — allow 항목 수 수정, 잔존 채용/점수 표현 전원 제거 |
+| [pr-readiness-review.md](pr-readiness-review.md) | 2026-03-01 | 7차 Scrum: PR 최종 준비 검토 — 취업 내용 완전 제거 확인, allow 158개, 깨진 링크 수정 |
