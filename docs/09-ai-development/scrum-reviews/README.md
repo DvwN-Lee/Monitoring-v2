@@ -54,6 +54,7 @@ Agent Teams Scrum은 복수의 AI Agent를 병렬로 실행하여 다관점 교�
 | 3차 | 문서 재구성 구현 전략 검토 | doc-quality-reviewer, fact-checker, portfolio-reviewer | VETO 1건(PR 수량/Worktree 표현), 수정 후 승인 | [doc-restructuring-strategy-review.md](doc-restructuring-strategy-review.md) |
 | 4차 | Phase 1 완성 문서 최종 검토 | doc-quality-reviewer, fact-checker, portfolio-reviewer | VETO 1건(이다체→합쇼체 수정), 수정 후 NO VETO 합의 | [final-document-review.md](final-document-review.md) |
 | 5차 | 공개 문서 무결성 최종 검토 | content-scanner, fact-verifier, public-reviewer | VETO 4건(비공개 이동, PR 수정, Scrum 횟수, 점수/판정 표현), 전원 해소 | [integrity-review.md](integrity-review.md) |
+| 6차 | 최종 검증 Scrum | doc-quality-reviewer, fact-checker, public-integrity-reviewer | VETO 4건(allow 항목 수, 내부 모순, 점수 표현, Hiring Analyst 잔존), 전원 해소 | [final-verification-review.md](final-verification-review.md) |
 
 ---
 
@@ -87,7 +88,13 @@ Agent Teams Scrum은 복수의 AI Agent를 병렬로 실행하여 다관점 교�
 
 - **배운 점**: 개발 과정의 내부 분석 문서(포지셔닝 전략, 시장 분석)와 공개 프로젝트 문서는 목적이 다릅니다. 공개 문서는 기술 사실을 중심으로 작성해야 합니다.
 - **교차 검증의 한계**: Fact Verifier가 settings.local.json을 "git 추적 중"으로 오판한 사례. `.gitignore` 재검증으로 오판 확인. 단일 Agent 판정을 무비판적으로 수용하지 말고 재검증이 필요합니다.
-- **결과**: VETO 4건 해소. portfolio-restructuring-analysis.md 비공개 이동. PR 브레이크다운(MERGED 23/CLOSED 4) 및 Scrum 횟수(4회) 수정 완료.
+- **결과**: VETO 4건 해소. portfolio-restructuring-analysis.md 비공개 이동. PR 브레이크다운(MERGED 23/CLOSED 4) 및 Scrum 횟수(5회) 수정 완료.
+
+### 6차 Scrum: 최종 검증
+
+- **배운 점**: allowlist 방식으로 운영하는 권한 목록은 작업 중 자동으로 항목이 추가될 수 있습니다. `git rm` 같은 명령 실행 시 Claude Code가 해당 명령을 allow 목록에 자동 추가하므로, 작업 완료 후 항목 수를 재검증해야 합니다.
+- **연관 문서 동기화**: 단일 문서 수정이 연관 문서와 불일치를 만들 수 있습니다. README.md 횟수 변경 시 integrity-review.md 처리 기록도 함께 동기화해야 합니다.
+- **결과**: VETO 4건 해소. allow 항목 수 154개로 수정. 잔존 점수/채용 표현(final-document-review.md, document-restructuring-review.md) 전원 제거 완료.
 
 ---
 
@@ -100,3 +107,4 @@ Agent Teams Scrum은 복수의 AI Agent를 병렬로 실행하여 다관점 교�
 | [doc-restructuring-strategy-review.md](doc-restructuring-strategy-review.md) | 2026-02-28 | 3차 Scrum: 문서 재구성 구현 계획(Task 1~10) 사실 검증 및 품질 검토 |
 | [final-document-review.md](final-document-review.md) | 2026-02-28 | 4차 Scrum: Phase 1 완성 문서 최종 다관점 검토 |
 | [integrity-review.md](integrity-review.md) | 2026-02-28 | 5차 Scrum: 공개 문서 무결성 검토 — 취업 특화 내용 분리 및 사실 오류 수정 |
+| [final-verification-review.md](final-verification-review.md) | 2026-03-01 | 6차 Scrum: 최종 검증 — allow 항목 수 수정, 잔존 채용/점수 표현 전원 제거 |
