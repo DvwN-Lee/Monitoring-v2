@@ -18,7 +18,8 @@ docs/
 ├── 05-troubleshooting/     # 5단계: 트러블슈팅 문서
 ├── 06-performance/         # 6단계: 성능 분석
 ├── 07-demo/                # 7단계: 데모 및 시연
-└── 08-retrospective/       # 8단계: 프로젝트 회고
+├── 08-retrospective/       # 8단계: 프로젝트 회고
+└── 09-ai-development/      # 9단계: AI Agent 활용 개발 프로세스
 ```
 
 ---
@@ -51,6 +52,9 @@ docs/
    - [06-performance/k6-load-test-results.md](06-performance/k6-load-test-results.md) - 부하 테스트 결과
    - [06-performance/e2e-test-results.md](06-performance/e2e-test-results.md) - E2E 테스트 결과 (New)
    - [08-retrospective/project-retrospective.md](08-retrospective/project-retrospective.md) - 프로젝트 회고
+
+7. **AI Agent 활용 과정 이해**
+   - [09-ai-development/README.md](09-ai-development/README.md) - AI Agent 활용 개발 프로세스 개요
 
 ### 특정 목적별 가이드
 
@@ -213,6 +217,19 @@ k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 |------|------|
 | [project-retrospective.md](08-retrospective/project-retrospective.md) | 잘한 점, 아쉬운 점, 배운 점, 향후 계획 |
 
+### 9단계: AI Agent 활용 개발 프로세스 (09-ai-development/)
+
+AI Agent를 활용한 개발 프로세스와 도구 구성 경험을 문서화했습니다.
+
+| 문서 | 설명 |
+|------|------|
+| [README.md](09-ai-development/README.md) | AI Agent 활용 개발 프로세스 개요 |
+| [agent-design.md](09-ai-development/agent-design.md) | 커스텀 Agent 설계 과정 |
+| [worktree-workflow.md](09-ai-development/worktree-workflow.md) | Worktree 기반 AI 협업 프로세스 |
+| [mcp-multi-ai.md](09-ai-development/mcp-multi-ai.md) | MCP 프로토콜을 통한 AI 도구 통합 |
+| [permission-policy.md](09-ai-development/permission-policy.md) | CLI 권한 정책 설계 |
+| [scrum-reviews/](09-ai-development/scrum-reviews/) | Agent Teams Scrum 문서 검토 이력 |
+
 ---
 
 ## 문서 작성 원칙
@@ -236,6 +253,7 @@ k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 - **트러블슈팅**: [05-troubleshooting/README.md](05-troubleshooting/README.md)
 - **성능 분석**: [06-performance/k6-load-test-results.md](06-performance/k6-load-test-results.md)
 - **최종 상태 보고서**: [04-operations/reports/final-status-report.md](04-operations/reports/final-status-report.md)
+- **AI Agent 활용 프로세스**: [09-ai-development/README.md](09-ai-development/README.md)
 
 ### 외부 리소스
 
@@ -245,4 +263,4 @@ k6 부하 테스트를 통한 성능 측정 및 최적화 결과입니다.
 
 ---
 
-**최종 업데이트**: 2025년 12월 14일
+**최종 업데이트**: 2026년 2월 28일
