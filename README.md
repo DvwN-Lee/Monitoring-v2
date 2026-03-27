@@ -157,93 +157,6 @@ titanium-prod namespace의 Service Mesh 구조를 시각화한 화면입니다. 
 
 ---
 
-## 시작하기
-
-### 빠른 시작 가이드
-
-프로젝트를 처음 시작하는 경우, 아래 가이드 문서를 먼저 읽어보세요:
-
-**[Getting Started - 로컬 환경에서 시작하기](./docs/00-getting-started/GETTING_STARTED.md)**
-
-이 가이드는 필수 도구 설치부터 로컬 환경에서 전체 시스템을 실행하는 과정까지 단계별로 안내합니다.
-
----
-
-### 배포 옵션
-
-이 프로젝트는 **로컬 개발 환경**과 **Solid Cloud 프로덕션 환경** 두 가지 방식으로 실행할 수 있습니다.
-
-### 옵션 1: 로컬 개발 환경 (Minikube + Skaffold)
-
-빠른 개발 및 테스트를 위한 로컬 Kubernetes 환경입니다.
-
-**요구사항:** `Minikube`, `Skaffold`, `kubectl`
-
-```bash
-# 1. Minikube Cluster 시작
-minikube start
-
-# 2. Skaffold 개발 모드 실행
-skaffold dev
-
-# 3. 서비스 접속
-kubectl port-forward svc/api-gateway 8000:8000
-```
-
----
-
-### 옵션 2: Solid Cloud 프로덕션 환경
-
-실제 클라우드 환경에서 Terraform으로 인프라를 생성하고 GitOps 방식으로 배포합니다.
-
-**요구사항:** `Terraform`, `kubectl`, Solid Cloud 접근 권한 (Token 기반 인증)
-
-```bash
-# 1. Kubernetes 인증 설정 (Token 기반)
-# .env.k8s 파일 생성
-cp .env.k8s.example .env.k8s
-
-# .env.k8s 파일 편집 (API Server, Token, CA Cert 입력)
-# - K8S_API_SERVER: Kubernetes API 서버 URL
-# - K8S_TOKEN: Service Account Token
-# - K8S_CA_CERT: CA Certificate (Base64 인코딩)
-
-# 2. Kubernetes context 설정 확인
-kubectl config get-contexts
-kubectl config use-context <solid-cloud-context-name>
-
-# 3. Terraform으로 인프라 생성
-cd terraform/environments/solid-cloud
-terraform init
-terraform apply
-
-# 4. 애플리케이션 배포
-cd ../../..
-kubectl apply -k k8s-manifests/overlays/solid-cloud
-
-# 5. 배포 상태 확인
-kubectl get pods -n titanium-prod
-kubectl get svc -n titanium-prod
-```
-
-**Token 발급 방법:**
-
-```bash
-# Service Account 생성 (기존 Cluster 접근 가능한 경우)
-kubectl create serviceaccount monitoring-sa -n default
-kubectl create clusterrolebinding monitoring-sa-admin \
-  --clusterrole=cluster-admin \
-  --serviceaccount=default:monitoring-sa
-
-# Token 발급 (Kubernetes 1.24+)
-kubectl create token monitoring-sa --duration=87600h
-
-# CA Certificate 가져오기
-kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}'
-```
-
----
-
 ## 문서 구조 및 가이드
 
 이 프로젝트는 학습 및 개발 과정을 체계적으로 보여주기 위해 상세한 문서를 포함하고 있습니다.
@@ -297,17 +210,7 @@ AI Agent 활용 방식(커스텀 Agent 설계, Worktree 기반 협업, Agent Tea
 
 ### 성능 목표 및 달성 현황
 
-**K6 부하 테스트 기준 (100 VU, 10분)**:
-- **P95 Latency**: 74.76ms (목표 500ms 대비 85% 개선)
-- **P90 Latency**: 55.67ms
-- **Error Rate**: 0.01%
-- **Check Success Rate**: 99.95%
-
-**시스템 안정성**:
-- **HTTP 실패율**: 0% (목표 달성)
-- **보안**: Trivy 스캔 자동화, mTLS STRICT 모드, Rate Limiting 적용 (목표 달성)
-- **배포 시간**: Git Push 후 5분 이내 자동 배포 (목표 달성)
-- **고가용성**: 주요 서비스 2+ replicas 유지 (목표 달성)
+상세 성능 지표는 [주요 성과](#주요-성과) 섹션을 참고하세요.
 
 ---
 
@@ -389,27 +292,7 @@ AI Agent 활용 방식(커스텀 Agent 설계, Worktree 기반 협업, Agent Tea
 - **CI/CD**: Git Push → 5분 이내 자동 배포
 
 ### 접속 정보
-- **Grafana 대시보드**: http://10.0.11.168:30300
-- **Kiali Service Mesh**: http://10.0.11.168:30164
-- **Prometheus**: http://10.0.11.168:30090
-- **애플리케이션**: http://10.0.11.168:31304
-
----
-
-## 프로젝트 문서
-
-상세한 기술 문서 및 가이드는 다음을 참고하세요:
-
--   **[요구사항 명세서](./docs/01-planning/requirements.md)**: 프로젝트에서 구현할 기능과 목표
--   **[시스템 설계서](./docs/02-architecture/architecture.md)**: 시스템 아키텍처와 구조
--   **[프로젝트 계획서](./docs/01-planning/project-plan.md)**: 개발 일정과 마일스톤
--   **[기술 결정 기록 (ADR)](./docs/02-architecture/adr/)**: 주요 기술 선택의 이유와 배경
--   **[Secret 관리 가이드](./docs/04-operations/guides/SECRET_MANAGEMENT.md)**: 보안 비밀 정보 관리 방법
--   **[Week 5 최종 상태 보고서](./docs/04-operations/reports/final-status-report.md)**: 프로젝트 완료 상태
--   **[k6 부하 테스트 결과 분석](./docs/06-performance/k6-load-test-results.md)**: 부하 테스트 및 최적화 결과
--   **[k6 부하 테스트 가이드](./tests/performance/README.md)**: k6 성능 테스트 실행 방법
--   **[k6 테스트 결과 보고서](./docs/06-performance/k6-load-test-results.md)**: 부하 테스트 결과 및 성능 지표
--   **[Istio 트러블슈팅 가이드](./docs/05-troubleshooting/istio/)**: Istio Service Mesh 문제 해결
+- 접속 IP는 배포 환경에 따라 달라집니다. `kubectl get svc -n titanium-prod` 명령으로 확인하세요.
 
 ---
 
